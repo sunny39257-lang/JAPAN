@@ -70,11 +70,13 @@
         .nav-item { display: flex; flex-direction: column; align-items: center; color: #94A3B8; font-size: 0.7rem; width: 60px; }
         .nav-item.active { color: #01579B; font-weight: bold; }
         .nav-item i { font-size: 1.2rem; margin-bottom: 2px; }
+        
+        /* 4. 修改 FAB 顏色 (原本黃色改為深海藍) */
         .fab-center {
-            width: 52px; height: 52px; background: #FFD54F; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; color: #01579B;
+            width: 52px; height: 52px; background: #01579B; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; color: white;
             font-size: 1.4rem; margin-top: -26px; border: 4px solid #fff;
-            box-shadow: 0 4px 15px rgba(255, 213, 79, 0.6);
+            box-shadow: 0 4px 15px rgba(1, 87, 155, 0.4);
         }
 
         /* Timeline */
@@ -229,6 +231,9 @@
                                 <div v-if="item.category === 'flight' && item.deptAirport" class="text-xs text-slate-500 mt-1">
                                     {{ item.deptAirport }} <i class="fa-solid fa-arrow-right text-[10px]"></i> {{ item.arrAirport }}
                                 </div>
+                                <div v-else-if="item.category === 'food' && item.foodItem" class="text-xs text-orange-600 font-bold mt-1">
+                                    <i class="fa-solid fa-utensils mr-1"></i>{{ item.foodItem }}
+                                </div>
                                 <p v-else class="text-xs text-slate-500 truncate mt-1" v-if="item.note">{{ item.note }}</p>
                             </div>
 
@@ -363,7 +368,8 @@
                             <!-- Center: Icon & Info -->
                             <div class="flex-1 flex flex-col items-center justify-center px-2">
                                 <i class="fa-solid fa-plane text-sm mb-1 transform" :class="index === 0 ? 'text-blue-500 -rotate-45' : 'text-orange-500 rotate-45'"></i>
-                                <div class="text-[10px] font-bold text-slate-400">{{ flight.name || '航班' }}</div>
+                                <!-- 顯示出發航班號，若有抵達航班號則加顯示 -->
+                                <div class="text-[10px] font-bold text-slate-400">{{ flight.deptFlightNo || flight.name || '航班' }}</div>
                                 <div class="text-[10px] text-slate-400 scale-90">({{ getDateSimple(flight.dayIndex) }})</div>
                             </div>
 
@@ -439,6 +445,7 @@
         <button class="nav-item" :class="{ active: currentTab === 'shopping' }" @click="currentTab = 'shopping'">
             <i class="fa-solid fa-bag-shopping"></i><span>購物</span>
         </button>
+        <!-- FAB 按鈕顏色已在 CSS 修改為 .fab-center -->
         <button class="fab-center" @click="handleAddClick"><i class="fa-solid fa-plus"></i></button>
         <button class="nav-item" :class="{ active: currentTab === 'expenses' }" @click="currentTab = 'expenses'">
             <i class="fa-solid fa-wallet"></i><span>花費</span>
@@ -479,8 +486,8 @@
                     <div class="flex gap-2 mb-2">
                         <span class="text-xs font-bold px-2 py-1 rounded text-white inline-block" :class="getCategoryColor(previewItem.category)">{{ getCategoryName(previewItem.category) }}</span>
                         <!-- 航班號 Tag -->
-                        <span v-if="previewItem.category === 'flight' && previewItem.name" class="text-xs font-bold px-2 py-1 rounded bg-sky-100 text-sky-700 border border-sky-200 inline-block">
-                            <i class="fa-solid fa-plane mr-1"></i>{{ previewItem.name }}
+                        <span v-if="previewItem.category === 'flight'" class="text-xs font-bold px-2 py-1 rounded bg-sky-100 text-sky-700 border border-sky-200 inline-block">
+                            <i class="fa-solid fa-plane mr-1"></i>{{ previewItem.deptFlightNo || previewItem.name }}
                         </span>
                     </div>
 
@@ -491,12 +498,19 @@
                         </span>
                         <span v-else>{{ previewItem.name }}</span>
                     </h2>
+                    
+                    <!-- 飲食：顯示品名 -->
+                     <div v-if="previewItem.category === 'food' && previewItem.foodItem" class="mt-2 flex items-center text-orange-600 font-bold bg-orange-50 px-3 py-2 rounded-lg">
+                        <i class="fa-solid fa-utensils mr-2"></i> {{ previewItem.foodItem }}
+                     </div>
                 </div>
 
                 <!-- 航班詳細資訊 -->
                 <div v-if="previewItem.category === 'flight' && previewItem.deptAirport" class="mb-6 bg-sky-50 rounded-xl p-4 border border-sky-100 shadow-sm relative overflow-hidden">
                     <div class="absolute top-0 left-0 w-full h-1 bg-sky-400"></div>
-                    <div class="flex items-center justify-between mb-2">
+                    
+                    <!-- Departure -->
+                    <div class="flex items-center justify-between mb-4">
                         <div class="text-center flex-1">
                             <div class="text-3xl font-black text-slate-700 tracking-wider">{{ previewItem.deptAirport }}</div>
                             <div class="text-xs text-slate-500 font-bold">{{ previewItem.deptTerminal ? 'T'+previewItem.deptTerminal : '航廈 -' }}</div>
@@ -511,6 +525,12 @@
                             <div class="text-xs text-slate-500 font-bold">{{ previewItem.arrTerminal ? 'T'+previewItem.arrTerminal : '航廈 -' }}</div>
                             <div class="text-lg font-bold text-sky-700 mt-1">{{ previewItem.endTime || '--:--' }}</div>
                         </div>
+                    </div>
+                    
+                    <!-- 顯示詳細航班號 (如果去程回程不同) -->
+                    <div class="border-t border-sky-200 pt-2 flex justify-between text-[10px] text-sky-700">
+                        <span><i class="fa-solid fa-plane-departure mr-1"></i>{{ previewItem.deptFlightNo || previewItem.name }}</span>
+                        <span v-if="previewItem.arrFlightNo"><i class="fa-solid fa-plane-arrival mr-1"></i>{{ previewItem.arrFlightNo }}</span>
                     </div>
                 </div>
 
@@ -560,11 +580,11 @@
         </div>
     </div>
 
-    <!-- 2. Shopping Detail Preview Modal (READ ONLY) -->
+    <!-- 2. Shopping Detail Preview Modal (READ ONLY) - 2. 修改：移除上方X，按鈕排下方，顯示所有資訊 -->
     <div v-if="showShoppingDetailModal && selectedShoppingItem" class="fixed inset-0 z-[60] flex items-center justify-center px-4">
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" @click="closeAllModals"></div>
         <div class="bg-white rounded-3xl w-full max-w-sm overflow-hidden relative z-10 max-h-[90vh] overflow-y-auto">
-            <button @click="closeAllModals" class="absolute top-4 right-4 w-8 h-8 bg-black/30 text-white rounded-full flex items-center justify-center z-20 backdrop-blur-md"><i class="fa-solid fa-xmark"></i></button>
+            <!-- 移除這裡原本的 X 按鈕 -->
 
             <div class="relative h-72 bg-slate-100 group" @click="openLightbox(selectedShoppingItem.images ? selectedShoppingItem.images[currentGalleryIndex] : null)">
                 <img v-if="selectedShoppingItem.images && selectedShoppingItem.images.length > 0" :src="selectedShoppingItem.images[currentGalleryIndex]" referrerpolicy="no-referrer" class="w-full h-full object-contain bg-black">
@@ -581,12 +601,48 @@
 
             <div class="p-6">
                 <h3 class="text-xl font-bold text-slate-800 mb-2">{{ selectedShoppingItem.name }}</h3>
-                <p v-if="selectedShoppingItem.shopName" class="text-sm font-bold text-slate-500 mb-4"><i class="fa-solid fa-store mr-1"></i> {{ selectedShoppingItem.shopName }}</p>
-                <div class="grid grid-cols-2 gap-3 mb-4">
-                    <div class="bg-slate-50 p-3 rounded-xl text-center"><span class="text-xs text-slate-400 block">單價</span><span class="font-bold">¥{{ selectedShoppingItem.price || '-' }}</span></div>
-                    <div class="bg-slate-50 p-3 rounded-xl text-center"><span class="text-xs text-slate-400 block">數量</span><span class="font-bold">x{{ selectedShoppingItem.quantity || 1 }}</span></div>
+                
+                <!-- 2. 顯示所有欄位資訊 -->
+                <div class="space-y-3 mb-6">
+                    <div class="grid grid-cols-2 gap-3 mb-2">
+                        <div class="bg-slate-50 p-3 rounded-xl text-center"><span class="text-xs text-slate-400 block">單價</span><span class="font-bold">¥{{ selectedShoppingItem.price || '-' }}</span></div>
+                        <div class="bg-slate-50 p-3 rounded-xl text-center"><span class="text-xs text-slate-400 block">數量</span><span class="font-bold">x{{ selectedShoppingItem.quantity || 1 }}</span></div>
+                    </div>
+                    
+                    <div v-if="selectedShoppingItem.shopName" class="flex items-center gap-3">
+                        <div class="w-6 text-slate-400 text-center"><i class="fa-solid fa-store"></i></div>
+                        <p class="text-sm font-bold text-slate-600">{{ selectedShoppingItem.shopName }}</p>
+                    </div>
+
+                    <div v-if="selectedShoppingItem.openTime" class="flex items-center gap-3">
+                        <div class="w-6 text-slate-400 text-center"><i class="fa-regular fa-clock"></i></div>
+                        <div class="text-sm text-slate-700">{{ selectedShoppingItem.openTime }}</div>
+                    </div>
+
+                    <div v-if="selectedShoppingItem.address" class="flex items-start gap-3">
+                        <div class="w-6 text-slate-400 text-center"><i class="fa-solid fa-location-dot"></i></div>
+                        <div class="flex-1">
+                            <p class="text-sm text-slate-700 mb-1">{{ selectedShoppingItem.address }}</p>
+                            <a :href="'https://www.google.com/maps/search/?api=1&query='+selectedShoppingItem.address" target="_blank" class="inline-block text-xs bg-slate-100 px-3 py-1.5 rounded-lg text-slate-600 font-bold hover:bg-slate-200"><i class="fa-solid fa-map-location-dot mr-1"></i> Google 導航</a>
+                        </div>
+                    </div>
+
+                    <div v-if="selectedShoppingItem.website" class="flex items-center gap-3">
+                        <div class="w-6 text-slate-400 text-center"><i class="fa-solid fa-globe"></i></div>
+                        <a :href="selectedShoppingItem.website" target="_blank" class="text-sm text-blue-600 underline font-bold truncate block flex-1">官方網站</a>
+                    </div>
+
+                    <div v-if="selectedShoppingItem.note" class="flex items-start gap-3">
+                        <div class="w-6 text-slate-400 text-center"><i class="fa-solid fa-note-sticky"></i></div>
+                        <p class="text-sm text-slate-600 whitespace-pre-wrap bg-slate-50 p-2 rounded-lg flex-1">{{ selectedShoppingItem.note }}</p>
+                    </div>
                 </div>
-                <button @click="switchToEditShopping" class="w-full py-3 bg-deep-sea-blue text-white rounded-xl font-bold shadow-lg shadow-blue-900/20"><i class="fa-solid fa-pen mr-2"></i> 編輯內容</button>
+
+                <!-- 2. 下方按鈕區塊：關閉 與 編輯 -->
+                <div class="flex gap-2">
+                    <button @click="closeAllModals" class="w-1/3 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold">關閉</button>
+                    <button @click="switchToEditShopping" class="flex-1 py-3 bg-deep-sea-blue text-white rounded-xl font-bold shadow-lg shadow-blue-900/20"><i class="fa-solid fa-pen mr-2"></i> 編輯內容</button>
+                </div>
             </div>
         </div>
     </div>
@@ -613,6 +669,8 @@
                 <!-- 1. 餐廳 -->
                 <div v-if="newItinerary.category === 'food'" class="space-y-3">
                     <div><label class="form-label">餐廳名稱</label><input v-model="newItinerary.name" class="input-field"></div>
+                    <!-- 3. 新增 品名 欄位 -->
+                    <div><label class="form-label">品名 (想吃的菜)</label><input v-model="newItinerary.foodItem" placeholder="例如：成吉思汗烤肉" class="input-field"></div>
                     <div class="grid grid-cols-2 gap-3">
                         <div><label class="form-label">價格</label><input v-model="newItinerary.price" placeholder="¥" class="input-field"></div>
                         <div><label class="form-label">時間</label><input v-model="newItinerary.startTime" type="time" class="input-field"></div>
@@ -659,18 +717,28 @@
                     </div>
                 </div>
 
-                <!-- 4. 航班 -->
+                <!-- 4. 航班 (1. 修改：依照指定的順序欄位) -->
                 <div v-else-if="newItinerary.category === 'flight'" class="space-y-3 bg-sky-50 p-3 rounded-xl border border-sky-100">
-                    <div><label class="form-label text-sky-800">航班號</label><input v-model="newItinerary.name" placeholder="例如：JX800" class="input-field bg-white"></div>
+                    <div>
+                        <label class="form-label text-sky-800">標題</label>
+                        <input v-model="newItinerary.name" placeholder="例如：台北 -> 札幌" class="input-field bg-white">
+                    </div>
+                    
+                    <div class="text-xs font-bold text-sky-600 mt-2 mb-1">出發資訊</div>
+                    <div><label class="form-label text-sky-800">出發機場</label><input v-model="newItinerary.deptAirport" placeholder="TPE" class="input-field bg-white"></div>
                     <div class="grid grid-cols-2 gap-3">
-                        <div><label class="form-label text-sky-800">出發機場</label><input v-model="newItinerary.deptAirport" placeholder="TPE" class="input-field bg-white"></div>
-                        <div><label class="form-label text-sky-800">航廈</label><input v-model="newItinerary.deptTerminal" placeholder="T1" class="input-field bg-white"></div>
+                         <div><label class="form-label text-sky-800">航班號</label><input v-model="newItinerary.deptFlightNo" placeholder="JX800" class="input-field bg-white"></div>
+                         <div><label class="form-label text-sky-800">航廈</label><input v-model="newItinerary.deptTerminal" placeholder="T1" class="input-field bg-white"></div>
                     </div>
                     <div><label class="form-label text-sky-800">出發時間</label><input v-model="newItinerary.startTime" type="time" class="input-field bg-white"></div>
-                    <div class="border-t border-sky-200 my-1"></div>
+                    
+                    <div class="border-t border-sky-200 my-2"></div>
+                    
+                    <div class="text-xs font-bold text-sky-600 mb-1">抵達資訊</div>
+                    <div><label class="form-label text-sky-800">抵達機場</label><input v-model="newItinerary.arrAirport" placeholder="CTS" class="input-field bg-white"></div>
                     <div class="grid grid-cols-2 gap-3">
-                        <div><label class="form-label text-sky-800">抵達機場</label><input v-model="newItinerary.arrAirport" placeholder="CTS" class="input-field bg-white"></div>
-                        <div><label class="form-label text-sky-800">航廈</label><input v-model="newItinerary.arrTerminal" placeholder="T1" class="input-field bg-white"></div>
+                         <div><label class="form-label text-sky-800">航班號</label><input v-model="newItinerary.arrFlightNo" placeholder="JX800" class="input-field bg-white"></div>
+                         <div><label class="form-label text-sky-800">航廈</label><input v-model="newItinerary.arrTerminal" placeholder="T1" class="input-field bg-white"></div>
                     </div>
                     <div><label class="form-label text-sky-800">抵達時間</label><input v-model="newItinerary.endTime" type="time" class="input-field bg-white"></div>
                     
@@ -710,41 +778,6 @@
                 </div>
             </div>
         </div>
-    </div>
-
-    <!-- 4. Shopping Add/Edit Modal (Simplified for brevity) -->
-    <div v-if="showShoppingModal" class="fixed inset-0 z-[60] flex items-center justify-center px-4">
-         <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" @click="closeAllModals"></div>
-         <div class="bg-white rounded-3xl w-full max-w-sm max-h-[85vh] overflow-y-auto p-6 relative z-10">
-             <button @click="closeAllModals" class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
-             <h3 class="font-bold text-lg mb-4 text-center">{{ isEditMode ? '編輯' : '新增' }}購物</h3>
-             <div class="space-y-4">
-                 <div><label class="form-label">商品名稱</label><input v-model="newShoppingItem.name" class="input-field"></div>
-                 <div class="grid grid-cols-2 gap-3">
-                     <div><label class="form-label">單價 (¥)</label><input v-model="newShoppingItem.price" type="number" class="input-field"></div>
-                     <div><label class="form-label">數量</label><input v-model="newShoppingItem.quantity" type="number" class="input-field"></div>
-                 </div>
-                 <div><label class="form-label">商店名稱</label><input v-model="newShoppingItem.shopName" class="input-field"></div>
-                 <div><label class="form-label">商店地址</label><input v-model="newShoppingItem.address" class="input-field"></div>
-                <div>
-                    <label class="form-label">商品照片</label>
-                    <div class="image-preview-grid">
-                        <div v-for="(img, idx) in newShoppingItem.images" :key="idx" class="image-preview-item">
-                            <img :src="img" referrerpolicy="no-referrer">
-                            <button @click="removeImage(idx, newShoppingItem)" class="absolute top-1 right-1 bg-red-500 text-white w-5 h-5 rounded-full text-[10px]"><i class="fa-solid fa-xmark"></i></button>
-                        </div>
-                        <label class="image-preview-item flex items-center justify-center bg-slate-50 border-2 border-dashed border-slate-200 cursor-pointer">
-                            <input type="file" @change="(e) => handleImageUpload(e, newShoppingItem)" class="hidden" multiple accept="image/*">
-                            <i class="fa-solid fa-plus text-slate-400"></i>
-                        </label>
-                    </div>
-                </div>
-                 <div class="flex gap-2 mt-4">
-                     <button v-if="isEditMode" @click="removeShoppingItem(newShoppingItem.id)" class="px-4 py-3 bg-red-50 text-red-500 rounded-xl"><i class="fa-solid fa-trash"></i></button>
-                     <button @click="saveShoppingItem" class="flex-1 py-3 bg-deep-sea-blue text-white rounded-xl font-bold">儲存</button>
-                 </div>
-             </div>
-         </div>
     </div>
 
     <!-- 5. Settings Modal -->
