@@ -47,19 +47,17 @@
         .header-bg {
             height: 200px; width: 100%; position: relative;
             border-bottom-left-radius: 30px; border-bottom-right-radius: 30px;
-            overflow: hidden; background-color: #eee; /* Placeholder color */
+            overflow: hidden; background-color: #eee;
             box-shadow: 0 4px 20px rgba(1, 87, 155, 0.1);
         }
-        .header-image-container img { width: 100%; height: 100%; object-fit: cover; }
         
         .banner-btn {
             position: absolute; width: 36px; height: 36px;
             background: rgba(255, 255, 255, 0.9); color: #01579B;
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2); cursor: pointer; z-index: 20;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2); cursor: pointer; z-index: 30;
             backdrop-filter: blur(4px);
         }
-        .banner-edit-btn { bottom: 20px; right: 20px; }
         .banner-settings-btn { top: 20px; right: 20px; }
 
         /* Nav */
@@ -156,22 +154,26 @@
 
     <!-- Header (Banner) -->
     <div class="header-bg">
-        <div class="header-image-container relative w-full h-full">
+        <div class="header-image-container relative w-full h-full group">
             <!-- Loading Skeleton -->
             <div v-if="!bannerLoaded" class="absolute inset-0 bg-slate-200 animate-pulse z-0"></div>
             
-            <img :src="bannerUrl || 'https://images.unsplash.com/photo-1542051841857-5f90071e7989?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80'" 
-                 alt="Header" 
-                 referrerpolicy="no-referrer"
-                 class="relative z-10 transition-opacity duration-500"
-                 :class="bannerLoaded ? 'opacity-100' : 'opacity-0'"
-                 @load="bannerLoaded = true">
-                 
-            <button @click="showSettingsModal = true" class="banner-btn banner-settings-btn"><i class="fa-solid fa-gear"></i></button>
-            <label class="banner-btn banner-edit-btn">
+            <!-- 點擊整張圖片觸發更換 -->
+            <label class="cursor-pointer block w-full h-full relative">
                 <input type="file" @change="handleBannerUpload" class="hidden" accept="image/*">
-                <i class="fa-solid fa-camera"></i>
+                <img :src="bannerUrl || 'https://images.unsplash.com/photo-1542051841857-5f90071e7989?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80'" 
+                     alt="Header" 
+                     referrerpolicy="no-referrer"
+                     class="relative z-10 transition-opacity duration-500 w-full h-full object-cover"
+                     :class="bannerLoaded ? 'opacity-100' : 'opacity-0'"
+                     @load="bannerLoaded = true">
+                <!-- 提示文字 -->
+                <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity z-20 flex items-center justify-center text-white text-sm font-bold">
+                    <i class="fa-solid fa-camera mr-2"></i> 更換封面
+                </div>
             </label>
+                 
+            <button @click.stop="showSettingsModal = true" class="banner-btn banner-settings-btn"><i class="fa-solid fa-gear"></i></button>
         </div>
     </div>
 
@@ -285,7 +287,6 @@
                     </div>
                     <div class="text-slate-300 text-sm"><i class="fa-solid fa-chevron-right"></i></div>
                 </div>
-                <!-- Removed Add Button at bottom as requested -->
             </div>
         </div>
 
@@ -377,11 +378,37 @@
                 <div class="mb-4">
                     <span class="text-xs font-bold px-2 py-1 rounded text-white mb-2 inline-block" :class="getCategoryColor(previewItem.category)">{{ getCategoryName(previewItem.category) }}</span>
                     <h2 class="text-2xl font-bold text-slate-800 leading-tight">{{ previewItem.name }}</h2>
-                    <p v-if="previewItem.flightNo" class="text-sky-600 font-bold mt-1"><i class="fa-solid fa-plane mr-1"></i> {{ previewItem.flightNo }}</p>
+                    <p v-if="previewItem.category === 'flight' && !previewItem.deptAirport" class="text-sky-600 font-bold mt-1"><i class="fa-solid fa-plane mr-1"></i> {{ previewItem.flightNo }}</p>
+                </div>
+
+                <!-- 航班專屬顯示區塊 -->
+                <div v-if="previewItem.category === 'flight' && previewItem.deptAirport" class="mb-6 bg-sky-50 rounded-xl p-4 border border-sky-100 shadow-sm relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-sky-400"></div>
+                    <div class="flex items-center justify-between mb-2">
+                         <!-- 出發 -->
+                        <div class="text-center flex-1">
+                            <div class="text-3xl font-black text-slate-700 tracking-wider">{{ previewItem.deptAirport }}</div>
+                            <div class="text-xs text-slate-500 font-bold">{{ previewItem.deptTerminal ? 'T'+previewItem.deptTerminal : '航廈 -' }}</div>
+                            <div class="text-lg font-bold text-sky-700 mt-1">{{ previewItem.startTime }}</div>
+                        </div>
+                        
+                        <!-- 飛機圖示 -->
+                        <div class="flex flex-col items-center justify-center px-2 w-16 opacity-50">
+                            <i class="fa-solid fa-plane text-sky-400 text-xl transform rotate-45 mb-1"></i>
+                            <div class="w-full border-t-2 border-dashed border-sky-300"></div>
+                        </div>
+
+                        <!-- 抵達 -->
+                        <div class="text-center flex-1">
+                            <div class="text-3xl font-black text-slate-700 tracking-wider">{{ previewItem.arrAirport }}</div>
+                            <div class="text-xs text-slate-500 font-bold">{{ previewItem.arrTerminal ? 'T'+previewItem.arrTerminal : '航廈 -' }}</div>
+                            <div class="text-lg font-bold text-sky-700 mt-1">{{ previewItem.endTime || '--:--' }}</div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="space-y-3 mb-6">
-                    <div class="flex items-start gap-3">
+                    <div v-if="previewItem.category !== 'flight'" class="flex items-start gap-3">
                         <div class="w-6 text-slate-400 text-center"><i class="fa-regular fa-clock"></i></div>
                         <div class="flex-1">
                             <p class="text-sm font-bold text-slate-700">預計時間: {{ previewItem.startTime || '--:--' }}</p>
@@ -501,6 +528,7 @@
                     </select>
                 </div>
 
+                <!-- 1. 餐廳 -->
                 <div v-if="newItinerary.category === 'food'" class="space-y-3">
                     <div><label class="form-label">餐廳名稱</label><input v-model="newItinerary.name" class="input-field"></div>
                     <div class="grid grid-cols-2 gap-3">
@@ -512,6 +540,7 @@
                     <div><label class="form-label">官網連結</label><input v-model="newItinerary.website" placeholder="http://" class="input-field"></div>
                 </div>
 
+                <!-- 2. 景點 -->
                 <div v-else-if="newItinerary.category === 'sightseeing'" class="space-y-3">
                     <div><label class="form-label">景點名稱</label><input v-model="newItinerary.name" class="input-field"></div>
                     <div class="grid grid-cols-2 gap-3">
@@ -522,6 +551,7 @@
                     <div><label class="form-label">地址</label><input v-model="newItinerary.address" class="input-field"></div>
                 </div>
 
+                <!-- 3. 住宿 -->
                 <div v-else-if="newItinerary.category === 'accommodation'" class="space-y-3 bg-indigo-50 p-3 rounded-xl border border-indigo-100">
                     <div><label class="form-label text-indigo-800">飯店名稱</label><input v-model="newItinerary.name" class="input-field bg-white"></div>
                     <div class="grid grid-cols-2 gap-3">
@@ -544,15 +574,38 @@
                     </div>
                 </div>
 
+                <!-- 4. 航班 (新修改的部分) -->
+                <div v-else-if="newItinerary.category === 'flight'" class="space-y-3 bg-sky-50 p-3 rounded-xl border border-sky-100">
+                    <div>
+                        <label class="form-label text-sky-800">航班號</label>
+                        <input v-model="newItinerary.name" placeholder="例如：JX800" class="input-field bg-white">
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3">
+                        <div><label class="form-label text-sky-800">出發機場</label><input v-model="newItinerary.deptAirport" placeholder="TPE" class="input-field bg-white"></div>
+                        <div><label class="form-label text-sky-800">航廈</label><input v-model="newItinerary.deptTerminal" placeholder="T1" class="input-field bg-white"></div>
+                    </div>
+                    <div><label class="form-label text-sky-800">出發時間</label><input v-model="newItinerary.startTime" type="time" class="input-field bg-white"></div>
+                    
+                    <div class="border-t border-sky-200 my-1"></div>
+                    
+                    <div class="grid grid-cols-2 gap-3">
+                        <div><label class="form-label text-sky-800">抵達機場</label><input v-model="newItinerary.arrAirport" placeholder="CTS" class="input-field bg-white"></div>
+                        <div><label class="form-label text-sky-800">航廈</label><input v-model="newItinerary.arrTerminal" placeholder="T1" class="input-field bg-white"></div>
+                    </div>
+                    <div><label class="form-label text-sky-800">抵達時間</label><input v-model="newItinerary.endTime" type="time" class="input-field bg-white"></div>
+                </div>
+
+                <!-- 5. 其他 (交通/購物) -->
                 <div v-else class="space-y-3">
                      <div><label class="form-label">名稱</label><input v-model="newItinerary.name" class="input-field"></div>
                      <div class="grid grid-cols-2 gap-3">
                         <div><label class="form-label">時間</label><input v-model="newItinerary.startTime" type="time" class="input-field"></div>
                         <div><label class="form-label">交通</label><select v-model="newItinerary.transportType" class="input-field"><option value="walk">步行</option><option value="car">自駕</option><option value="bus">巴士</option><option value="public">地鐵</option><option value="flight">飛機</option></select></div>
                      </div>
-                     <div v-if="newItinerary.category === 'flight'"><label class="form-label">航班號</label><input v-model="newItinerary.flightNo" class="input-field"></div>
                 </div>
 
+                <!-- 通用欄位 -->
                 <div><label class="form-label">備註</label><textarea v-model="newItinerary.note" rows="2" class="input-field"></textarea></div>
                 <div>
                     <label class="form-label">照片 ({{ newItinerary.images ? newItinerary.images.length : 0 }})</label>
