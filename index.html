@@ -4,10 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <!-- 網頁標題 -->
     <title>Hokkaido Sunny</title>
     
-    <!-- 設定分享連結時的預覽資訊 -->
     <meta name="description" content="20260103~20260113">
     <meta property="og:title" content="Hokkaido Sunny">
     <meta property="og:description" content="20260103~20260113">
@@ -66,7 +64,6 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.2); cursor: pointer; z-index: 30;
             backdrop-filter: blur(4px);
         }
-        /* Settings button hidden per request */
         .banner-settings-btn { display: none; }
 
         /* Nav */
@@ -180,7 +177,8 @@
         </div>
     </div>
 
-    <main class="px-4 pt-4">
+    <!-- 需求7：往上移動，縮短與Banner距離 (改為 pt-1, 移除原本的 pt-4) -->
+    <main class="px-4 pt-1">
         
         <!-- Tab: 行程 (Itinerary) -->
         <div v-if="currentTab === 'itinerary'">
@@ -198,7 +196,7 @@
                         <span class="text-[9px] opacity-70">{{ day.date.split('/')[0] }}月</span>
                     </div>
 
-                    <!-- 修改2：設定按鈕移到最右邊，樣式透明化，只留小齒輪 -->
+                    <!-- 設定按鈕 -->
                     <div @click="showSettingsModal = true"
                          class="flex-shrink-0 w-[30px] h-[64px] flex flex-col items-center justify-center cursor-pointer text-slate-300 active:text-slate-500 transition-colors ml-1">
                         <i class="fa-solid fa-gear text-sm"></i>
@@ -231,47 +229,8 @@
                         </div>
                     </div>
 
-                    <!-- 修改1：如果是航班，顯示機票樣式的卡片 -->
-                    <div v-if="item.category === 'flight'" class="relative z-10 mb-4" @click="openDetailPreview(item)">
-                         <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm relative overflow-hidden cursor-pointer active:scale-[0.99] transition-transform">
-                             <div class="absolute top-0 left-0 w-2 h-full bg-sky-500"></div>
-                             
-                             <div class="flex justify-between items-center mb-3">
-                                 <span class="text-xs font-bold text-sky-600 bg-sky-50 px-2 py-0.5 rounded-full"><i class="fa-solid fa-plane mr-1"></i>航班</span>
-                                 <span class="text-[10px] text-slate-400">{{ item.name }}</span>
-                             </div>
-
-                             <div class="flex justify-between items-center">
-                                 <!-- Dept -->
-                                 <div class="text-center">
-                                     <div class="text-2xl font-black text-slate-700 tracking-wider">{{ item.deptAirport || 'DEPT' }}</div>
-                                     <div class="text-xs text-slate-500 font-bold">{{ item.deptTerminal ? 'T'+item.deptTerminal : '-' }}</div>
-                                     <div class="text-lg font-bold text-sky-700 mt-1">{{ item.startTime }}</div>
-                                 </div>
-
-                                 <!-- Icon -->
-                                 <div class="flex flex-col items-center justify-center px-2 opacity-30">
-                                     <i class="fa-solid fa-plane text-sky-400 text-lg transform rotate-90"></i>
-                                     <div class="text-[9px] mt-1">{{ item.deptFlightNo }}</div>
-                                 </div>
-
-                                 <!-- Arr -->
-                                 <div class="text-center">
-                                     <div class="text-2xl font-black text-slate-700 tracking-wider">{{ item.arrAirport || 'ARR' }}</div>
-                                     <div class="text-xs text-slate-500 font-bold">{{ item.arrTerminal ? 'T'+item.arrTerminal : '-' }}</div>
-                                     <div class="text-lg font-bold text-sky-700 mt-1">{{ item.endTime || '--:--' }}</div>
-                                 </div>
-                             </div>
-                             
-                             <!-- 附件提示 -->
-                             <div v-if="item.files && item.files.length > 0" class="mt-3 pt-2 border-t border-dashed border-slate-200 flex justify-end">
-                                <span class="text-[10px] text-slate-400"><i class="fa-solid fa-paperclip mr-1"></i>有附件</span>
-                             </div>
-                         </div>
-                    </div>
-
-                    <!-- 一般行程 (非航班) -->
-                    <div v-else class="flex items-start relative z-10">
+                    <!-- 需求1：航班在列表中正常顯示 (非機票樣式)，點擊後才在彈窗顯示機票UI -->
+                    <div class="flex items-start relative z-10">
                         <div class="flex flex-col items-center mr-3 w-12 flex-shrink-0">
                             <div class="w-10 h-10 rounded-full text-white shadow-md flex items-center justify-center text-sm ring-4 ring-white" :class="getCategoryColor(item.category)">
                                 <i :class="getCategoryIcon(item.category)"></i>
@@ -288,18 +247,15 @@
                                     <span v-if="item.price" class="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-bold shrink-0">¥{{ item.price }}</span>
                                 </div>
                                 
-                                <div v-if="item.category === 'food' && item.foodItem" class="text-xs text-orange-600 font-bold mt-1">
+                                <div v-if="item.category === 'flight'" class="text-xs text-sky-600 font-bold mt-1">
+                                    <i class="fa-solid fa-plane-departure mr-1"></i>{{ item.deptFlightNo }} ({{ item.deptAirport }} <i class="fa-solid fa-arrow-right text-[10px]"></i> {{ item.arrAirport }})
+                                </div>
+
+                                <div v-else-if="item.category === 'food' && item.foodItem" class="text-xs text-orange-600 font-bold mt-1">
                                     <i class="fa-solid fa-utensils mr-1"></i>{{ item.foodItem }}
                                 </div>
                                 
-                                <div v-if="item.paymentMethods && item.paymentMethods.length > 0" class="flex gap-1 mt-1 flex-wrap">
-                                    <span v-for="pm in item.paymentMethods" :key="pm" class="text-[9px] px-1 rounded border" 
-                                          :class="pm === 'cash' ? 'bg-green-50 text-green-600 border-green-100' : 
-                                                  pm === 'card' ? 'bg-blue-50 text-blue-600 border-blue-100' : 
-                                                  pm === 'paypay' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-slate-50 text-slate-500'">
-                                        {{ getPaymentName(pm) }}
-                                    </span>
-                                </div>
+                                <!-- 需求2：付款方式圖示只在點進去後顯示，列表中隱藏 (已移除) -->
 
                                 <p class="text-xs text-slate-500 truncate mt-1" v-if="item.note">{{ item.note }}</p>
                             </div>
@@ -331,30 +287,32 @@
 
             <div class="flex flex-col gap-3">
                 <div v-for="(item, idx) in filteredShoppingList" :key="item.id" 
-                     @click="openShoppingDetail(item)" 
-                     class="bg-white rounded-xl p-3 shadow-sm border border-slate-100 flex items-center gap-4 cursor-pointer active:bg-slate-50">
+                     class="bg-white rounded-xl p-3 shadow-sm border border-slate-100 flex items-center gap-3 cursor-pointer active:bg-slate-50 transition-all"
+                     :class="{'opacity-70 grayscale': item.isPurchased}">
                     
+                    <!-- 需求6：勾選框 -->
+                    <div @click.stop="toggleShoppingCheck(item)" 
+                         class="w-6 h-6 rounded-full border-2 flex items-center justify-center cursor-pointer transition-colors flex-shrink-0"
+                         :class="item.isPurchased ? 'bg-green-500 border-green-500 text-white' : 'border-slate-300 text-transparent'">
+                        <i class="fa-solid fa-check text-xs"></i>
+                    </div>
+
                     <!-- Image -->
-                    <div class="w-20 h-20 bg-slate-100 rounded-lg overflow-hidden flex-shrink-0 relative border border-slate-200">
+                    <div @click="openShoppingDetail(item)" class="w-20 h-20 bg-slate-100 rounded-lg overflow-hidden flex-shrink-0 relative border border-slate-200">
                          <img v-if="item.images && item.images.length > 0" :src="item.images[0]" referrerpolicy="no-referrer" class="w-full h-full object-cover" loading="lazy">
                          <div v-else class="w-full h-full flex items-center justify-center text-slate-300"><i class="fa-solid fa-image"></i></div>
                     </div>
                     
                     <!-- Info -->
-                    <div class="flex-1 min-w-0 flex flex-col justify-center">
-                        <h4 class="font-bold text-slate-800 text-sm truncate mb-1">{{ item.name }}</h4>
+                    <div @click="openShoppingDetail(item)" class="flex-1 min-w-0 flex flex-col justify-center">
+                        <!-- 需求6：刪除線 -->
+                        <h4 class="font-bold text-slate-800 text-sm truncate mb-1" :class="{'line-through text-slate-400': item.isPurchased}">{{ item.name }}</h4>
                         
                         <div class="flex items-center gap-2 mb-1">
                              <span v-if="item.price" class="bg-yellow-50 text-yellow-700 px-1.5 py-0.5 rounded text-xs font-bold">¥{{ item.price }}</span>
                              <span v-if="item.quantity" class="text-xs text-slate-500">x{{ item.quantity }}</span>
                         </div>
                         
-                        <div v-if="item.paymentMethods && item.paymentMethods.length > 0" class="flex gap-1 mb-1 flex-wrap">
-                            <span v-for="pm in item.paymentMethods" :key="pm" class="text-[9px] px-1 rounded border bg-slate-50 text-slate-500">
-                                {{ getPaymentName(pm) }}
-                            </span>
-                        </div>
-
                         <div v-if="item.shopName" class="text-xs text-slate-500 truncate flex items-center gap-1">
                             <i class="fa-solid fa-store text-[10px] opacity-70"></i> {{ item.shopName }}
                         </div>
@@ -369,8 +327,8 @@
                            class="w-8 h-8 rounded-full bg-blue-50 text-deep-sea-blue flex items-center justify-center shadow-sm hover:bg-blue-100 transition-colors">
                             <i class="fa-solid fa-location-arrow text-xs"></i>
                         </a>
-                        <div v-else class="w-8 h-8"></div> <!-- Spacer -->
-                        <div class="text-slate-300 text-xs"><i class="fa-solid fa-chevron-right"></i></div>
+                        <div v-else class="w-8 h-8"></div>
+                        <div @click="openShoppingDetail(item)" class="text-slate-300 text-xs"><i class="fa-solid fa-chevron-right"></i></div>
                     </div>
                 </div>
             </div>
@@ -467,9 +425,9 @@
                         </div>
                     </div>
                 </div>
-                <!-- 匯率來源 -->
+                <!-- 匯率來源 (需求4: 參考哪裡) -->
                 <div class="text-[10px] text-cyan-300/80 text-right mt-2 font-mono">
-                    匯率: {{ currentRate }} ({{ rateSource }})
+                    計算匯率: {{ currentRate }} ({{ rateSource }})
                 </div>
             </div>
 
@@ -510,7 +468,6 @@
                                  </div>
                                  <div v-if="hotel.note" class="flex items-center gap-2 text-slate-500 text-xs mb-1.5">
                                      <i class="fa-solid fa-pen w-4 text-center text-slate-300"></i>
-                                     <!-- 修改4：網址顯示與點擊 -->
                                      <span class="whitespace-pre-wrap" v-html="linkify(hotel.note)"></span>
                                  </div>
                                  <div class="flex items-start gap-2 text-slate-500 text-xs">
@@ -559,7 +516,6 @@
             </div>
             
             <div class="flex-1 p-4 overflow-y-auto">
-                <!-- 修改3：確保換行 -->
                 <div v-if="!isEditingBankOffers" class="whitespace-pre-wrap text-sm text-slate-700 leading-relaxed" v-html="linkify(bankOffersContent || '尚未輸入優惠資訊')">
                 </div>
                 <textarea v-else v-model="bankOffersContent" class="w-full h-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:border-deep-sea-blue resize-none" placeholder="請輸入信用卡優惠、回饋資訊... (支援 Emoji 與符號)"></textarea>
@@ -603,6 +559,31 @@
                         <i class="fa-solid fa-utensils mr-2"></i> {{ previewItem.foodItem }}
                      </div>
                 </div>
+
+                <!-- 需求1：機票詳細UI (只在詳細頁顯示) -->
+                <div v-if="previewItem.category === 'flight' && previewItem.deptAirport" class="mb-6 bg-sky-50 rounded-xl p-4 border border-sky-100 shadow-sm relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-sky-400"></div>
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="text-center flex-1">
+                            <div class="text-3xl font-black text-slate-700 tracking-wider">{{ previewItem.deptAirport }}</div>
+                            <div class="text-xs text-slate-500 font-bold">{{ previewItem.deptTerminal ? 'T'+previewItem.deptTerminal : '航廈 -' }}</div>
+                            <div class="text-lg font-bold text-sky-700 mt-1">{{ previewItem.startTime }}</div>
+                        </div>
+                        <div class="flex flex-col items-center justify-center px-2 w-16 opacity-50">
+                            <i class="fa-solid fa-plane text-sky-400 text-xl transform rotate-45 mb-1"></i>
+                            <div class="w-full border-t-2 border-dashed border-sky-300"></div>
+                        </div>
+                        <div class="text-center flex-1">
+                            <div class="text-3xl font-black text-slate-700 tracking-wider">{{ previewItem.arrAirport }}</div>
+                            <div class="text-xs text-slate-500 font-bold">{{ previewItem.arrTerminal ? 'T'+previewItem.arrTerminal : '航廈 -' }}</div>
+                            <div class="text-lg font-bold text-sky-700 mt-1">{{ previewItem.endTime || '--:--' }}</div>
+                        </div>
+                    </div>
+                    <div class="border-t border-sky-200 pt-2 flex justify-between text-[10px] text-sky-700">
+                        <span><i class="fa-solid fa-plane-departure mr-1"></i>{{ previewItem.deptFlightNo || previewItem.name }}</span>
+                        <span v-if="previewItem.arrFlightNo"><i class="fa-solid fa-plane-arrival mr-1"></i>{{ previewItem.arrFlightNo }}</span>
+                    </div>
+                </div>
                 
                 <!-- 顯示交通資訊 -->
                 <div v-if="previewItem.transportType" class="mb-4 bg-slate-50 p-3 rounded-xl border border-slate-100 flex items-center gap-3">
@@ -631,7 +612,7 @@
                         <div class="w-6 text-slate-400 text-center"><i class="fa-solid fa-yen-sign"></i></div>
                         <div class="text-sm font-bold text-slate-700">{{ previewItem.price }}</div>
                     </div>
-                    <!-- 付款方式 (Preview) -->
+                    <!-- 需求2：付款方式 (只在 Preview 顯示) -->
                     <div v-if="previewItem.paymentMethods && previewItem.paymentMethods.length > 0" class="flex items-center gap-3">
                         <div class="w-6 text-slate-400 text-center"><i class="fa-solid fa-wallet"></i></div>
                         <div class="flex gap-1 flex-wrap">
@@ -646,7 +627,7 @@
                             <a :href="'https://www.google.com/maps/search/?api=1&query='+previewItem.address" target="_blank" class="inline-block text-xs bg-slate-100 px-3 py-1.5 rounded-lg text-slate-600 font-bold hover:bg-slate-200"><i class="fa-solid fa-map-location-dot mr-1"></i> Google 導航</a>
                         </div>
                     </div>
-                    <!-- 修改3,4: 備註連結與換行 -->
+                    <!-- 備註 -->
                     <div v-if="previewItem.note" class="flex items-start gap-3">
                         <div class="w-6 text-slate-400 text-center"><i class="fa-solid fa-note-sticky"></i></div>
                         <p class="text-sm text-slate-600 whitespace-pre-wrap bg-slate-50 p-2 rounded-lg flex-1" v-html="linkify(previewItem.note)"></p>
@@ -697,23 +678,28 @@
                     </select>
                 </div>
                 
-                <!-- 交通輸入欄位 -->
+                <!-- 需求3：車程時間改為數字選擇 -->
                 <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
                     <label class="form-label text-slate-500 mb-2">🚗 前往此處的交通 (選填)</label>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <select v-model="newItinerary.transportType" class="input-field bg-white">
-                                <option value="">無 / 未設定</option>
-                                <option value="public">🚇 地鐵/JR</option>
-                                <option value="bus">🚌 巴士</option>
-                                <option value="walk">🚶 步行</option>
-                                <option value="car">🚕 計程車/自駕</option>
-                                <option value="hsr">🚄 新幹線</option>
-                                <option value="flight">✈️ 飛機</option>
-                            </select>
+                    <div class="flex items-center gap-2 mb-2">
+                        <select v-model="newItinerary.transportType" class="input-field bg-white flex-1">
+                            <option value="">無 / 未設定</option>
+                            <option value="public">🚇 地鐵/JR</option>
+                            <option value="bus">🚌 巴士</option>
+                            <option value="walk">🚶 步行</option>
+                            <option value="car">🚕 計程車/自駕</option>
+                            <option value="hsr">🚄 新幹線</option>
+                            <option value="flight">✈️ 飛機</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="flex-1 flex items-center bg-white rounded-lg border border-slate-200 px-2">
+                            <input type="number" v-model="newItinerary.transportH" class="w-full py-2 outline-none text-center" placeholder="0">
+                            <span class="text-xs text-slate-400 shrink-0">小時</span>
                         </div>
-                        <div>
-                            <input v-model="newItinerary.transportTime" placeholder="車程 (如: 30分鐘)" class="input-field bg-white">
+                        <div class="flex-1 flex items-center bg-white rounded-lg border border-slate-200 px-2">
+                            <input type="number" v-model="newItinerary.transportM" class="w-full py-2 outline-none text-center" placeholder="0">
+                            <span class="text-xs text-slate-400 shrink-0">分</span>
                         </div>
                     </div>
                 </div>
@@ -931,7 +917,17 @@
                     <input type="date" v-model="tripSettings.startDate" class="input-field">
                 </div>
                 
-                <!-- 修改2：移除管理天數按鈕，改為顯示日期列表+刪除功能 -->
+                <!-- 需求4：手動匯率設定 -->
+                <div>
+                    <label class="form-label">手動匯率 (可輸入銀行換匯匯率)</label>
+                    <div class="flex items-center gap-2">
+                        <input type="number" v-model="tripSettings.manualRate" step="0.001" placeholder="例如 0.22" class="input-field flex-1">
+                        <div class="text-xs text-slate-400">目前: {{ currentRate }}</div>
+                    </div>
+                    <p class="text-[10px] text-slate-400 mt-1">若未設定，將使用 API 市場中價 (通常較低)。</p>
+                </div>
+
+                <!-- 管理日期 -->
                 <div>
                     <label class="form-label mb-2">管理日期 (僅可刪除最後一天)</label>
                     <div class="space-y-2">
@@ -989,12 +985,13 @@
                  <!-- Amount -->
                  <div><label class="form-label">金額 (¥)</label><input v-model.number="newExpense.amount" type="number" class="input-field font-bold text-lg text-deep-sea-blue"></div>
                  
-                 <!-- Payment -->
+                 <!-- Payment (需求5：更改選項) -->
                  <div><label class="form-label">付款方式</label>
-                    <div class="flex gap-2">
-                        <button @click="newExpense.payment='cash'" class="flex-1 py-2 rounded-lg border text-xs font-bold" :class="newExpense.payment==='cash'?'bg-slate-700 text-white':'text-slate-400'">現金</button>
-                        <button @click="newExpense.payment='mobile'" class="flex-1 py-2 rounded-lg border text-xs font-bold" :class="newExpense.payment==='mobile'?'bg-slate-700 text-white':'text-slate-400'">行動支付</button>
-                        <button @click="newExpense.payment='ic'" class="flex-1 py-2 rounded-lg border text-xs font-bold" :class="newExpense.payment==='ic'?'bg-green-600 text-white':'text-slate-400'">西瓜卡</button>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button @click="newExpense.payment='cash'" class="py-2 rounded-lg border text-xs font-bold" :class="newExpense.payment==='cash'?'bg-slate-700 text-white':'text-slate-400'">現金</button>
+                        <button @click="newExpense.payment='card'" class="py-2 rounded-lg border text-xs font-bold" :class="newExpense.payment==='card'?'bg-blue-600 text-white':'text-slate-400'">信用卡</button>
+                        <button @click="newExpense.payment='paypay'" class="py-2 rounded-lg border text-xs font-bold" :class="newExpense.payment==='paypay'?'bg-red-500 text-white':'text-slate-400'">PayPay</button>
+                        <button @click="newExpense.payment='suica'" class="py-2 rounded-lg border text-xs font-bold" :class="newExpense.payment==='suica'?'bg-green-600 text-white':'text-slate-400'">Suica</button>
                     </div>
                  </div>
 
@@ -1071,7 +1068,7 @@
             const currentTab = ref('itinerary');
             const shoppingSubTab = ref('souvenir');
             const dates = ref([]);
-            const tripSettings = ref({ startDate: '2026-02-01', duration: 7 });
+            const tripSettings = ref({ startDate: '2026-02-01', duration: 7, manualRate: null });
             const itineraryData = ref({});
             const shoppingList = ref([]);
             const expenses = ref([]);
@@ -1101,9 +1098,10 @@
             const currencyInput = ref(10000);
             const currencyResult = ref(0);
             
-            // 匯率 API
-            const currentRate = ref(0.215);
-            const rateSource = ref('預設');
+            const apiRate = ref(0.215);
+            // 需求4：使用手動匯率或 API 匯率
+            const currentRate = computed(() => tripSettings.value.manualRate ? Number(tripSettings.value.manualRate) : apiRate.value);
+            const rateSource = computed(() => tripSettings.value.manualRate ? '手動設定' : 'API');
 
             const currentItinerary = computed(() => itineraryData.value[selectedDateIndex.value] || []);
             const filteredShoppingList = computed(() => shoppingList.value.filter(item => item.category === shoppingSubTab.value));
@@ -1192,10 +1190,11 @@
                 if(code === 'mobile') return '行動支付';
                 if(code === 'ic') return '西瓜卡/IC';
                 if(code === 'card') return '信用卡';
+                if(code === 'paypay') return 'PayPay';
+                if(code === 'suica') return 'Suica';
                 return '其他';
             };
 
-            // 修改4：修正連結顯示，顯示完整網址並可點擊
             const linkify = (text) => {
                 if (!text) return '';
                 const urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -1209,12 +1208,10 @@
                     const res = await fetch('https://api.exchangerate-api.com/v4/latest/JPY');
                     const data = await res.json();
                     if(data && data.rates && data.rates.TWD) {
-                        currentRate.value = data.rates.TWD;
-                        rateSource.value = 'ExchangeRate-API ' + data.date;
+                        apiRate.value = data.rates.TWD;
                     }
                 } catch(e) {
                     console.error("Rate fetch failed", e);
-                    rateSource.value = 'API 失敗, 使用預設值';
                 }
                 calculateCurrency();
             };
@@ -1241,9 +1238,10 @@
                     if(snap.exists()){
                         const d = snap.data();
                         bannerUrl.value = d.headerImage;
-                        bankOffersContent.value = d.bankOffersNote || ''; // Load Bank Offers
+                        bankOffersContent.value = d.bankOffersNote || '';
                         if(d.tripStartDate) tripSettings.value.startDate = d.tripStartDate;
                         if(d.tripDuration) tripSettings.value.duration = d.tripDuration;
+                        if(d.manualRate) tripSettings.value.manualRate = d.manualRate; // Load manual rate
                         generateDates();
                     }
                 });
@@ -1304,12 +1302,13 @@
             const saveTripSettings = async () => {
                 isLoading.value = true;
                 await setDoc(doc(db, 'trips', TRIP_ID, DATA_PATH, 'settings'), {
-                    tripStartDate: tripSettings.value.startDate, tripDuration: tripSettings.value.duration
+                    tripStartDate: tripSettings.value.startDate, 
+                    tripDuration: tripSettings.value.duration,
+                    manualRate: tripSettings.value.manualRate
                 }, { merge: true });
                 generateDates(); isLoading.value = false; showSettingsModal.value = false;
             };
             
-            // 修改2：變更日期邏輯
             const changeDuration = (delta) => {
                 const n = tripSettings.value.duration + delta;
                 if(n > 0) tripSettings.value.duration = n;
@@ -1335,7 +1334,7 @@
                     newItinerary.value = { 
                         category: 'sightseeing', 
                         transportType: '', // 預設空
-                        transportTime: '',
+                        transportH: '', transportM: '', // 新增時間欄位
                         images: [], 
                         files: [], 
                         paymentMethods: [],
@@ -1364,14 +1363,37 @@
                 else target.paymentMethods.push(pm);
             };
 
+            // 需求6: 購物清單勾選
+            const toggleShoppingCheck = async (item) => {
+                item.isPurchased = !item.isPurchased;
+                await updateDoc(doc(db, 'trips', TRIP_ID, 'shopping_items', item.id), { isPurchased: item.isPurchased });
+            };
+
             const saveItineraryItem = async () => {
                 isLoading.value = true;
                 try {
                     const imgUrls = await processImageUploads(newItinerary.value.images || []);
                     const fileObjects = await processUploads(newItinerary.value.files || []);
                     const finalDayIndex = parseInt(newItinerary.value.dayIndex);
-                    const data = { ...newItinerary.value, images: imgUrls, files: fileObjects, dayIndex: finalDayIndex };
+                    
+                    // 需求3: 處理車程時間字串
+                    let tTime = '';
+                    if(newItinerary.value.transportH || newItinerary.value.transportM) {
+                        tTime = (newItinerary.value.transportH || '0') + '小時' + (newItinerary.value.transportM || '0') + '分';
+                    }
+
+                    const data = { 
+                        ...newItinerary.value, 
+                        images: imgUrls, 
+                        files: fileObjects, 
+                        dayIndex: finalDayIndex,
+                        transportTime: tTime
+                    };
+                    // 清理暫存欄位
+                    delete data.transportH; 
+                    delete data.transportM;
                     delete data.order; delete data.id;
+
                     if(isEditMode.value) await updateDoc(doc(db, 'trips', TRIP_ID, 'itinerary_items', newItinerary.value.id), data);
                     else await addDoc(collection(db, 'trips', TRIP_ID, 'itinerary_items'), data);
                 } catch (e) {
@@ -1380,6 +1402,26 @@
                 }
                 isLoading.value = false; closeAllModals();
             };
+            
+            // 編輯時解析時間字串
+            const switchToEditItinerary = () => {
+                showItineraryDetailModal.value = false;
+                isEditMode.value = true;
+                const item = JSON.parse(JSON.stringify(previewItem.value));
+                
+                // 解析 "X小時Y分"
+                if(item.transportTime) {
+                    const match = item.transportTime.match(/(\d+)小時(\d+)分/);
+                    if(match) {
+                        item.transportH = match[1];
+                        item.transportM = match[2];
+                    }
+                }
+                
+                newItinerary.value = item;
+                showItineraryModal.value = true;
+            };
+
             const removeItineraryItem = async (id) => {
                 if(confirm("刪除此行程？")) { await deleteDoc(doc(db, 'trips', TRIP_ID, 'itinerary_items', id)); closeAllModals(); }
             };
@@ -1468,12 +1510,6 @@
                 currentGalleryIndex.value = 0;
                 showItineraryDetailModal.value = true;
             };
-            const switchToEditItinerary = () => {
-                showItineraryDetailModal.value = false;
-                isEditMode.value = true;
-                newItinerary.value = JSON.parse(JSON.stringify(previewItem.value));
-                showItineraryModal.value = true;
-            };
 
             const openShoppingDetail = (item) => { 
                 selectedShoppingItem.value = item; 
@@ -1520,7 +1556,7 @@
                 tripSettings, saveTripSettings, changeDuration, deleteLastDate,
                 newItinerary, isEditMode, handleAddClick, handleImageUpload, handleFileUpload, removeImage, removeFile, saveItineraryItem, removeItineraryItem, openDetailPreview, switchToEditItinerary, openFile,
                 previewItem, allAccommodations,
-                newShoppingItem, selectedShoppingItem, currentGalleryIndex, galleryNav, openShoppingDetail, switchToEditShopping, saveShoppingItem, removeShoppingItem,
+                newShoppingItem, selectedShoppingItem, currentGalleryIndex, galleryNav, openShoppingDetail, switchToEditShopping, saveShoppingItem, removeShoppingItem, toggleShoppingCheck,
                 newExpense, saveExpense, editExpense, removeExpense,
                 closeAllModals, handleBannerUpload, openLightbox,
                 linkify, togglePayment,
