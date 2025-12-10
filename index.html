@@ -71,12 +71,13 @@
         .nav-item.active { color: #01579B; font-weight: bold; }
         .nav-item i { font-size: 1.2rem; margin-bottom: 2px; }
         
-        /* 4. 修改 FAB 顏色 (原本黃色改為深海藍) */
+        /* FAB Center Button - 修正 Z-index 確保可點擊 */
         .fab-center {
             width: 52px; height: 52px; background: #01579B; border-radius: 50%;
             display: flex; align-items: center; justify-content: center; color: white;
             font-size: 1.4rem; margin-top: -26px; border: 4px solid #fff;
             box-shadow: 0 4px 15px rgba(1, 87, 155, 0.4);
+            position: relative; z-index: 60; cursor: pointer;
         }
 
         /* Timeline */
@@ -228,13 +229,13 @@
                                     <h3 class="text-base font-bold text-slate-800 leading-tight truncate pr-1">{{ item.name }}</h3>
                                     <span v-if="item.price" class="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-bold shrink-0">¥{{ item.price }}</span>
                                 </div>
-                                <div v-if="item.category === 'flight' && item.deptAirport" class="text-xs text-slate-500 mt-1">
-                                    {{ item.deptAirport }} <i class="fa-solid fa-arrow-right text-[10px]"></i> {{ item.arrAirport }}
-                                </div>
-                                <div v-else-if="item.category === 'food' && item.foodItem" class="text-xs text-orange-600 font-bold mt-1">
+                                
+                                <!-- 修改 2: 航班行程在列表只顯示標題與備註，隱藏機場詳細 -->
+                                <div v-if="item.category === 'food' && item.foodItem" class="text-xs text-orange-600 font-bold mt-1">
                                     <i class="fa-solid fa-utensils mr-1"></i>{{ item.foodItem }}
                                 </div>
-                                <p v-else class="text-xs text-slate-500 truncate mt-1" v-if="item.note">{{ item.note }}</p>
+                                <!-- 一般備註顯示 -->
+                                <p class="text-xs text-slate-500 truncate mt-1" v-if="item.note">{{ item.note }}</p>
                             </div>
 
                             <div v-if="item.images && item.images.length > 0" class="w-20 bg-slate-100 relative">
@@ -311,9 +312,8 @@
         <!-- Tab: 資訊 (Info) -->
         <div v-if="currentTab === 'info'" class="pb-28">
             
-            <!-- 1. 匯率換算 (Gradient Card) -->
+            <!-- 1. 匯率換算 -->
             <div class="bg-gradient-to-br from-[#006080] to-[#004060] rounded-[2rem] p-6 text-white shadow-xl mb-6 mx-1 relative overflow-hidden">
-                <!-- 裝飾圓圈 -->
                 <div class="absolute -top-10 -right-10 w-40 h-40 bg-white/5 rounded-full blur-2xl"></div>
                 
                 <div class="flex items-center gap-2 mb-4 relative z-10">
@@ -339,7 +339,7 @@
                 <div class="text-[10px] text-cyan-300/80 text-right mt-2 font-mono">匯率基準: 0.215</div>
             </div>
 
-            <!-- 2. 航班資訊 (Flight Cards) -->
+            <!-- 2. 航班資訊 -->
             <div class="bg-white rounded-[2rem] p-5 shadow-sm border border-slate-100 mb-6">
                 <div class="flex items-center gap-2 mb-4 text-slate-800">
                     <i class="fa-solid fa-plane-departure text-blue-500"></i>
@@ -368,7 +368,6 @@
                             <!-- Center: Icon & Info -->
                             <div class="flex-1 flex flex-col items-center justify-center px-2">
                                 <i class="fa-solid fa-plane text-sm mb-1 transform" :class="index === 0 ? 'text-blue-500 -rotate-45' : 'text-orange-500 rotate-45'"></i>
-                                <!-- 顯示出發航班號，若有抵達航班號則加顯示 -->
                                 <div class="text-[10px] font-bold text-slate-400">{{ flight.deptFlightNo || flight.name || '航班' }}</div>
                                 <div class="text-[10px] text-slate-400 scale-90">({{ getDateSimple(flight.dayIndex) }})</div>
                             </div>
@@ -386,7 +385,7 @@
                 </div>
             </div>
 
-            <!-- 3. 住宿資訊 (Hotel List) -->
+            <!-- 3. 住宿資訊 -->
             <div class="bg-white rounded-[2rem] p-5 shadow-sm border border-slate-100">
                 <div class="flex items-center gap-2 mb-4 text-slate-800">
                     <i class="fa-solid fa-hotel text-indigo-500"></i>
@@ -402,13 +401,9 @@
                          <div class="flex items-start justify-between gap-3">
                              <div class="flex-1 min-w-0">
                                  <h4 class="font-bold text-slate-800 text-base mb-2 truncate">{{ hotel.name }}</h4>
-                                 
-                                 <!-- Badge: Date & Duration -->
                                  <div class="inline-flex items-center bg-slate-100 text-slate-500 rounded-full px-3 py-1 text-xs font-medium mb-3">
                                     {{ getHotelDurationLabel(hotel) }}
                                  </div>
-
-                                 <!-- Phone -->
                                  <div v-if="hotel.note" class="flex items-center gap-2 text-slate-500 text-xs mb-1.5">
                                      <i class="fa-solid fa-phone w-4 text-center text-slate-300"></i>
                                      <span>{{ hotel.note }}</span>
@@ -417,15 +412,11 @@
                                      <i class="fa-solid fa-phone w-4 text-center"></i>
                                      <span>無電話資訊 (備註)</span>
                                  </div>
-
-                                 <!-- Address -->
                                  <div class="flex items-start gap-2 text-slate-500 text-xs">
                                      <i class="fa-solid fa-location-dot w-4 text-center text-slate-300 mt-0.5"></i>
                                      <span class="break-words leading-relaxed">{{ hotel.address || '尚未輸入地址' }}</span>
                                  </div>
                              </div>
-
-                             <!-- Nav Button -->
                              <a v-if="hotel.address" :href="'https://www.google.com/maps/search/?api=1&query='+hotel.address" target="_blank" 
                                 class="w-10 h-10 rounded-full bg-indigo-50 text-indigo-500 flex items-center justify-center flex-shrink-0 shadow-sm active:scale-95 transition-transform mt-2">
                                  <i class="fa-solid fa-location-arrow"></i>
@@ -445,7 +436,7 @@
         <button class="nav-item" :class="{ active: currentTab === 'shopping' }" @click="currentTab = 'shopping'">
             <i class="fa-solid fa-bag-shopping"></i><span>購物</span>
         </button>
-        <!-- FAB 按鈕顏色已在 CSS 修改為 .fab-center -->
+        <!-- 修改 1: FAB 按鈕使用 .fab-center 樣式，已設定高 z-index 確保點擊 -->
         <button class="fab-center" @click="handleAddClick"><i class="fa-solid fa-plus"></i></button>
         <button class="nav-item" :class="{ active: currentTab === 'expenses' }" @click="currentTab = 'expenses'">
             <i class="fa-solid fa-wallet"></i><span>花費</span>
@@ -491,12 +482,9 @@
                         </span>
                     </div>
 
-                    <!-- 標題邏輯修改：航班顯示機場 -->
-                    <h2 class="text-2xl font-bold text-slate-800 leading-tight">
-                        <span v-if="previewItem.category === 'flight' && previewItem.deptAirport && previewItem.arrAirport">
-                            {{ previewItem.deptAirport }} <i class="fa-solid fa-arrow-right text-sm mx-1 opacity-50"></i> {{ previewItem.arrAirport }}
-                        </span>
-                        <span v-else>{{ previewItem.name }}</span>
+                    <!-- 修改 3: 如果是航班，隱藏上方的黑色大標題 (重複資訊)，只保留其他類別的標題 -->
+                    <h2 v-if="previewItem.category !== 'flight'" class="text-2xl font-bold text-slate-800 leading-tight">
+                        {{ previewItem.name }}
                     </h2>
                     
                     <!-- 飲食：顯示品名 -->
@@ -505,7 +493,7 @@
                      </div>
                 </div>
 
-                <!-- 航班詳細資訊 -->
+                <!-- 航班詳細資訊 (藍色框框保留) -->
                 <div v-if="previewItem.category === 'flight' && previewItem.deptAirport" class="mb-6 bg-sky-50 rounded-xl p-4 border border-sky-100 shadow-sm relative overflow-hidden">
                     <div class="absolute top-0 left-0 w-full h-1 bg-sky-400"></div>
                     
@@ -527,7 +515,7 @@
                         </div>
                     </div>
                     
-                    <!-- 顯示詳細航班號 (如果去程回程不同) -->
+                    <!-- 顯示詳細航班號 -->
                     <div class="border-t border-sky-200 pt-2 flex justify-between text-[10px] text-sky-700">
                         <span><i class="fa-solid fa-plane-departure mr-1"></i>{{ previewItem.deptFlightNo || previewItem.name }}</span>
                         <span v-if="previewItem.arrFlightNo"><i class="fa-solid fa-plane-arrival mr-1"></i>{{ previewItem.arrFlightNo }}</span>
@@ -580,12 +568,11 @@
         </div>
     </div>
 
-    <!-- 2. Shopping Detail Preview Modal (READ ONLY) - 2. 修改：移除上方X，按鈕排下方，顯示所有資訊 -->
+    <!-- 2. Shopping Detail Preview Modal (READ ONLY) -->
     <div v-if="showShoppingDetailModal && selectedShoppingItem" class="fixed inset-0 z-[60] flex items-center justify-center px-4">
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" @click="closeAllModals"></div>
         <div class="bg-white rounded-3xl w-full max-w-sm overflow-hidden relative z-10 max-h-[90vh] overflow-y-auto">
-            <!-- 移除這裡原本的 X 按鈕 -->
-
+            
             <div class="relative h-72 bg-slate-100 group" @click="openLightbox(selectedShoppingItem.images ? selectedShoppingItem.images[currentGalleryIndex] : null)">
                 <img v-if="selectedShoppingItem.images && selectedShoppingItem.images.length > 0" :src="selectedShoppingItem.images[currentGalleryIndex]" referrerpolicy="no-referrer" class="w-full h-full object-contain bg-black">
                 <div v-else class="w-full h-full flex items-center justify-center text-slate-300"><i class="fa-solid fa-image text-4xl"></i></div>
@@ -602,7 +589,6 @@
             <div class="p-6">
                 <h3 class="text-xl font-bold text-slate-800 mb-2">{{ selectedShoppingItem.name }}</h3>
                 
-                <!-- 2. 顯示所有欄位資訊 -->
                 <div class="space-y-3 mb-6">
                     <div class="grid grid-cols-2 gap-3 mb-2">
                         <div class="bg-slate-50 p-3 rounded-xl text-center"><span class="text-xs text-slate-400 block">單價</span><span class="font-bold">¥{{ selectedShoppingItem.price || '-' }}</span></div>
@@ -638,7 +624,6 @@
                     </div>
                 </div>
 
-                <!-- 2. 下方按鈕區塊：關閉 與 編輯 -->
                 <div class="flex gap-2">
                     <button @click="closeAllModals" class="w-1/3 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold">關閉</button>
                     <button @click="switchToEditShopping" class="flex-1 py-3 bg-deep-sea-blue text-white rounded-xl font-bold shadow-lg shadow-blue-900/20"><i class="fa-solid fa-pen mr-2"></i> 編輯內容</button>
@@ -669,7 +654,6 @@
                 <!-- 1. 餐廳 -->
                 <div v-if="newItinerary.category === 'food'" class="space-y-3">
                     <div><label class="form-label">餐廳名稱</label><input v-model="newItinerary.name" class="input-field"></div>
-                    <!-- 3. 新增 品名 欄位 -->
                     <div><label class="form-label">品名 (想吃的菜)</label><input v-model="newItinerary.foodItem" placeholder="例如：成吉思汗烤肉" class="input-field"></div>
                     <div class="grid grid-cols-2 gap-3">
                         <div><label class="form-label">價格</label><input v-model="newItinerary.price" placeholder="¥" class="input-field"></div>
@@ -717,7 +701,7 @@
                     </div>
                 </div>
 
-                <!-- 4. 航班 (1. 修改：依照指定的順序欄位) -->
+                <!-- 4. 航班 (欄位順序修改) -->
                 <div v-else-if="newItinerary.category === 'flight'" class="space-y-3 bg-sky-50 p-3 rounded-xl border border-sky-100">
                     <div>
                         <label class="form-label text-sky-800">標題</label>
