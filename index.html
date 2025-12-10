@@ -17,7 +17,7 @@
                     colors: {
                         'deep-sea-blue': '#01579B',
                         'accent-yellow': '#FFD54F',
-                        'expense-header': '#007EA7', /* 仿照圖片的藍色 */
+                        'expense-header': '#007EA7',
                     },
                     padding: { 'safe-bottom': 'env(safe-area-inset-bottom)' }
                 }
@@ -282,18 +282,31 @@
             </div>
         </div>
 
-        <!-- Tab: 花費 (Expenses) - REDESIGNED -->
+        <!-- Tab: 花費 (Expenses) -->
         <div v-if="currentTab === 'expenses'" class="pb-24">
-            <!-- Blue Card Header -->
-            <div class="bg-gradient-to-r from-[#007EA7] to-[#00A8E8] text-white rounded-3xl p-6 mb-8 shadow-xl relative overflow-hidden">
+            <!-- Blue Card Header (Height Adjusted) -->
+            <div class="bg-gradient-to-r from-[#007EA7] to-[#00A8E8] text-white rounded-3xl py-4 px-6 mb-4 shadow-xl relative overflow-hidden">
                 <div class="relative z-10 text-center">
-                    <p class="text-xs text-blue-100 mb-2 opacity-90">目前總花費 (JPY)</p>
-                    <h2 class="text-5xl font-bold mb-4 tracking-tight">¥ {{ formatNumber(totalExpensesJPY) }}</h2>
-                    <p class="text-sm text-blue-100 font-medium text-right">約 NT$ {{ formatNumber(totalExpensesTWD) }}</p>
+                    <p class="text-xs text-blue-100 mb-1 opacity-90">目前總花費 (JPY)</p>
+                    <h2 class="text-4xl font-bold mb-2 tracking-tight">¥ {{ formatNumber(totalExpensesJPY) }}</h2>
+                    <p class="text-xs text-blue-100 font-medium text-right">約 NT$ {{ formatNumber(totalExpensesTWD) }}</p>
                 </div>
                 <!-- Decorative Circle -->
                 <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
                 <div class="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
+            </div>
+
+            <!-- Bank Offers Button -->
+            <div class="mb-6">
+                <button @click="showBankOffersModal = true" class="w-full bg-white p-3 rounded-xl shadow-sm border border-slate-100 flex items-center justify-between group active:scale-[0.99] transition-transform">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center text-sm">
+                            <i class="fa-solid fa-credit-card"></i>
+                        </div>
+                        <span class="font-bold text-slate-700 text-sm">銀行優惠列表</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-slate-300 text-sm"></i>
+                </button>
             </div>
 
             <!-- List Header -->
@@ -304,27 +317,33 @@
             
             <!-- Expenses List -->
             <div class="space-y-4">
-                <div v-for="exp in expenses" :key="exp.id" class="flex items-center bg-white p-4 rounded-2xl shadow-sm border border-slate-50">
-                    <!-- Icon -->
-                    <div class="w-12 h-12 rounded-full flex items-center justify-center text-white text-lg shadow-md mr-4 shrink-0" 
-                         :class="getExpenseCatInfo(exp.category).color">
-                        <i :class="getExpenseCatInfo(exp.category).icon"></i>
-                    </div>
-                    
-                    <!-- Info -->
-                    <div class="flex-1 min-w-0 mr-2">
-                        <div class="font-bold text-slate-700 text-base truncate">{{ exp.name }}</div>
-                        <div class="text-xs text-slate-400 mt-0.5 font-medium">
-                            {{ exp.date }} · {{ getPaymentLabel(exp.payment) }}
+                <div v-for="exp in expenses" :key="exp.id" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-50 relative">
+                    <div class="flex items-start">
+                        <!-- Icon -->
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm shadow-md mr-3 shrink-0 mt-1" 
+                             :class="getExpenseCatInfo(exp.category).color">
+                            <i :class="getExpenseCatInfo(exp.category).icon"></i>
                         </div>
-                    </div>
-                    
-                    <!-- Amount & Delete -->
-                    <div class="text-right">
-                        <div class="font-bold text-slate-700 text-base mb-1">¥{{ formatNumber(exp.amount) }}</div>
-                        <button @click="removeExpense(exp.id)" class="text-red-300 text-xs px-2 py-1 rounded hover:bg-red-50 hover:text-red-500 transition-colors">
-                            <i class="fa-solid fa-xmark"></i>
-                        </button>
+                        
+                        <!-- Info -->
+                        <div class="flex-1 min-w-0 mr-2">
+                            <div class="font-bold text-slate-700 text-base leading-tight">{{ exp.name }}</div>
+                            <div class="text-xs text-slate-400 mt-1 font-medium">
+                                {{ exp.date }} · {{ getPaymentLabel(exp.payment) }}
+                            </div>
+                            <!-- Note Display -->
+                            <div v-if="exp.note" class="mt-2 text-xs text-slate-500 bg-slate-50 p-2 rounded-lg break-words">
+                                {{ exp.note }}
+                            </div>
+                        </div>
+                        
+                        <!-- Amount & Delete -->
+                        <div class="text-right">
+                            <div class="font-bold text-slate-700 text-base mb-1">¥{{ formatNumber(exp.amount) }}</div>
+                            <button @click="removeExpense(exp.id)" class="text-red-300 text-xs px-2 py-1 rounded hover:bg-red-50 hover:text-red-500 transition-colors absolute top-3 right-3">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -472,6 +491,34 @@
     </nav>
 
     <!-- ================= MODALS ================= -->
+
+    <!-- Bank Offers Modal (New) -->
+    <div v-if="showBankOffersModal" class="fixed inset-0 z-[60] flex items-center justify-center px-4">
+        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" @click="closeAllModals"></div>
+        <div class="bg-white rounded-3xl w-full max-w-sm h-[70vh] flex flex-col relative z-10 overflow-hidden">
+            <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+                <h3 class="font-bold text-lg text-slate-800">銀行優惠列表</h3>
+                <button @click="closeAllModals" class="w-8 h-8 flex items-center justify-center bg-slate-100 rounded-full text-slate-500"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="flex-1 p-4 overflow-y-auto">
+                <!-- View Mode -->
+                <div v-if="!isEditingBankOffers" class="whitespace-pre-wrap text-sm text-slate-700 leading-relaxed">
+                    {{ bankOffersContent || '尚未輸入優惠資訊' }}
+                </div>
+                <!-- Edit Mode -->
+                <textarea v-else v-model="bankOffersContent" class="w-full h-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:border-deep-sea-blue resize-none" placeholder="請輸入信用卡優惠、回饋資訊..."></textarea>
+            </div>
+
+            <div class="p-4 border-t border-slate-100 flex gap-3">
+                <button v-if="!isEditingBankOffers" @click="closeAllModals" class="w-1/3 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold">返回</button>
+                <button v-if="!isEditingBankOffers" @click="isEditingBankOffers = true" class="flex-1 py-3 bg-deep-sea-blue text-white rounded-xl font-bold">編輯</button>
+
+                <button v-if="isEditingBankOffers" @click="isEditingBankOffers = false" class="w-1/3 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold">取消</button>
+                <button v-if="isEditingBankOffers" @click="saveBankOffers" class="flex-1 py-3 bg-deep-sea-blue text-white rounded-xl font-bold">儲存</button>
+            </div>
+        </div>
+    </div>
 
     <!-- 1. Itinerary Detail Modal (READ ONLY) -->
     <div v-if="showItineraryDetailModal && previewItem" class="fixed inset-0 z-[60] flex items-center justify-center px-4">
@@ -655,7 +702,7 @@
         </div>
     </div>
 
-    <!-- 3. Itinerary Add/Edit Modal (Updated: With Date Selector) -->
+    <!-- 3. Itinerary Add/Edit Modal -->
     <div v-if="showItineraryModal" class="fixed inset-0 z-[60] flex items-center justify-center px-4">
         <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" @click="closeAllModals"></div>
         <div class="bg-white rounded-3xl w-full max-w-sm max-h-[85vh] overflow-y-auto p-6 relative z-10">
@@ -663,7 +710,7 @@
             <h3 class="font-bold text-lg mb-4 text-center">{{ isEditMode ? '編輯' : '新增' }}行程</h3>
             
             <div class="space-y-4">
-                <!-- 新增：日期選擇 -->
+                <!-- 日期選擇 -->
                 <div>
                     <label class="form-label text-deep-sea-blue">📅 日期</label>
                     <select v-model="newItinerary.dayIndex" class="input-field border-blue-200 bg-blue-50 font-bold">
@@ -877,7 +924,7 @@
         </div>
     </div>
     
-    <!-- 6. Expense Modal (UPDATED) -->
+    <!-- 6. Expense Modal -->
     <div v-if="showExpenseModal" class="fixed inset-0 z-[60] flex items-center justify-center px-4">
         <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" @click="closeAllModals"></div>
         <div class="bg-white rounded-3xl w-full max-w-sm max-h-[90vh] overflow-y-auto p-6 relative z-10">
@@ -1005,8 +1052,12 @@
             const showShoppingModal = ref(false);
             const showShoppingDetailModal = ref(false);
             const showExpenseModal = ref(false);
+            const showBankOffersModal = ref(false); // New Modal
             
             const isEditMode = ref(false);
+            const isEditingBankOffers = ref(false);
+            const bankOffersContent = ref('');
+            
             const newItinerary = ref({ images: [], files: [] });
             const newShoppingItem = ref({ images: [] });
             const newExpense = ref({ payment: 'cash' });
@@ -1094,7 +1145,6 @@
                 } catch (e) { return `${startDate} (入住)`; }
             };
 
-            // Expense Helpers
             const getExpenseCatInfo = (cat) => {
                 const map = {
                     transport: { color: 'bg-blue-500', icon: 'fa-solid fa-train' },
@@ -1137,6 +1187,7 @@
                     if(snap.exists()){
                         const d = snap.data();
                         bannerUrl.value = d.headerImage;
+                        bankOffersContent.value = d.bankOffersNote || ''; // Load Bank Offers
                         if(d.tripStartDate) tripSettings.value.startDate = d.tripStartDate;
                         if(d.tripDuration) tripSettings.value.duration = d.tripDuration;
                         generateDates();
@@ -1208,10 +1259,19 @@
                 if(n > 0) tripSettings.value.duration = n;
             };
 
+            // New: Save Bank Offers
+            const saveBankOffers = async () => {
+                isLoading.value = true;
+                await setDoc(doc(db, 'trips', TRIP_ID, DATA_PATH, 'settings'), {
+                    bankOffersNote: bankOffersContent.value
+                }, { merge: true });
+                isLoading.value = false; 
+                isEditingBankOffers.value = false;
+            };
+
             const handleAddClick = () => {
                 if(currentTab.value === 'itinerary') {
                     isEditMode.value = false;
-                    // dayIndex defaults to selectedDateIndex
                     newItinerary.value = { category: 'sightseeing', transportType: 'walk', images: [], files: [], dayIndex: selectedDateIndex.value };
                     showItineraryModal.value = true;
                 } else if(currentTab.value === 'shopping') {
@@ -1230,17 +1290,24 @@
 
             const saveItineraryItem = async () => {
                 isLoading.value = true;
-                const imgUrls = await processImageUploads(newItinerary.value.images);
-                const fileObjects = await processUploads(newItinerary.value.files);
-                
-                // Use the dayIndex from the modal (user selected), not just the current tab
-                const data = { ...newItinerary.value, images: imgUrls, files: fileObjects };
-                
-                delete data.order; 
-                delete data.id;
-                
-                if(isEditMode.value) await updateDoc(doc(db, 'trips', TRIP_ID, 'itinerary_items', newItinerary.value.id), data);
-                else await addDoc(collection(db, 'trips', TRIP_ID, 'itinerary_items'), data);
+                try {
+                    const imgUrls = await processImageUploads(newItinerary.value.images || []);
+                    const fileObjects = await processUploads(newItinerary.value.files || []);
+                    
+                    // Fix: Force dayIndex to be a number to prevent type mismatch or undefined
+                    const finalDayIndex = parseInt(newItinerary.value.dayIndex);
+
+                    const data = { ...newItinerary.value, images: imgUrls, files: fileObjects, dayIndex: finalDayIndex };
+                    
+                    delete data.order; 
+                    delete data.id;
+                    
+                    if(isEditMode.value) await updateDoc(doc(db, 'trips', TRIP_ID, 'itinerary_items', newItinerary.value.id), data);
+                    else await addDoc(collection(db, 'trips', TRIP_ID, 'itinerary_items'), data);
+                } catch (e) {
+                    console.error("Save failed", e);
+                    alert("儲存失敗，請重試");
+                }
                 isLoading.value = false; closeAllModals();
             };
             const removeItineraryItem = async (id) => {
@@ -1264,7 +1331,6 @@
             const addExpense = async () => {
                 if(!newExpense.value.name || !newExpense.value.amount) return;
                 isLoading.value = true;
-                // Use user selected date or default today
                 const dateVal = newExpense.value.date || new Date().toISOString().split('T')[0];
                 await addDoc(collection(db, 'trips', TRIP_ID, 'expense_items'), { ...newExpense.value, date: dateVal });
                 isLoading.value = false; closeAllModals();
@@ -1353,7 +1419,8 @@
             const closeAllModals = () => {
                 showSettingsModal.value = false; showItineraryModal.value = false;
                 showItineraryDetailModal.value = false; showShoppingModal.value = false; 
-                showShoppingDetailModal.value = false; showExpenseModal.value = false; 
+                showShoppingDetailModal.value = false; showExpenseModal.value = false;
+                showBankOffersModal.value = false; isEditingBankOffers.value = false;
                 isLoading.value = false;
             };
 
@@ -1364,6 +1431,7 @@
                 currencyInput, currencyResult, calculateCurrency, formatNumber, getDateString, getDateSimple, getHotelDurationLabel,
                 getCategoryColor, getCategoryIcon, getCategoryName, getTransportIcon, getExpenseCatInfo, getPaymentLabel,
                 showSettingsModal, showItineraryModal, showItineraryDetailModal, showShoppingModal, showShoppingDetailModal, showExpenseModal,
+                showBankOffersModal, bankOffersContent, isEditingBankOffers, saveBankOffers,
                 tripSettings, saveTripSettings, changeDuration,
                 newItinerary, isEditMode, handleAddClick, handleImageUpload, handleFileUpload, removeImage, removeFile, saveItineraryItem, removeItineraryItem, openDetailPreview, switchToEditItinerary, openFile,
                 previewItem, allAccommodations, allFlights,
