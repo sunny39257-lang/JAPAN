@@ -71,7 +71,7 @@
         .nav-item.active { color: #01579B; font-weight: bold; }
         .nav-item i { font-size: 1.2rem; margin-bottom: 2px; }
         
-        /* FAB Center Button - 修正 Z-index 確保可點擊 */
+        /* FAB Center Button */
         .fab-center {
             width: 52px; height: 52px; background: #01579B; border-radius: 50%;
             display: flex; align-items: center; justify-content: center; color: white;
@@ -230,11 +230,9 @@
                                     <span v-if="item.price" class="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-bold shrink-0">¥{{ item.price }}</span>
                                 </div>
                                 
-                                <!-- 修改 2: 航班行程在列表只顯示標題與備註，隱藏機場詳細 -->
                                 <div v-if="item.category === 'food' && item.foodItem" class="text-xs text-orange-600 font-bold mt-1">
                                     <i class="fa-solid fa-utensils mr-1"></i>{{ item.foodItem }}
                                 </div>
-                                <!-- 一般備註顯示 -->
                                 <p class="text-xs text-slate-500 truncate mt-1" v-if="item.note">{{ item.note }}</p>
                             </div>
 
@@ -405,11 +403,12 @@
                                     {{ getHotelDurationLabel(hotel) }}
                                  </div>
                                  <div v-if="hotel.note" class="flex items-center gap-2 text-slate-500 text-xs mb-1.5">
-                                     <i class="fa-solid fa-phone w-4 text-center text-slate-300"></i>
+                                     <!-- 修正: 備註 ICON 改為筆 -->
+                                     <i class="fa-solid fa-pen w-4 text-center text-slate-300"></i>
                                      <span>{{ hotel.note }}</span>
                                  </div>
                                  <div v-else class="flex items-center gap-2 text-slate-300 text-xs mb-1.5">
-                                     <i class="fa-solid fa-phone w-4 text-center"></i>
+                                     <i class="fa-solid fa-pen w-4 text-center"></i>
                                      <span>無電話資訊 (備註)</span>
                                  </div>
                                  <div class="flex items-start gap-2 text-slate-500 text-xs">
@@ -436,7 +435,7 @@
         <button class="nav-item" :class="{ active: currentTab === 'shopping' }" @click="currentTab = 'shopping'">
             <i class="fa-solid fa-bag-shopping"></i><span>購物</span>
         </button>
-        <!-- 修改 1: FAB 按鈕使用 .fab-center 樣式，已設定高 z-index 確保點擊 -->
+        <!-- FAB Center Button -->
         <button class="fab-center" @click="handleAddClick"><i class="fa-solid fa-plus"></i></button>
         <button class="nav-item" :class="{ active: currentTab === 'expenses' }" @click="currentTab = 'expenses'">
             <i class="fa-solid fa-wallet"></i><span>花費</span>
@@ -482,18 +481,16 @@
                         </span>
                     </div>
 
-                    <!-- 修改 3: 如果是航班，隱藏上方的黑色大標題 (重複資訊)，只保留其他類別的標題 -->
                     <h2 v-if="previewItem.category !== 'flight'" class="text-2xl font-bold text-slate-800 leading-tight">
                         {{ previewItem.name }}
                     </h2>
                     
-                    <!-- 飲食：顯示品名 -->
                      <div v-if="previewItem.category === 'food' && previewItem.foodItem" class="mt-2 flex items-center text-orange-600 font-bold bg-orange-50 px-3 py-2 rounded-lg">
                         <i class="fa-solid fa-utensils mr-2"></i> {{ previewItem.foodItem }}
                      </div>
                 </div>
 
-                <!-- 航班詳細資訊 (藍色框框保留) -->
+                <!-- 航班詳細資訊 -->
                 <div v-if="previewItem.category === 'flight' && previewItem.deptAirport" class="mb-6 bg-sky-50 rounded-xl p-4 border border-sky-100 shadow-sm relative overflow-hidden">
                     <div class="absolute top-0 left-0 w-full h-1 bg-sky-400"></div>
                     
@@ -701,7 +698,7 @@
                     </div>
                 </div>
 
-                <!-- 4. 航班 (欄位順序修改) -->
+                <!-- 4. 航班 -->
                 <div v-else-if="newItinerary.category === 'flight'" class="space-y-3 bg-sky-50 p-3 rounded-xl border border-sky-100">
                     <div>
                         <label class="form-label text-sky-800">標題</label>
@@ -726,7 +723,6 @@
                     </div>
                     <div><label class="form-label text-sky-800">抵達時間</label><input v-model="newItinerary.endTime" type="time" class="input-field bg-white"></div>
                     
-                     <!-- 航班檔案上傳 -->
                      <div class="mt-2">
                         <label class="form-label text-sky-800">電子機票/附件</label>
                         <div class="space-y-2">
@@ -745,12 +741,22 @@
                     </div>
                 </div>
 
-                <!-- 5. 其他 -->
+                <!-- 5. 其他 (修正: 加入高鐵選項) -->
                 <div v-else class="space-y-3">
                      <div><label class="form-label">名稱</label><input v-model="newItinerary.name" class="input-field"></div>
                      <div class="grid grid-cols-2 gap-3">
                         <div><label class="form-label">時間</label><input v-model="newItinerary.startTime" type="time" class="input-field"></div>
-                        <div><label class="form-label">交通</label><select v-model="newItinerary.transportType" class="input-field"><option value="walk">步行</option><option value="car">自駕</option><option value="bus">巴士</option><option value="public">地鐵</option><option value="flight">飛機</option></select></div>
+                        <div>
+                            <label class="form-label">交通</label>
+                            <select v-model="newItinerary.transportType" class="input-field">
+                                <option value="walk">步行</option>
+                                <option value="car">自駕</option>
+                                <option value="bus">巴士</option>
+                                <option value="public">地鐵</option>
+                                <option value="hsr">高鐵</option> <!-- 新增高鐵 -->
+                                <option value="flight">飛機</option>
+                            </select>
+                        </div>
                      </div>
                 </div>
 
@@ -759,6 +765,56 @@
                 <div class="flex gap-2 pt-2">
                     <button v-if="isEditMode" @click="removeItineraryItem(newItinerary.id)" class="px-4 py-3 bg-red-50 text-red-500 rounded-xl"><i class="fa-solid fa-trash"></i></button>
                     <button @click="saveItineraryItem" class="flex-1 py-3 bg-deep-sea-blue text-white rounded-xl font-bold">儲存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Shopping Add/Edit Modal (補回遺失的部分) -->
+    <div v-if="showShoppingModal" class="fixed inset-0 z-[60] flex items-center justify-center px-4">
+        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" @click="closeAllModals"></div>
+        <div class="bg-white rounded-3xl w-full max-w-sm max-h-[85vh] overflow-y-auto p-6 relative z-10">
+            <button @click="closeAllModals" class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+            <h3 class="font-bold text-lg mb-4 text-center">{{ isEditMode ? '編輯' : '新增' }}購物清單</h3>
+            
+            <div class="space-y-3">
+                <!-- Name -->
+                <div><label class="form-label">商品名稱</label><input v-model="newShoppingItem.name" class="input-field"></div>
+                
+                <!-- Price & Qty -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div><label class="form-label">預估價格</label><input v-model="newShoppingItem.price" type="number" class="input-field"></div>
+                    <div><label class="form-label">數量</label><input v-model="newShoppingItem.quantity" type="number" class="input-field"></div>
+                </div>
+
+                <!-- Shop Info -->
+                <div><label class="form-label">商店名稱</label><input v-model="newShoppingItem.shopName" class="input-field"></div>
+                <div><label class="form-label">營業時間</label><input v-model="newShoppingItem.openTime" class="input-field"></div>
+                <div><label class="form-label">地址</label><input v-model="newShoppingItem.address" class="input-field"></div>
+                <div><label class="form-label">官網連結</label><input v-model="newShoppingItem.website" class="input-field"></div>
+                
+                <!-- Note -->
+                <div><label class="form-label">備註</label><textarea v-model="newShoppingItem.note" rows="2" class="input-field"></textarea></div>
+
+                <!-- Images -->
+                <div>
+                    <label class="form-label">圖片</label>
+                    <div class="image-preview-grid mb-2">
+                        <div v-for="(img, idx) in newShoppingItem.images" :key="idx" class="image-preview-item">
+                            <img :src="img">
+                            <button @click="removeImage(idx, newShoppingItem)" class="absolute top-1 right-1 bg-black/50 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                        <label class="image-preview-item flex items-center justify-center bg-slate-50 cursor-pointer border-dashed">
+                            <input type="file" multiple accept="image/*" @change="(e) => handleImageUpload(e, newShoppingItem)" class="hidden">
+                            <i class="fa-solid fa-plus text-slate-300"></i>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex gap-2 pt-2">
+                    <button v-if="isEditMode" @click="removeShoppingItem(newShoppingItem.id)" class="px-4 py-3 bg-red-50 text-red-500 rounded-xl"><i class="fa-solid fa-trash"></i></button>
+                    <button @click="saveShoppingItem" class="flex-1 py-3 bg-deep-sea-blue text-white rounded-xl font-bold">儲存</button>
                 </div>
             </div>
         </div>
@@ -901,7 +957,6 @@
             const totalExpensesJPY = computed(() => expenses.value.reduce((sum, e) => sum + e.amount, 0));
             const totalExpensesTWD = computed(() => Math.round(totalExpensesJPY.value * 0.215));
             
-            // Computed for All Hotels (Info Tab)
             const allAccommodations = computed(() => {
                 let hotels = [];
                 Object.keys(itineraryData.value).forEach(dayIndex => {
@@ -917,7 +972,6 @@
                 return hotels.sort((a, b) => a.dayIndex - b.dayIndex || (a.startTime || '').localeCompare(b.startTime || ''));
             });
 
-            // Computed for All Flights (Info Tab)
             const allFlights = computed(() => {
                 let flights = [];
                 Object.keys(itineraryData.value).forEach(dayIndex => {
@@ -944,7 +998,17 @@
             const getCategoryName = (cat) => ({
                 sightseeing: '景點', food: '飲食', shopping: '購物', flight: '航班', transport: '交通', accommodation: '住宿'
             }[cat] || '行程');
-            const getTransportIcon = (t) => ({ walk: 'fa-solid fa-person-walking', car: 'fa-solid fa-car', bus: 'fa-solid fa-bus', public: 'fa-solid fa-train-subway', flight: 'fa-solid fa-plane' }[t] || 'fa-solid fa-arrow-right');
+            
+            // 修正: 增加高鐵 ICON 映射
+            const getTransportIcon = (t) => ({ 
+                walk: 'fa-solid fa-person-walking', 
+                car: 'fa-solid fa-car', 
+                bus: 'fa-solid fa-bus', 
+                public: 'fa-solid fa-train-subway', 
+                hsr: 'fa-solid fa-train', // 高鐵
+                flight: 'fa-solid fa-plane' 
+            }[t] || 'fa-solid fa-arrow-right');
+            
             const formatNumber = (n) => n?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             const calculateCurrency = () => currencyResult.value = Math.round(currencyInput.value * 0.215);
             
@@ -1001,10 +1065,9 @@
                         if(!temp[day]) temp[day] = [];
                         temp[day].push({ ...data, id: d.id });
                     });
-                    // Modified sort logic: Strictly by time
                     Object.keys(temp).forEach(k => {
                         temp[k].sort((a,b) => {
-                            const timeA = a.startTime || '99:99'; // Push no-time items to end
+                            const timeA = a.startTime || '99:99'; 
                             const timeB = b.startTime || '99:99';
                             return timeA.localeCompare(timeB);
                         });
@@ -1016,11 +1079,9 @@
                 onSnapshot(qExp, (snap) => expenses.value = snap.docs.map(d => ({...d.data(), id:d.id})));
             };
 
-            // Enhanced File Upload Processing
             const processUploads = async (filesArray) => {
                 const results = [];
                 for(const item of filesArray) {
-                    // Check if it's a raw file object (has content) to upload
                     if(item.content && item.content.startsWith('data:')) {
                         const res = await fetch(item.content); 
                         const blob = await res.blob();
@@ -1037,7 +1098,6 @@
                 return results;
             };
 
-            // Image uploads remain arrays of strings
             const processImageUploads = async (imagesArray) => {
                  const urls = [];
                  for(const item of imagesArray) {
@@ -1129,7 +1189,6 @@
                 isLoading.value = false;
             };
 
-            // Enhanced File Upload Handler (Stores name and content)
             const handleFileUpload = (e, target) => {
                 if(!target.files) target.files = [];
                 for(const file of e.target.files) {
@@ -1148,7 +1207,7 @@
             const removeFile = (idx, target) => target.files.splice(idx, 1);
             
             const openFile = (fileObj) => { 
-                const url = fileObj.url || fileObj; // Handle old string format
+                const url = fileObj.url || fileObj; 
                 if(url && !url.startsWith('data:')) window.open(url, '_blank'); 
             };
             const openLightbox = (url) => { if(url) lightboxImage.value = url; };
