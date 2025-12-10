@@ -278,9 +278,10 @@
         <div class="spinner"></div>
     </div>
 
-    <!-- Header Image Area (Updated Banner) -->
+    <!-- Header Image Area -->
     <div class="header-bg">
         <div class="header-image-container">
+            <!-- 請確保此圖片已上傳至您的 GitHub 儲存庫，或使用網址 -->
             <img src="50328286908_769a66c13a_c.jpg" alt="Hokkaido">
         </div>
         <div class="snow-layer"></div>
@@ -1041,7 +1042,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-    import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
     import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
     import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-storage.js";
 
@@ -1049,9 +1050,19 @@
 
     createApp({
         setup() {
-            // Firebase Setup
-            const firebaseConfig = JSON.parse(__firebase_config);
-            const appId = __app_id || 'default-app';
+            // Firebase Setup - REPLACE WITH YOUR CONFIG
+            const firebaseConfig = {
+                apiKey: "YOUR_API_KEY",
+                authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+                projectId: "YOUR_PROJECT_ID",
+                storageBucket: "YOUR_PROJECT_ID.appspot.com",
+                messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+                appId: "YOUR_APP_ID"
+            };
+            
+            // App ID for data separation (optional)
+            const appId = 'hokkaido-trip-2026'; 
+
             const app = initializeApp(firebaseConfig);
             const auth = getAuth(app);
             const db = getFirestore(app);
@@ -1153,16 +1164,10 @@
             // --- Firebase Logic ---
 
             onMounted(async () => {
-                if(typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    try {
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                    } catch(e) {
-                        console.error("Auth Token Error", e);
-                        await signInAnonymously(auth);
-                    }
-                } else {
-                    await signInAnonymously(auth);
-                }
+                // Anonymous Sign In
+                await signInAnonymously(auth).catch((error) => {
+                    console.error("Auth Error:", error);
+                });
 
                 onAuthStateChanged(auth, (user) => {
                     if (user) {
