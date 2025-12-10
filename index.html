@@ -28,23 +28,31 @@
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
         
         body {
-            background-color: #E5F3F7;
-            -webkit-tap-highlight-color: transparent;
+            background-color: #F0F2F5; /* 桌機版背景色 */
             font-family: 'Noto Sans TC', sans-serif;
             color: #334155;
-            overscroll-behavior-y: none;
+            margin: 0; padding: 0;
+            display: flex; justify-content: center;
+            min-height: 100vh;
         }
 
         .app-container {
-            max-width: 480px; margin: 0 auto; min-height: 100vh;
-            background-color: #ffffff; position: relative; padding-bottom: 100px;
+            width: 100%;
+            max-width: 480px; /* 手機寬度限制 */
+            background-color: #ffffff;
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            padding-bottom: 100px;
+            overflow-x: hidden; /* 防止橫向跑版 */
         }
 
         /* Header */
         .header-bg {
-            height: 200px; overflow: hidden; position: relative;
-            border-bottom-left-radius: 40px; border-bottom-right-radius: 40px;
-            box-shadow: 0 10px 30px rgba(1, 87, 155, 0.15);
+            height: 200px; width: 100%; position: relative;
+            border-bottom-left-radius: 30px; border-bottom-right-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(1, 87, 155, 0.1);
         }
         .header-image-container img { width: 100%; height: 100%; object-fit: cover; }
         
@@ -53,6 +61,7 @@
             background: rgba(255, 255, 255, 0.9); color: #01579B;
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
             box-shadow: 0 2px 10px rgba(0,0,0,0.2); cursor: pointer; z-index: 20;
+            backdrop-filter: blur(4px);
         }
         .banner-edit-btn { bottom: 20px; right: 20px; }
         .banner-settings-btn { top: 20px; right: 20px; }
@@ -60,24 +69,25 @@
         /* Nav */
         .bottom-nav {
             position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
-            width: 100%; max-width: 480px; background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px); border-top: 1px solid rgba(229, 231, 235, 0.5);
+            width: 100%; max-width: 480px; background: rgba(255, 255, 255, 0.98);
+            border-top: 1px solid #f1f5f9;
             display: flex; justify-content: space-around; align-items: center;
-            padding: 12px 16px; padding-bottom: calc(12px + env(safe-area-inset-bottom));
-            z-index: 50; border-top-left-radius: 24px; border-top-right-radius: 24px;
+            padding: 10px 16px; padding-bottom: calc(10px + env(safe-area-inset-bottom));
+            z-index: 50;
         }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #94A3B8; font-size: 0.75rem; width: 60px; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #94A3B8; font-size: 0.7rem; width: 60px; }
         .nav-item.active { color: #01579B; font-weight: bold; }
+        .nav-item i { font-size: 1.2rem; margin-bottom: 2px; }
         .fab-center {
-            width: 56px; height: 56px; background: #FFD54F; border-radius: 50%;
+            width: 52px; height: 52px; background: #FFD54F; border-radius: 50%;
             display: flex; align-items: center; justify-content: center; color: #01579B;
-            font-size: 1.5rem; margin-top: -28px; border: 4px solid #fff;
+            font-size: 1.4rem; margin-top: -26px; border: 4px solid #fff;
             box-shadow: 0 4px 15px rgba(255, 213, 79, 0.6);
         }
 
         /* Timeline */
         .timeline-line {
-            position: absolute; left: 23px; top: 24px; bottom: -24px;
+            position: absolute; left: 23px; top: 30px; bottom: -20px;
             width: 2px; background-color: #E2E8F0; z-index: 0;
         }
         
@@ -93,7 +103,8 @@
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Form Elements */
+        /* Common */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
         .form-label {
             font-size: 0.75rem; font-weight: 700; color: #64748B;
             margin-bottom: 0.35rem; display: block; margin-left: 0.25rem;
@@ -105,7 +116,7 @@
         }
         .input-field:focus { border-color: #01579B; background-color: #fff; }
 
-        /* Image Gallery Grid */
+        /* Images */
         .image-preview-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
         .image-preview-item {
             aspect-ratio: 1; position: relative; border-radius: 0.75rem;
@@ -113,22 +124,20 @@
         }
         .image-preview-item img { width: 100%; height: 100%; object-fit: cover; }
 
+        /* Modal Close Button */
+        .modal-close-btn {
+            position: absolute; top: 12px; right: 12px; width: 32px; height: 32px;
+            display: flex; align-items: center; justify-content: center;
+            background-color: #F1F5F9; border-radius: 50%; color: #64748B;
+            font-size: 1rem; cursor: pointer; z-index: 50;
+        }
+
         .toast {
             background: rgba(30, 41, 59, 0.95); color: white;
             padding: 12px 20px; border-radius: 12px; font-size: 0.875rem;
             position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
-            z-index: 110; box-shadow: 0 4px 15px rgba(0,0,0,0.2); pointer-events: none;
+            z-index: 110; box-shadow: 0 4px 15px rgba(0,0,0,0.2); pointer-events: none; width: max-content;
         }
-        
-        /* Modal Close Button */
-        .modal-close-btn {
-            position: absolute; top: 1rem; right: 1rem; width: 2rem; height: 2rem;
-            display: flex; align-items: center; justify-content: center;
-            background-color: #F1F5F9; border-radius: 50%; color: #64748B;
-            font-size: 1rem; cursor: pointer; transition: background-color 0.2s;
-        }
-        .modal-close-btn:active { background-color: #E2E8F0; }
-
         [v-cloak] { display: none; }
     </style>
 </head>
@@ -157,103 +166,98 @@
         </div>
     </div>
 
-    <main class="px-4 app-main">
+    <main class="px-4 pt-4">
         
         <!-- Tab: 行程 (Itinerary) -->
-        <div v-if="currentTab === 'itinerary'" class="pb-24">
-            <!-- Date Selector -->
-            <div class="flex overflow-x-auto hide-scrollbar space-x-3 px-1 sticky top-0 -mx-4 px-4 snap-x z-20 bg-white/95 backdrop-blur-md py-3 rounded-b-2xl shadow-sm mb-2">
-                <div v-for="(day, index) in dates" :key="index"
-                     @click="selectedDateIndex = index"
-                     class="snap-center flex-shrink-0 w-[60px] h-[70px] rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-all border border-transparent"
-                     :class="selectedDateIndex === index ? 'bg-deep-sea-blue text-white shadow-lg translate-y-[-2px]' : 'bg-slate-50 text-slate-400'">
-                    <span class="text-xs font-medium mb-1">{{ day.weekday }}</span>
-                    <span class="text-lg font-bold leading-none">{{ day.date.split('/')[1] }}</span>
-                    <span class="text-[10px] opacity-60 mt-1">{{ day.date.split('/')[0] }}月</span>
+        <div v-if="currentTab === 'itinerary'">
+            <!-- Date Selector (Sticky) -->
+            <div class="sticky top-0 z-30 bg-white/95 backdrop-blur-md -mx-4 px-4 pb-2 pt-1 shadow-sm rounded-b-2xl">
+                <div class="flex overflow-x-auto hide-scrollbar space-x-2 py-1">
+                    <div v-for="(day, index) in dates" :key="index"
+                         @click="selectedDateIndex = index"
+                         class="flex-shrink-0 w-[56px] h-[64px] rounded-xl flex flex-col items-center justify-center cursor-pointer border border-transparent transition-all"
+                         :class="selectedDateIndex === index ? 'bg-deep-sea-blue text-white shadow-md' : 'bg-slate-50 text-slate-400'">
+                        <span class="text-xs font-medium">{{ day.weekday }}</span>
+                        <span class="text-lg font-bold leading-none mt-0.5">{{ day.date.split('/')[1] }}</span>
+                        <span class="text-[9px] opacity-70">{{ day.date.split('/')[0] }}月</span>
+                    </div>
                 </div>
             </div>
 
-            <!-- Sort Toggle Button -->
-            <div class="flex justify-between items-center mb-4 px-2">
+            <!-- Sort Toggle -->
+            <div class="flex justify-between items-center my-3 px-1">
                 <span class="text-xs font-bold text-slate-400">當日行程 ({{ currentItinerary.length }})</span>
                 <button @click="isReordering = !isReordering" 
-                        class="text-xs px-3 py-1.5 rounded-full font-bold transition-colors flex items-center gap-1"
-                        :class="isReordering ? 'bg-accent-yellow text-yellow-900' : 'bg-slate-100 text-slate-500'">
-                    <i class="fa-solid" :class="isReordering ? 'fa-check' : 'fa-sort'"></i>
+                        class="text-xs px-3 py-1.5 rounded-full font-bold transition-colors flex items-center gap-1 border"
+                        :class="isReordering ? 'bg-accent-yellow border-accent-yellow text-yellow-900' : 'bg-white border-slate-200 text-slate-500'">
+                    <i class="fa-solid" :class="isReordering ? 'fa-check' : 'fa-arrow-down-up-across-line'"></i>
                     {{ isReordering ? '完成排序' : '調整順序' }}
                 </button>
             </div>
 
-            <!-- Timeline -->
-            <div class="space-y-0 pl-2">
+            <!-- Timeline List -->
+            <div class="pl-2 pb-24">
                 <div v-if="currentItinerary.length === 0" class="text-center py-10 text-slate-400 text-sm">
                     <i class="fa-solid fa-map-location-dot text-4xl mb-3 opacity-20 block"></i>
-                    尚未安排行程，按 + 新增
+                    按 + 新增行程
                 </div>
 
-                <div v-for="(item, idx) in currentItinerary" :key="item.id" class="relative group pb-6 last:pb-24">
-                    <!-- Connector Line -->
+                <div v-for="(item, idx) in currentItinerary" :key="item.id" class="relative group pb-6">
+                    <!-- Line -->
                     <div v-if="idx < currentItinerary.length - 1" class="timeline-line border-l-2 border-dashed border-slate-200"></div>
 
-                    <!-- Travel Time (Visual) -->
-                    <div v-if="idx > 0 && !isReordering" class="pl-12 mb-3 flex items-center text-xs text-slate-400">
-                        <div class="flex items-center bg-slate-50 px-2 py-1 rounded-lg border border-slate-100">
-                            <i :class="getTransportIcon(item.transportType)" class="mr-1.5 text-slate-400"></i>
-                            <span>接續行程</span>
+                    <!-- Travel Time (hidden in reorder) -->
+                    <div v-if="idx > 0 && !isReordering" class="pl-12 mb-2 flex items-center text-xs text-slate-400">
+                        <div class="flex items-center bg-slate-50 px-2 py-0.5 rounded border border-slate-100">
+                            <i :class="getTransportIcon(item.transportType)" class="mr-1.5 opacity-60"></i>
+                            <span>移動</span>
                         </div>
                     </div>
 
                     <div class="flex items-start relative z-10">
-                        <!-- Icon Column -->
+                        <!-- Left Icon -->
                         <div class="flex flex-col items-center mr-3 w-12 flex-shrink-0">
-                            <div class="w-10 h-10 rounded-full text-white shadow-md flex items-center justify-center text-sm ring-4 ring-white z-10" :class="getCategoryColor(item.category)">
+                            <div class="w-10 h-10 rounded-full text-white shadow-md flex items-center justify-center text-sm ring-4 ring-white" :class="getCategoryColor(item.category)">
                                 <i :class="getCategoryIcon(item.category)"></i>
                             </div>
-                            <span v-if="item.startTime" class="text-xs font-bold text-slate-500 mt-2 bg-white px-1 rounded">{{ item.startTime }}</span>
+                            <span v-if="item.startTime" class="text-xs font-bold text-slate-500 mt-1 bg-white px-1 rounded">{{ item.startTime }}</span>
                         </div>
 
-                        <!-- Card Content -->
-                        <div class="flex-1 bg-white rounded-2xl shadow-sm border border-slate-100 relative overflow-hidden flex cursor-pointer active:scale-[0.99] transition-transform"
-                             @click="!isReordering && openItineraryDetail(item)">
+                        <!-- Card -->
+                        <div class="flex-1 bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden flex cursor-pointer active:scale-[0.99] transition-transform"
+                             @click="!isReordering && openDetailPreview(item)">
                             
-                            <!-- Left: Info -->
+                            <!-- Main Info -->
                             <div class="p-3 flex-1 min-w-0">
                                 <div class="flex justify-between items-start">
-                                    <h3 class="text-base font-bold text-slate-800 leading-snug truncate">{{ item.name }}</h3>
-                                    <!-- Price Tag for Food/Ticket -->
-                                    <span v-if="item.price" class="text-xs bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded ml-2 font-medium shrink-0">¥{{ item.price }}</span>
+                                    <h3 class="text-base font-bold text-slate-800 leading-tight truncate pr-1">{{ item.name }}</h3>
+                                    <!-- Price Badge -->
+                                    <span v-if="item.price" class="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-bold shrink-0">¥{{ item.price }}</span>
                                 </div>
-                                
                                 <p class="text-xs text-slate-500 truncate mt-1" v-if="item.note">{{ item.note }}</p>
-                                
-                                <!-- Special Tags -->
-                                <div class="mt-2 flex flex-wrap gap-1">
-                                    <span v-if="item.category === 'flight'" class="inline-flex items-center bg-sky-50 text-sky-700 px-2 py-1 rounded-[4px] text-[10px] font-bold">
-                                        <i class="fa-solid fa-plane mr-1"></i> {{ item.flightNo }}
+
+                                <!-- Tags Row -->
+                                <div class="flex gap-1 mt-2 flex-wrap">
+                                    <span v-if="item.category === 'flight'" class="inline-flex items-center bg-sky-50 text-sky-700 px-1.5 py-0.5 rounded text-[10px] font-bold">
+                                        <i class="fa-solid fa-plane mr-1"></i>{{ item.flightNo }}
                                     </span>
-                                    <span v-if="item.category === 'accommodation'" class="inline-flex items-center bg-indigo-50 text-indigo-700 px-2 py-1 rounded-[4px] text-[10px] font-bold">
-                                        <i class="fa-solid fa-bed mr-1"></i> 住宿
+                                    <span v-if="item.category === 'accommodation'" class="inline-flex items-center bg-indigo-50 text-indigo-700 px-1.5 py-0.5 rounded text-[10px] font-bold">
+                                        <i class="fa-solid fa-bed mr-1"></i>住宿
                                     </span>
-                                    <span v-if="item.files && item.files.length > 0" class="inline-flex items-center bg-slate-100 text-slate-500 px-2 py-1 rounded-[4px] text-[10px]">
-                                        <i class="fa-solid fa-paperclip mr-1"></i> 附件
+                                    <span v-if="item.website" class="inline-flex items-center bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded text-[10px]">
+                                        <i class="fa-solid fa-link mr-1"></i>官網
                                     </span>
                                 </div>
                             </div>
 
-                            <!-- Sort Mode Controls (Only visible when Reordering) -->
-                            <div v-if="isReordering" class="flex flex-col items-center justify-center border-l border-slate-100 bg-yellow-50 w-12 transition-all">
-                                <button @click.stop="reorderItem(item, -1)" class="h-1/2 w-full flex items-center justify-center text-yellow-700 active:bg-yellow-200">
-                                    <i class="fa-solid fa-chevron-up"></i>
-                                </button>
-                                <button @click.stop="reorderItem(item, 1)" class="h-1/2 w-full flex items-center justify-center text-yellow-700 active:bg-yellow-200">
-                                    <i class="fa-solid fa-chevron-down"></i>
-                                </button>
+                            <!-- Sorting Handle or Thumbnail -->
+                            <div v-if="isReordering" class="w-12 bg-yellow-50 border-l border-yellow-100 flex flex-col">
+                                <button @click.stop="reorderItem(item, -1)" class="flex-1 text-yellow-700 hover:bg-yellow-100 flex items-center justify-center"><i class="fa-solid fa-chevron-up"></i></button>
+                                <button @click.stop="reorderItem(item, 1)" class="flex-1 text-yellow-700 hover:bg-yellow-100 flex items-center justify-center"><i class="fa-solid fa-chevron-down"></i></button>
                             </div>
-                            
-                            <!-- Normal Mode: Thumbnail -->
-                            <div v-else-if="item.images && item.images.length > 0" class="w-20 bg-slate-100 relative border-l border-slate-100">
+                            <div v-else-if="item.images && item.images.length > 0" class="w-20 bg-slate-100 relative">
                                 <img :src="item.images[0]" class="w-full h-full object-cover">
-                                <div v-if="item.images.length > 1" class="absolute bottom-0 right-0 bg-black/50 text-white text-[9px] px-1.5 py-0.5 rounded-tl-md">
+                                <div v-if="item.images.length > 1" class="absolute bottom-0 right-0 bg-black/50 text-white text-[9px] px-1.5 py-0.5 rounded-tl">
                                     +{{ item.images.length - 1 }}
                                 </div>
                             </div>
@@ -263,7 +267,7 @@
             </div>
         </div>
 
-        <!-- Tab: 購物 -->
+        <!-- Tab: 購物 (Shopping) -->
         <div v-if="currentTab === 'shopping'" class="pb-24">
             <div class="flex p-1 bg-slate-100 rounded-2xl mb-4">
                 <button @click="shoppingSubTab = 'souvenir'" class="flex-1 py-2 rounded-xl text-sm font-bold transition-all"
@@ -299,9 +303,9 @@
             </div>
         </div>
 
-        <!-- Tab: 花費 -->
+        <!-- Tab: 花費 (Expenses) -->
         <div v-if="currentTab === 'expenses'" class="pb-24">
-            <div class="bg-gradient-to-br from-deep-sea-blue to-blue-800 text-white rounded-3xl p-6 mb-6 shadow-xl relative overflow-hidden">
+            <div class="bg-gradient-to-br from-deep-sea-blue to-blue-800 text-white rounded-2xl p-6 mb-6 shadow-lg">
                 <p class="text-xs text-blue-200 mb-1">總支出預估</p>
                 <h2 class="text-4xl font-bold mb-1">¥ {{ formatNumber(totalExpensesJPY) }}</h2>
                 <p class="text-sm text-blue-200 opacity-80">≈ NT$ {{ formatNumber(totalExpensesTWD) }}</p>
@@ -325,21 +329,18 @@
             </div>
         </div>
 
-        <!-- Tab: 資訊 (只剩匯率) -->
+        <!-- Tab: 資訊 (Info) -->
         <div v-if="currentTab === 'info'" class="pb-24">
             <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex items-center gap-3">
                 <div class="flex-1">
                     <label class="text-[10px] text-slate-400 block mb-1">日幣 JPY</label>
-                    <input type="number" v-model="currencyInput" @input="calculateCurrency" class="w-full bg-slate-50 rounded-lg p-2 font-bold text-deep-sea-blue">
+                    <input type="number" v-model="currencyInput" @input="calculateCurrency" class="w-full bg-slate-50 rounded-lg p-2 font-bold text-deep-sea-blue outline-none">
                 </div>
                 <i class="fa-solid fa-arrow-right text-slate-300 mt-4"></i>
                 <div class="flex-1">
                     <label class="text-[10px] text-slate-400 block mb-1">台幣 TWD</label>
                     <div class="w-full bg-slate-100 rounded-lg p-2 font-bold text-slate-600">$ {{ currencyResult }}</div>
                 </div>
-            </div>
-            <div class="mt-8 text-center text-slate-400 text-sm">
-                <p>住宿資訊已移至「每日行程」頁面</p>
             </div>
         </div>
     </main>
@@ -363,7 +364,110 @@
 
     <!-- ================= MODALS ================= -->
 
-    <!-- 1. Settings Modal -->
+    <!-- 1. Itinerary Detail Preview Modal (READ ONLY) -->
+    <div v-if="showItineraryDetailModal && previewItem" class="fixed inset-0 z-[60] flex items-center justify-center px-4">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" @click="closeAllModals"></div>
+        <div class="bg-white rounded-3xl w-full max-w-sm overflow-hidden relative z-10 max-h-[90vh] overflow-y-auto">
+            
+            <!-- Close Button -->
+            <button @click="closeAllModals" class="absolute top-4 right-4 w-8 h-8 bg-black/30 text-white rounded-full flex items-center justify-center z-20 backdrop-blur-md">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <!-- Top Image or Icon Area -->
+            <div class="relative h-60 bg-slate-100 group">
+                <img v-if="previewItem.images && previewItem.images.length > 0" :src="previewItem.images[currentGalleryIndex]" class="w-full h-full object-cover">
+                <div v-else class="w-full h-full flex flex-col items-center justify-center text-slate-400 bg-slate-50">
+                    <i :class="getCategoryIcon(previewItem.category)" class="text-6xl opacity-30 mb-2"></i>
+                    <span class="text-xs">無照片</span>
+                </div>
+                
+                <!-- Gallery Nav -->
+                <div v-if="previewItem.images && previewItem.images.length > 1">
+                    <button @click.stop="galleryNav(-1, previewItem)" class="absolute top-1/2 left-2 -translate-y-1/2 w-8 h-8 bg-black/30 text-white rounded-full flex items-center justify-center"><i class="fa-solid fa-chevron-left"></i></button>
+                    <button @click.stop="galleryNav(1, previewItem)" class="absolute top-1/2 right-2 -translate-y-1/2 w-8 h-8 bg-black/30 text-white rounded-full flex items-center justify-center"><i class="fa-solid fa-chevron-right"></i></button>
+                    <div class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/50 px-2 py-0.5 rounded-full text-white text-xs backdrop-blur-sm">
+                        {{ currentGalleryIndex + 1 }} / {{ previewItem.images.length }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6">
+                <!-- Title & Category -->
+                <div class="mb-4">
+                    <span class="text-xs font-bold px-2 py-1 rounded text-white mb-2 inline-block" :class="getCategoryColor(previewItem.category)">
+                        {{ getCategoryName(previewItem.category) }}
+                    </span>
+                    <h2 class="text-2xl font-bold text-slate-800 leading-tight">{{ previewItem.name }}</h2>
+                    <p v-if="previewItem.flightNo" class="text-sky-600 font-bold mt-1"><i class="fa-solid fa-plane mr-1"></i> {{ previewItem.flightNo }}</p>
+                </div>
+
+                <!-- Info Grid -->
+                <div class="space-y-3 mb-6">
+                    <!-- Time -->
+                    <div class="flex items-start gap-3">
+                        <div class="w-6 text-slate-400 text-center"><i class="fa-regular fa-clock"></i></div>
+                        <div class="flex-1">
+                            <p class="text-sm font-bold text-slate-700">預計時間: {{ previewItem.startTime || '--:--' }}</p>
+                            <p v-if="previewItem.openTime" class="text-xs text-slate-500">營業時間: {{ previewItem.openTime }}</p>
+                            <p v-if="previewItem.checkOutDate" class="text-xs text-indigo-600">退房: {{ previewItem.checkOutDate }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Price -->
+                    <div v-if="previewItem.price" class="flex items-center gap-3">
+                        <div class="w-6 text-slate-400 text-center"><i class="fa-solid fa-yen-sign"></i></div>
+                        <div class="text-sm font-bold text-slate-700">{{ previewItem.price }}</div>
+                    </div>
+
+                    <!-- Address & Map -->
+                    <div v-if="previewItem.address" class="flex items-start gap-3">
+                        <div class="w-6 text-slate-400 text-center"><i class="fa-solid fa-location-dot"></i></div>
+                        <div class="flex-1">
+                            <p class="text-sm text-slate-700 mb-1">{{ previewItem.address }}</p>
+                            <a :href="'https://www.google.com/maps/search/?api=1&query='+previewItem.address" target="_blank" class="inline-block text-xs bg-slate-100 px-3 py-1.5 rounded-lg text-slate-600 font-bold hover:bg-slate-200">
+                                <i class="fa-solid fa-map-location-dot mr-1"></i> Google 導航
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Website -->
+                    <div v-if="previewItem.website" class="flex items-center gap-3">
+                        <div class="w-6 text-slate-400 text-center"><i class="fa-solid fa-globe"></i></div>
+                        <a :href="previewItem.website" target="_blank" class="text-sm text-blue-600 underline font-bold truncate block flex-1">
+                            官方網站
+                        </a>
+                    </div>
+
+                    <!-- Note -->
+                    <div v-if="previewItem.note" class="flex items-start gap-3">
+                        <div class="w-6 text-slate-400 text-center"><i class="fa-solid fa-note-sticky"></i></div>
+                        <p class="text-sm text-slate-600 whitespace-pre-wrap bg-slate-50 p-2 rounded-lg flex-1">{{ previewItem.note }}</p>
+                    </div>
+                </div>
+
+                <!-- Files Download -->
+                <div v-if="previewItem.files && previewItem.files.length > 0" class="mb-6">
+                    <p class="text-xs font-bold text-slate-400 mb-2">附件檔案</p>
+                    <div class="space-y-2">
+                        <div v-for="(file, idx) in previewItem.files" :key="idx" 
+                             @click="openFile(file)"
+                             class="flex items-center p-3 bg-slate-50 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-100">
+                            <i class="fa-solid fa-file-pdf text-red-400 text-xl mr-3"></i>
+                            <span class="text-sm font-bold text-slate-700 flex-1 truncate">查看附件 {{ idx + 1 }}</span>
+                            <i class="fa-solid fa-chevron-right text-slate-300 text-xs"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <button @click="switchToEditItinerary" class="w-full py-3.5 bg-deep-sea-blue text-white rounded-xl font-bold shadow-lg shadow-blue-900/20">
+                    <i class="fa-solid fa-pen mr-2"></i> 編輯行程
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Settings Modal -->
     <div v-if="showSettingsModal" class="fixed inset-0 z-[60] flex items-center justify-center px-4">
         <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" @click="closeAllModals"></div>
         <div class="bg-white rounded-3xl w-full max-w-sm p-6 relative z-10">
@@ -384,7 +488,7 @@
         </div>
     </div>
 
-    <!-- 2. Itinerary Add/Edit Modal (Updated Fields) -->
+    <!-- 3. Itinerary Add/Edit Modal (EDIT MODE) -->
     <div v-if="showItineraryModal" class="fixed inset-0 z-[60] flex items-center justify-center px-4">
         <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" @click="closeAllModals"></div>
         <div class="bg-white rounded-3xl w-full max-w-sm max-h-[85vh] overflow-y-auto p-6 relative z-10">
@@ -392,9 +496,7 @@
             <h3 class="font-bold text-lg mb-4 text-center">{{ isEditMode ? '編輯' : '新增' }}行程</h3>
             
             <div class="space-y-4">
-                <!-- Category Select -->
-                <div>
-                    <label class="form-label">類型</label>
+                <div><label class="form-label">類型</label>
                     <select v-model="newItinerary.category" class="input-field">
                         <option value="sightseeing">📸 景點</option>
                         <option value="food">🍴 飲食</option>
@@ -405,32 +507,31 @@
                     </select>
                 </div>
 
-                <!-- === Conditional Fields based on Category === -->
-
-                <!-- A. Food (飲食) -->
+                <!-- Fields based on Category -->
+                <!-- Food -->
                 <div v-if="newItinerary.category === 'food'" class="space-y-3">
                     <div><label class="form-label">餐廳名稱</label><input v-model="newItinerary.name" class="input-field"></div>
                     <div class="grid grid-cols-2 gap-3">
-                        <div><label class="form-label">預算/價格</label><input v-model="newItinerary.price" type="text" placeholder="¥" class="input-field"></div>
+                        <div><label class="form-label">價格</label><input v-model="newItinerary.price" placeholder="¥" class="input-field"></div>
                         <div><label class="form-label">時間</label><input v-model="newItinerary.startTime" type="time" class="input-field"></div>
                     </div>
-                    <div><label class="form-label">營業時間</label><input v-model="newItinerary.openTime" placeholder="例如: 11:00-20:00" class="input-field"></div>
+                    <div><label class="form-label">營業時間</label><input v-model="newItinerary.openTime" class="input-field"></div>
                     <div><label class="form-label">地址</label><input v-model="newItinerary.address" class="input-field"></div>
                     <div><label class="form-label">官網連結</label><input v-model="newItinerary.website" placeholder="http://" class="input-field"></div>
                 </div>
 
-                <!-- B. Sightseeing (景點) -->
+                <!-- Sightseeing -->
                 <div v-else-if="newItinerary.category === 'sightseeing'" class="space-y-3">
                     <div><label class="form-label">景點名稱</label><input v-model="newItinerary.name" class="input-field"></div>
                     <div class="grid grid-cols-2 gap-3">
-                        <div><label class="form-label">門票價格</label><input v-model="newItinerary.price" type="text" placeholder="免費 / ¥2000" class="input-field"></div>
-                        <div><label class="form-label">預計時間</label><input v-model="newItinerary.startTime" type="time" class="input-field"></div>
+                        <div><label class="form-label">門票價格</label><input v-model="newItinerary.price" class="input-field"></div>
+                        <div><label class="form-label">時間</label><input v-model="newItinerary.startTime" type="time" class="input-field"></div>
                     </div>
-                    <div><label class="form-label">營業時間</label><input v-model="newItinerary.openTime" placeholder="例如: 09:00-17:00" class="input-field"></div>
+                    <div><label class="form-label">營業時間</label><input v-model="newItinerary.openTime" class="input-field"></div>
                     <div><label class="form-label">地址</label><input v-model="newItinerary.address" class="input-field"></div>
                 </div>
 
-                <!-- C. Accommodation (住宿) -->
+                <!-- Accommodation -->
                 <div v-else-if="newItinerary.category === 'accommodation'" class="space-y-3 bg-indigo-50 p-3 rounded-xl border border-indigo-100">
                     <div><label class="form-label text-indigo-800">飯店名稱</label><input v-model="newItinerary.name" class="input-field bg-white"></div>
                     <div class="grid grid-cols-2 gap-3">
@@ -439,7 +540,7 @@
                     </div>
                     <div><label class="form-label text-indigo-800">地址</label><input v-model="newItinerary.address" class="input-field bg-white"></div>
                     
-                    <!-- File Upload for Hotel -->
+                    <!-- File Upload -->
                     <div>
                         <label class="form-label text-indigo-800">訂單檔案 (PDF/截圖)</label>
                         <div class="space-y-2">
@@ -449,35 +550,24 @@
                              </div>
                              <label class="block w-full py-2 bg-white border border-dashed border-indigo-300 rounded-lg text-center text-indigo-400 cursor-pointer text-xs">
                                 <input type="file" @change="(e) => handleFileUpload(e, newItinerary)" class="hidden" multiple accept="image/*,application/pdf">
-                                <i class="fa-solid fa-cloud-arrow-up mr-1"></i> 上傳訂單
+                                <i class="fa-solid fa-cloud-arrow-up mr-1"></i> 上傳
                             </label>
                         </div>
                     </div>
                 </div>
 
-                <!-- D. Default/Transport/Other -->
+                <!-- Default -->
                 <div v-else class="space-y-3">
                      <div><label class="form-label">名稱</label><input v-model="newItinerary.name" class="input-field"></div>
                      <div class="grid grid-cols-2 gap-3">
                         <div><label class="form-label">時間</label><input v-model="newItinerary.startTime" type="time" class="input-field"></div>
-                        <div>
-                             <label class="form-label">交通方式</label>
-                             <select v-model="newItinerary.transportType" class="input-field">
-                                <option value="walk">步行</option>
-                                <option value="car">自駕</option>
-                                <option value="bus">巴士</option>
-                                <option value="public">地鐵/JR</option>
-                                <option value="flight">飛機</option>
-                            </select>
-                        </div>
+                        <div><label class="form-label">交通</label><select v-model="newItinerary.transportType" class="input-field"><option value="walk">步行</option><option value="car">自駕</option><option value="bus">巴士</option><option value="public">地鐵</option><option value="flight">飛機</option></select></div>
                      </div>
                      <div v-if="newItinerary.category === 'flight'"><label class="form-label">航班號</label><input v-model="newItinerary.flightNo" class="input-field"></div>
                 </div>
 
-                <!-- Common: Note -->
                 <div><label class="form-label">備註</label><textarea v-model="newItinerary.note" rows="2" class="input-field"></textarea></div>
                 
-                <!-- Common: Image Upload -->
                 <div>
                     <label class="form-label">照片 ({{ newItinerary.images ? newItinerary.images.length : 0 }})</label>
                     <div class="image-preview-grid">
@@ -500,19 +590,17 @@
         </div>
     </div>
 
-    <!-- 3. Shopping Detail Modal -->
+    <!-- 4. Shopping Detail Modal -->
     <div v-if="showShoppingDetailModal && selectedShoppingItem" class="fixed inset-0 z-[60] flex items-center justify-center px-4">
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" @click="closeAllModals"></div>
         <div class="bg-white rounded-3xl w-full max-w-sm overflow-hidden relative z-10">
             <div class="relative h-72 bg-slate-100 group">
-                <img v-if="selectedShoppingItem.images && selectedShoppingItem.images.length > 0" 
-                     :src="selectedShoppingItem.images[currentGalleryIndex]" 
-                     class="w-full h-full object-contain bg-black">
+                <img v-if="selectedShoppingItem.images && selectedShoppingItem.images.length > 0" :src="selectedShoppingItem.images[currentGalleryIndex]" class="w-full h-full object-contain bg-black">
                 <div v-else class="w-full h-full flex items-center justify-center text-slate-300"><i class="fa-solid fa-image text-4xl"></i></div>
                 <button @click="closeAllModals" class="absolute top-3 right-3 w-8 h-8 bg-black/40 text-white rounded-full flex items-center justify-center backdrop-blur-sm"><i class="fa-solid fa-xmark"></i></button>
                 <div v-if="selectedShoppingItem.images && selectedShoppingItem.images.length > 1">
-                    <button @click.stop="galleryNav(-1)" class="absolute top-1/2 left-2 -translate-y-1/2 w-8 h-8 bg-black/30 text-white rounded-full flex items-center justify-center"><i class="fa-solid fa-chevron-left"></i></button>
-                    <button @click.stop="galleryNav(1)" class="absolute top-1/2 right-2 -translate-y-1/2 w-8 h-8 bg-black/30 text-white rounded-full flex items-center justify-center"><i class="fa-solid fa-chevron-right"></i></button>
+                    <button @click.stop="galleryNav(-1, selectedShoppingItem)" class="absolute top-1/2 left-2 -translate-y-1/2 w-8 h-8 bg-black/30 text-white rounded-full flex items-center justify-center"><i class="fa-solid fa-chevron-left"></i></button>
+                    <button @click.stop="galleryNav(1, selectedShoppingItem)" class="absolute top-1/2 right-2 -translate-y-1/2 w-8 h-8 bg-black/30 text-white rounded-full flex items-center justify-center"><i class="fa-solid fa-chevron-right"></i></button>
                 </div>
             </div>
             <div class="p-5">
@@ -526,7 +614,7 @@
         </div>
     </div>
     
-    <!-- 4. Shopping Add/Edit Modal -->
+    <!-- 5. Shopping Add/Edit Modal -->
     <div v-if="showShoppingModal" class="fixed inset-0 z-[60] flex items-center justify-center px-4">
          <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" @click="closeAllModals"></div>
          <div class="bg-white rounded-3xl w-full max-w-sm max-h-[85vh] overflow-y-auto p-6 relative z-10">
@@ -560,7 +648,7 @@
          </div>
     </div>
 
-    <!-- 5. Expense Modal -->
+    <!-- 6. Expense Modal -->
     <div v-if="showExpenseModal" class="fixed inset-0 z-[60] flex items-center justify-center px-4">
         <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" @click="closeAllModals"></div>
         <div class="bg-white rounded-3xl w-full max-w-sm p-6 relative z-10">
@@ -616,7 +704,6 @@
             const toastMessage = ref('');
             const showToast = (msg) => { toastMessage.value = msg; setTimeout(() => toastMessage.value = '', 3000); };
 
-            // Helper: Image Compression
             const compressImage = async (file) => {
                 return new Promise((resolve) => {
                     const maxWidth = 1200;
@@ -638,7 +725,6 @@
                 });
             };
 
-            // Data
             const currentTab = ref('itinerary');
             const shoppingSubTab = ref('souvenir');
             const dates = ref([]);
@@ -649,34 +735,31 @@
             const bannerUrl = ref('');
             const selectedDateIndex = ref(0);
             
-            // UI State
-            const isReordering = ref(false); // New: Reorder Mode
-            
-            // Modals
+            // State
+            const isReordering = ref(false);
             const showSettingsModal = ref(false);
             const showItineraryModal = ref(false);
+            const showItineraryDetailModal = ref(false); // NEW: Detail Modal
             const showShoppingModal = ref(false);
             const showShoppingDetailModal = ref(false);
             const showExpenseModal = ref(false);
             
-            // Edit/New Items
             const isEditMode = ref(false);
             const newItinerary = ref({ images: [], files: [] });
             const newShoppingItem = ref({ images: [] });
             const newExpense = ref({ payment: 'cash' });
             
+            const previewItem = ref(null); // For Itinerary Detail Preview
             const selectedShoppingItem = ref(null);
             const currentGalleryIndex = ref(0);
             const currencyInput = ref(10000);
             const currencyResult = ref(0);
 
-            // Computed
             const currentItinerary = computed(() => itineraryData.value[selectedDateIndex.value] || []);
             const filteredShoppingList = computed(() => shoppingList.value.filter(item => item.category === shoppingSubTab.value));
             const totalExpensesJPY = computed(() => expenses.value.reduce((sum, e) => sum + e.amount, 0));
             const totalExpensesTWD = computed(() => Math.round(totalExpensesJPY.value * 0.215));
 
-            // Icons
             const getCategoryColor = (cat) => ({
                 sightseeing: 'bg-emerald-400', food: 'bg-orange-400', shopping: 'bg-pink-400',
                 flight: 'bg-sky-500', transport: 'bg-slate-400', accommodation: 'bg-indigo-500'
@@ -685,11 +768,13 @@
                 sightseeing: 'fa-solid fa-camera', food: 'fa-solid fa-utensils', shopping: 'fa-solid fa-bag-shopping',
                 flight: 'fa-solid fa-plane', transport: 'fa-solid fa-bus', accommodation: 'fa-solid fa-bed'
             }[cat] || 'fa-solid fa-info');
+            const getCategoryName = (cat) => ({
+                sightseeing: '景點', food: '飲食', shopping: '購物', flight: '航班', transport: '交通', accommodation: '住宿'
+            }[cat] || '行程');
             const getTransportIcon = (t) => ({ walk: 'fa-solid fa-person-walking', car: 'fa-solid fa-car', bus: 'fa-solid fa-bus', public: 'fa-solid fa-train-subway', flight: 'fa-solid fa-plane' }[t] || 'fa-solid fa-arrow-right');
             const formatNumber = (n) => n?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             const calculateCurrency = () => currencyResult.value = Math.round(currencyInput.value * 0.215);
 
-            // Init
             onMounted(async () => {
                 await signInAnonymously(auth);
                 onAuthStateChanged(auth, (user) => { if (user) setupListeners(); });
@@ -708,7 +793,6 @@
             };
 
             const setupListeners = () => {
-                // Settings
                 onSnapshot(doc(db, 'trips', TRIP_ID, DATA_PATH, 'settings'), (snap) => {
                     if(snap.exists()){
                         const d = snap.data();
@@ -718,7 +802,6 @@
                         generateDates();
                     }
                 });
-                // Itinerary
                 onSnapshot(collection(db, 'trips', TRIP_ID, 'itinerary_items'), (snap) => {
                     const temp = {};
                     snap.forEach(d => {
@@ -732,14 +815,11 @@
                     });
                     itineraryData.value = temp;
                 });
-                // Shopping
                 onSnapshot(collection(db, 'trips', TRIP_ID, 'shopping_items'), (snap) => shoppingList.value = snap.docs.map(d => ({...d.data(), id:d.id})));
-                // Expenses
                 const qExp = query(collection(db, 'trips', TRIP_ID, 'expense_items'), orderBy("date", "desc"));
                 onSnapshot(qExp, (snap) => expenses.value = snap.docs.map(d => ({...d.data(), id:d.id})));
             };
 
-            // Logic
             const processUploads = async (filesArray) => {
                 const urls = [];
                 for(const item of filesArray) {
@@ -765,13 +845,11 @@
                 if(n > 0) tripSettings.value.duration = n;
             };
 
-            // Itinerary
             const handleAddClick = () => {
                 if(currentTab.value === 'itinerary') {
                     isEditMode.value = false;
                     const dayList = itineraryData.value[selectedDateIndex.value] || [];
                     const maxOrder = dayList.length > 0 ? Math.max(...dayList.map(i => i.order || 0)) : 0;
-                    // Reset New Itinerary Structure
                     newItinerary.value = { category: 'sightseeing', transportType: 'walk', images: [], files: [], dayIndex: selectedDateIndex.value, order: maxOrder + 1000 };
                     showItineraryModal.value = true;
                 } else if(currentTab.value === 'shopping') {
@@ -815,7 +893,6 @@
                 await batch.commit();
             };
 
-            // Shopping
             const saveShoppingItem = async () => {
                 isLoading.value = true;
                 if(!isEditMode.value) newShoppingItem.value.category = shoppingSubTab.value;
@@ -830,7 +907,6 @@
                 if(confirm("刪除此商品？")) { await deleteDoc(doc(db, 'trips', TRIP_ID, 'shopping_items', id)); closeAllModals(); }
             };
 
-            // Expense
             const addExpense = async () => {
                 if(!newExpense.value.name || !newExpense.value.amount) return;
                 isLoading.value = true;
@@ -839,7 +915,6 @@
             };
             const removeExpense = async (id) => { if(confirm("刪除記帳？")) await deleteDoc(doc(db, 'trips', TRIP_ID, 'expense_items', id)); };
 
-            // Files & Images
             const handleImageUpload = async (e, target) => {
                 loadingText.value = '壓縮中...'; isLoading.value = true;
                 if(!target.images) target.images = [];
@@ -864,11 +939,23 @@
             const openFile = (url) => { if(!url.startsWith('data:')) window.open(url, '_blank'); };
             
             // Detail Openers
-            const openItineraryDetail = (item) => { isEditMode.value = true; newItinerary.value = JSON.parse(JSON.stringify(item)); showItineraryModal.value = true; };
+            const openDetailPreview = (item) => {
+                previewItem.value = item;
+                currentGalleryIndex.value = 0;
+                showItineraryDetailModal.value = true;
+            };
+            
+            const switchToEditItinerary = () => {
+                showItineraryDetailModal.value = false;
+                isEditMode.value = true;
+                newItinerary.value = JSON.parse(JSON.stringify(previewItem.value));
+                showItineraryModal.value = true;
+            };
+
             const openShoppingDetail = (item) => { selectedShoppingItem.value = item; currentGalleryIndex.value = 0; showShoppingDetailModal.value = true; };
             const switchToEditShopping = () => { showShoppingDetailModal.value = false; isEditMode.value = true; newShoppingItem.value = JSON.parse(JSON.stringify(selectedShoppingItem.value)); showShoppingModal.value = true; };
-            const galleryNav = (d) => {
-                const len = selectedShoppingItem.value.images.length;
+            const galleryNav = (d, target) => {
+                const len = target.images.length;
                 let n = currentGalleryIndex.value + d;
                 if(n < 0) n = len - 1; if(n >= len) n = 0;
                 currentGalleryIndex.value = n;
@@ -884,6 +971,7 @@
             };
             const closeAllModals = () => {
                 showSettingsModal.value = false; showItineraryModal.value = false;
+                showItineraryDetailModal.value = false; // Close preview
                 showShoppingModal.value = false; showShoppingDetailModal.value = false;
                 showExpenseModal.value = false; isLoading.value = false;
             };
@@ -893,10 +981,11 @@
                 currentTab, dates, selectedDateIndex, currentItinerary, isReordering,
                 shoppingSubTab, filteredShoppingList, expenses, totalExpensesJPY, totalExpensesTWD,
                 currencyInput, currencyResult, calculateCurrency, formatNumber,
-                getCategoryColor, getCategoryIcon, getTransportIcon,
-                showSettingsModal, showItineraryModal, showShoppingModal, showShoppingDetailModal, showExpenseModal,
+                getCategoryColor, getCategoryIcon, getCategoryName, getTransportIcon,
+                showSettingsModal, showItineraryModal, showItineraryDetailModal, showShoppingModal, showShoppingDetailModal, showExpenseModal,
                 tripSettings, saveTripSettings, changeDuration,
-                newItinerary, isEditMode, handleAddClick, handleImageUpload, handleFileUpload, removeImage, removeFile, saveItineraryItem, removeItineraryItem, openItineraryDetail, reorderItem, openFile,
+                newItinerary, isEditMode, handleAddClick, handleImageUpload, handleFileUpload, removeImage, removeFile, saveItineraryItem, removeItineraryItem, openDetailPreview, switchToEditItinerary, reorderItem, openFile,
+                previewItem, // For detail modal
                 newShoppingItem, selectedShoppingItem, currentGalleryIndex, galleryNav, openShoppingDetail, switchToEditShopping, saveShoppingItem, removeShoppingItem,
                 newExpense, addExpense, removeExpense,
                 closeAllModals, handleBannerUpload
