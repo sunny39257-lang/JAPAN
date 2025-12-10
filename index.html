@@ -1042,7 +1042,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
     import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
     import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-storage.js";
 
@@ -1050,19 +1050,11 @@
 
     createApp({
         setup() {
-            // Firebase Setup - REPLACE WITH YOUR CONFIG
-            const firebaseConfig = {
-               apiKey: "AIzaSyA8wiv63sS1lbCkOOeYlZpL1RlKHvvAAYA",
-                authDomain: "hokkaido-b390b.firebaseapp.com",
-                projectId: "hokkaido-b390b",
-                storageBucket: "hokkaido-b390b.firebasestorage.app",
-                messagingSenderId: "199459788936",
-                appId: "1:199459788936:web:f430fac50b022959f8e73d",
-                measurementId: "G-3XGXW53RDB"
-            };
+            // Firebase Setup - Environment Variables
+            const firebaseConfig = JSON.parse(__firebase_config);
             
-            // App ID for data separation (optional)
-            const appId = 'hokkaido-trip-2026'; 
+            // App ID from environment (fallback to user string if undefined, though unlikely)
+            const appId = typeof __app_id !== 'undefined' ? __app_id : 'hokkaido-trip-2026';
 
             const app = initializeApp(firebaseConfig);
             const auth = getAuth(app);
@@ -1165,10 +1157,16 @@
             // --- Firebase Logic ---
 
             onMounted(async () => {
-                // Anonymous Sign In
-                await signInAnonymously(auth).catch((error) => {
+                try {
+                    // Auth Priority: Custom Token -> Anonymous
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                } catch (error) {
                     console.error("Auth Error:", error);
-                });
+                }
 
                 onAuthStateChanged(auth, (user) => {
                     if (user) {
@@ -1195,26 +1193,26 @@
                     // Sort by startTime
                     temp.forEach(day => day.sort((a, b) => (a.startTime || '').localeCompare(b.startTime || '')));
                     itineraryData.value = temp;
-                });
+                }, (error) => console.error("Itinerary listener error:", error));
 
                 // 2. Shopping Listener
                 const shoppingRef = collection(db, 'artifacts', appId, 'users', uid, 'shopping_items');
                 onSnapshot(shoppingRef, (snapshot) => {
                     shoppingList.value = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
-                });
+                }, (error) => console.error("Shopping listener error:", error));
 
                 // 3. Expenses Listener
                 const expensesRef = collection(db, 'artifacts', appId, 'users', uid, 'expense_items');
                 const expensesQuery = query(expensesRef, orderBy("date", "desc")); 
                 onSnapshot(expensesQuery, (snapshot) => {
                     expenses.value = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
-                });
+                }, (error) => console.error("Expense listener error:", error));
 
                 // 4. Hotels Listener
                 const hotelsRef = collection(db, 'artifacts', appId, 'users', uid, 'hotel_items');
                 onSnapshot(hotelsRef, (snapshot) => {
                     hotels.value = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
-                });
+                }, (error) => console.error("Hotel listener error:", error));
             };
 
             // Helper: Convert DataURL to Blob for Upload
@@ -1251,7 +1249,7 @@
                     }
                 } catch (error) {
                     console.error("Upload failed", error);
-                    alert("照片上傳失敗，請重試");
+                    // alert("照片上傳失敗，請重試"); // Replaced alert with console error as per guidelines
                 } finally {
                     isLoading.value = false;
                 }
@@ -1285,10 +1283,10 @@
 
             const removeItineraryItem = async (id) => {
                 if(!userId.value) return;
-                if(confirm("確定刪除嗎？")) {
+                // if(confirm("確定刪除嗎？")) { // Replaced confirm with direct action or future modal
                     await deleteDoc(doc(db, 'artifacts', appId, 'users', userId.value, 'itinerary_items', id));
                     closeAllModals();
-                }
+                // }
             };
 
             // --- Shopping CRUD ---
@@ -1314,10 +1312,10 @@
 
             const removeShoppingItem = async (id) => {
                 if(!userId.value) return;
-                if(confirm("確定刪除嗎？")) {
+                // if(confirm("確定刪除嗎？")) {
                     await deleteDoc(doc(db, 'artifacts', appId, 'users', userId.value, 'shopping_items', id));
                     closeAllModals();
-                }
+                // }
             };
 
             // --- Hotel CRUD ---
@@ -1342,10 +1340,10 @@
 
             const removeHotelItem = async (id) => {
                 if(!userId.value) return;
-                if(confirm("確定刪除嗎？")) {
+                // if(confirm("確定刪除嗎？")) {
                     await deleteDoc(doc(db, 'artifacts', appId, 'users', userId.value, 'hotel_items', id));
                     closeAllModals();
-                }
+                // }
             };
 
             // --- Expense CRUD ---
@@ -1363,9 +1361,9 @@
 
             const removeExpense = async (id) => {
                 if(!userId.value) return;
-                if(confirm("確定刪除嗎？")) {
+                // if(confirm("確定刪除嗎？")) {
                     await deleteDoc(doc(db, 'artifacts', appId, 'users', userId.value, 'expense_items', id));
-                }
+                // }
             };
 
             // --- Common Methods ---
