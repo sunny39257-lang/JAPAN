@@ -67,12 +67,14 @@
             width: 100%;
             height: 100%;
             position: relative;
+            background-color: #eee;
         }
         
         .header-image-container img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            transition: opacity 0.3s ease;
         }
 
         .snow-layer {
@@ -87,6 +89,26 @@
             animation: snowfall 8s linear infinite;
             z-index: 5;
             pointer-events: none;
+        }
+
+        /* Banner Edit Button */
+        .banner-edit-btn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            z-index: 20;
+            background: rgba(255, 255, 255, 0.9);
+            color: #01579B;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            font-size: 14px;
+            backdrop-filter: blur(4px);
+            border: 2px solid white;
         }
 
         @keyframes snowfall {
@@ -267,6 +289,48 @@
             background-color: rgba(0, 0, 0, 0.95);
             backdrop-filter: blur(5px);
         }
+
+        /* Toast Notification */
+        .toast-container {
+            position: fixed;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 90%;
+            max-width: 400px;
+            pointer-events: none;
+        }
+        .toast {
+            background: rgba(30, 41, 59, 0.95);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            backdrop-filter: blur(4px);
+        }
+        .toast.error {
+            background: rgba(239, 68, 68, 0.95);
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-leave-active {
+            transition: opacity 0.3s;
+        }
+        .fade-leave-to {
+            opacity: 0;
+        }
     </style>
 </head>
 <body>
@@ -278,11 +342,29 @@
         <div class="spinner"></div>
     </div>
 
-    <!-- Header Image Area -->
+    <!-- Toast Notifications -->
+    <div class="toast-container">
+        <transition-group name="fade">
+            <div v-for="toast in toasts" :key="toast.id" class="toast" :class="{ error: toast.type === 'error' }">
+                <div class="flex items-center">
+                    <i v-if="toast.type === 'success'" class="fa-solid fa-check-circle text-green-400 mr-2"></i>
+                    <i v-else class="fa-solid fa-triangle-exclamation text-white mr-2"></i>
+                    {{ toast.message }}
+                </div>
+            </div>
+        </transition-group>
+    </div>
+
+    <!-- Header Image Area with Banner Edit -->
     <div class="header-bg">
-        <div class="header-image-container">
-            <!-- 請確保此圖片已上傳至您的 GitHub 儲存庫，或使用網址 -->
-            <img src="50328286908_769a66c13a_c.jpg" alt="Hokkaido">
+        <div class="header-image-container relative group">
+            <img :src="bannerUrl || 'https://images.unsplash.com/photo-1542051841857-5f90071e7989?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80'" alt="Hokkaido">
+            
+            <!-- Banner Edit Button -->
+            <label class="banner-edit-btn cursor-pointer active:scale-90 transition-transform">
+                <input type="file" @change="handleBannerUpload" class="hidden" accept="image/*">
+                <i class="fa-solid fa-camera"></i>
+            </label>
         </div>
         <div class="snow-layer"></div>
     </div>
@@ -332,6 +414,10 @@
 
             <!-- Timeline Itinerary -->
             <div class="space-y-0 pl-2">
+                <div v-if="currentItinerary.length === 0" class="text-center py-10 text-slate-400 text-sm">
+                    <i class="fa-solid fa-map-location-dot text-4xl mb-3 opacity-20 block"></i>
+                    這天還沒有行程喔
+                </div>
                 <div v-for="(item, idx) in currentItinerary" :key="item.id" 
                      class="relative group pb-6 last:pb-24 cursor-pointer"
                      @click="openItineraryDetail(item)">
@@ -453,6 +539,10 @@
                             <i class="fa-solid fa-trash-can"></i>
                         </button>
                     </div>
+                </div>
+                <div v-if="expenses.length === 0" class="p-8 text-center text-slate-400 text-sm">
+                    <i class="fa-solid fa-receipt text-3xl mb-2 block opacity-20"></i>
+                    還沒有記帳紀錄
                 </div>
             </div>
         </div>
@@ -1043,18 +1133,16 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
     import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
-    import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, setDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
     import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-storage.js";
 
     const { createApp, ref, computed, onMounted } = Vue
 
     createApp({
         setup() {
-            // Firebase Setup - Environment Variables
+            // Firebase Setup - Environment Variables for Previewer Stability
             const firebaseConfig = JSON.parse(__firebase_config);
-            
-            // App ID from environment (fallback to user string if undefined, though unlikely)
-            const appId = typeof __app_id !== 'undefined' ? __app_id : 'hokkaido-trip-2026';
+            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
             const app = initializeApp(firebaseConfig);
             const auth = getAuth(app);
@@ -1063,6 +1151,16 @@
             
             const userId = ref(null);
             const isLoading = ref(false);
+
+            // Toast Notification System
+            const toasts = ref([]);
+            const showToast = (message, type = 'success') => {
+                const id = Date.now();
+                toasts.value.push({ id, message, type });
+                setTimeout(() => {
+                    toasts.value = toasts.value.filter(t => t.id !== id);
+                }, 3000);
+            };
 
             // Data
             const EXCHANGE_RATE = 0.215;
@@ -1096,6 +1194,7 @@
             const itineraryData = ref([[], [], [], [], [], [], []]);
             const shoppingList = ref([]);
             const expenses = ref([]);
+            const bannerUrl = ref(''); // For custom banner
 
             const weatherData = ref([
                 { condition: 'snow', temp: '0/-5', feel: '-8' },
@@ -1166,6 +1265,7 @@
                     }
                 } catch (error) {
                     console.error("Auth Error:", error);
+                    showToast("登入驗證失敗，請重整頁面", 'error');
                 }
 
                 onAuthStateChanged(auth, (user) => {
@@ -1193,26 +1293,34 @@
                     // Sort by startTime
                     temp.forEach(day => day.sort((a, b) => (a.startTime || '').localeCompare(b.startTime || '')));
                     itineraryData.value = temp;
-                }, (error) => console.error("Itinerary listener error:", error));
+                }, (error) => showToast("讀取行程失敗", 'error'));
 
                 // 2. Shopping Listener
                 const shoppingRef = collection(db, 'artifacts', appId, 'users', uid, 'shopping_items');
                 onSnapshot(shoppingRef, (snapshot) => {
                     shoppingList.value = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
-                }, (error) => console.error("Shopping listener error:", error));
+                }, (error) => showToast("讀取清單失敗", 'error'));
 
                 // 3. Expenses Listener
                 const expensesRef = collection(db, 'artifacts', appId, 'users', uid, 'expense_items');
                 const expensesQuery = query(expensesRef, orderBy("date", "desc")); 
                 onSnapshot(expensesQuery, (snapshot) => {
                     expenses.value = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
-                }, (error) => console.error("Expense listener error:", error));
+                });
 
                 // 4. Hotels Listener
                 const hotelsRef = collection(db, 'artifacts', appId, 'users', uid, 'hotel_items');
                 onSnapshot(hotelsRef, (snapshot) => {
                     hotels.value = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
-                }, (error) => console.error("Hotel listener error:", error));
+                });
+
+                // 5. Settings (Banner) Listener
+                const settingsRef = doc(db, 'artifacts', appId, 'users', uid, 'settings', 'preference');
+                onSnapshot(settingsRef, (doc) => {
+                    if (doc.exists()) {
+                        bannerUrl.value = doc.data().headerImage || '';
+                    }
+                });
             };
 
             // Helper: Convert DataURL to Blob for Upload
@@ -1249,44 +1357,82 @@
                     }
                 } catch (error) {
                     console.error("Upload failed", error);
-                    // alert("照片上傳失敗，請重試"); // Replaced alert with console error as per guidelines
+                    showToast("照片上傳失敗", 'error');
                 } finally {
                     isLoading.value = false;
                 }
                 return processedUrls;
             };
 
+            // --- Banner Handling ---
+            const handleBannerUpload = async (e) => {
+                const file = e.target.files[0];
+                if (!file || !userId.value) return;
+
+                isLoading.value = true;
+                try {
+                    const filename = `banner_${Date.now()}`;
+                    const fileRef = storageRef(storage, `users/${userId.value}/${filename}`);
+                    await uploadBytes(fileRef, file);
+                    const url = await getDownloadURL(fileRef);
+
+                    // Save URL to Firestore
+                    const settingsRef = doc(db, 'artifacts', appId, 'users', userId.value, 'settings', 'preference');
+                    await setDoc(settingsRef, { headerImage: url }, { merge: true });
+                    
+                    showToast("Banner 更新成功！");
+                } catch (error) {
+                    console.error("Banner upload error:", error);
+                    showToast("Banner 更新失敗", 'error');
+                } finally {
+                    isLoading.value = false;
+                }
+            };
+
+
             // --- Itinerary CRUD ---
-            
             const saveItineraryItem = async () => {
                 if(!newItinerary.value.name) return;
                 if(!userId.value) return;
+                
+                isLoading.value = true;
+                try {
+                    if(newItinerary.value.category === 'flight') {
+                        newItinerary.value.transportType = 'flight';
+                    }
 
-                // Auto-set transportType for flight category
-                if(newItinerary.value.category === 'flight') {
-                    newItinerary.value.transportType = 'flight';
+                    const finalImages = await processImagesAndUpload(newItinerary.value.images);
+                    const itemData = { ...newItinerary.value, images: finalImages, dayIndex: selectedDateIndex.value };
+                    delete itemData.id; 
+
+                    const colRef = collection(db, 'artifacts', appId, 'users', userId.value, 'itinerary_items');
+
+                    if(isEditMode.value && newItinerary.value.id) {
+                        await updateDoc(doc(colRef, newItinerary.value.id), itemData);
+                        showToast("行程更新成功");
+                    } else {
+                        await addDoc(colRef, itemData);
+                        showToast("行程新增成功");
+                    }
+                    closeAllModals();
+                } catch (e) {
+                    showToast("儲存失敗: " + e.message, 'error');
+                } finally {
+                    isLoading.value = false;
                 }
-
-                const finalImages = await processImagesAndUpload(newItinerary.value.images);
-                const itemData = { ...newItinerary.value, images: finalImages, dayIndex: selectedDateIndex.value };
-                delete itemData.id; // Don't save ID in doc data
-
-                const colRef = collection(db, 'artifacts', appId, 'users', userId.value, 'itinerary_items');
-
-                if(isEditMode.value && newItinerary.value.id) {
-                    await updateDoc(doc(colRef, newItinerary.value.id), itemData);
-                } else {
-                    await addDoc(colRef, itemData);
-                }
-                closeAllModals();
             };
 
             const removeItineraryItem = async (id) => {
                 if(!userId.value) return;
-                // if(confirm("確定刪除嗎？")) { // Replaced confirm with direct action or future modal
-                    await deleteDoc(doc(db, 'artifacts', appId, 'users', userId.value, 'itinerary_items', id));
-                    closeAllModals();
-                // }
+                if(confirm("確定刪除嗎？")) { 
+                    try {
+                        await deleteDoc(doc(db, 'artifacts', appId, 'users', userId.value, 'itinerary_items', id));
+                        showToast("已刪除");
+                        closeAllModals();
+                    } catch(e) {
+                        showToast("刪除失敗", 'error');
+                    }
+                }
             };
 
             // --- Shopping CRUD ---
@@ -1294,28 +1440,38 @@
             const saveShoppingItem = async () => {
                 if(!newShoppingItem.value.name) return;
                 if(!userId.value) return;
+                
+                isLoading.value = true;
+                try {
+                    if(!isEditMode.value) newShoppingItem.value.category = shoppingSubTab.value;
+                    const finalImages = await processImagesAndUpload(newShoppingItem.value.images);
+                    const itemData = { ...newShoppingItem.value, images: finalImages };
+                    delete itemData.id;
 
-                if(!isEditMode.value) newShoppingItem.value.category = shoppingSubTab.value;
-                const finalImages = await processImagesAndUpload(newShoppingItem.value.images);
-                const itemData = { ...newShoppingItem.value, images: finalImages };
-                delete itemData.id;
+                    const colRef = collection(db, 'artifacts', appId, 'users', userId.value, 'shopping_items');
 
-                const colRef = collection(db, 'artifacts', appId, 'users', userId.value, 'shopping_items');
-
-                if(isEditMode.value && newShoppingItem.value.id) {
-                    await updateDoc(doc(colRef, newShoppingItem.value.id), itemData);
-                } else {
-                    await addDoc(colRef, itemData);
+                    if(isEditMode.value && newShoppingItem.value.id) {
+                        await updateDoc(doc(colRef, newShoppingItem.value.id), itemData);
+                        showToast("物品更新成功");
+                    } else {
+                        await addDoc(colRef, itemData);
+                        showToast("物品加入成功");
+                    }
+                    closeAllModals();
+                } catch(e) {
+                    showToast("儲存失敗", 'error');
+                } finally {
+                    isLoading.value = false;
                 }
-                closeAllModals();
             };
 
             const removeShoppingItem = async (id) => {
                 if(!userId.value) return;
-                // if(confirm("確定刪除嗎？")) {
+                if(confirm("確定刪除嗎？")) {
                     await deleteDoc(doc(db, 'artifacts', appId, 'users', userId.value, 'shopping_items', id));
+                    showToast("已刪除");
                     closeAllModals();
-                // }
+                }
             };
 
             // --- Hotel CRUD ---
@@ -1323,27 +1479,36 @@
             const saveHotelItem = async () => {
                 if(!newHotel.value.name) return;
                 if(!userId.value) return;
+                
+                isLoading.value = true;
+                try {
+                    const finalImages = await processImagesAndUpload(newHotel.value.images);
+                    const itemData = { ...newHotel.value, images: finalImages };
+                    delete itemData.id;
 
-                const finalImages = await processImagesAndUpload(newHotel.value.images);
-                const itemData = { ...newHotel.value, images: finalImages };
-                delete itemData.id;
+                    const colRef = collection(db, 'artifacts', appId, 'users', userId.value, 'hotel_items');
 
-                const colRef = collection(db, 'artifacts', appId, 'users', userId.value, 'hotel_items');
-
-                if(isEditHotel.value && newHotel.value.id) {
-                    await updateDoc(doc(colRef, newHotel.value.id), itemData);
-                } else {
-                    await addDoc(colRef, itemData);
+                    if(isEditHotel.value && newHotel.value.id) {
+                        await updateDoc(doc(colRef, newHotel.value.id), itemData);
+                        showToast("住宿更新成功");
+                    } else {
+                        await addDoc(colRef, itemData);
+                        showToast("住宿新增成功");
+                    }
+                    closeAllModals();
+                } catch(e) {
+                    showToast("儲存失敗", 'error');
+                } finally {
+                    isLoading.value = false;
                 }
-                closeAllModals();
             };
 
             const removeHotelItem = async (id) => {
                 if(!userId.value) return;
-                // if(confirm("確定刪除嗎？")) {
+                if(confirm("確定刪除嗎？")) {
                     await deleteDoc(doc(db, 'artifacts', appId, 'users', userId.value, 'hotel_items', id));
                     closeAllModals();
-                // }
+                }
             };
 
             // --- Expense CRUD ---
@@ -1351,19 +1516,27 @@
             const addExpense = async () => {
                 if(!newExpense.value.name || !newExpense.value.amount) return;
                 if(!userId.value) return;
-
-                const itemData = { ...newExpense.value, date: newExpense.value.date || new Date().toISOString().split('T')[0] };
-                const colRef = collection(db, 'artifacts', appId, 'users', userId.value, 'expense_items');
-                await addDoc(colRef, itemData);
                 
-                closeAllModals();
+                isLoading.value = true;
+                try {
+                    const itemData = { ...newExpense.value, date: newExpense.value.date || new Date().toISOString().split('T')[0] };
+                    const colRef = collection(db, 'artifacts', appId, 'users', userId.value, 'expense_items');
+                    await addDoc(colRef, itemData);
+                    showToast("記帳成功");
+                    closeAllModals();
+                } catch(e) {
+                    showToast("記帳失敗", 'error');
+                } finally {
+                    isLoading.value = false;
+                }
             };
 
             const removeExpense = async (id) => {
                 if(!userId.value) return;
-                // if(confirm("確定刪除嗎？")) {
+                if(confirm("確定刪除嗎？")) {
                     await deleteDoc(doc(db, 'artifacts', appId, 'users', userId.value, 'expense_items', id));
-                // }
+                    showToast("已刪除");
+                }
             };
 
             // --- Common Methods ---
@@ -1495,18 +1668,18 @@
             const openMap = (q) => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`, '_blank');
 
             return {
-                isLoading,
+                isLoading, toasts,
                 currentTab, dates, selectedDateIndex, currentItinerary, currentWeather, currentDateInfo,
                 hotels, shoppingList, filteredShoppingList, expenses, totalExpensesJPY, totalExpensesTWD,
                 currencyInput, currencyResult, calculateCurrency, formatNumber,
                 getWeatherIcon, getWeatherDescription, getCategoryColor, getCategoryIcon, getTransportIcon,
                 // Modals
                 showItineraryModal, showShoppingModal, showExpenseModal, showShoppingDetailModal, showItineraryDetailModal, showHotelModal, showHotelDetailModal, showImagePreviewModal, anyModalOpen,
-                isEditMode, isEditHotel, shoppingSubTab, previewImageUrl,
+                isEditMode, isEditHotel, shoppingSubTab, previewImageUrl, bannerUrl,
                 // Data
                 newItinerary, newShoppingItem, newHotel, newExpense, selectedShoppingItem, selectedItineraryItem, selectedHotelItem,
                 // Methods
-                handleAddClick, closeAllModals, 
+                handleAddClick, closeAllModals, handleBannerUpload,
                 saveItineraryItem, removeItineraryItem, openItineraryDetail, switchToEditItinerary, handleItineraryImageUpload, removeItineraryImage,
                 saveShoppingItem, removeShoppingItem, openShoppingDetail, switchToEditShopping, handleImageUpload, removeImage, openImagePreview,
                 saveHotelItem, removeHotelItem, openHotelDetail, switchToEditHotel, handleHotelImageUpload, removeHotelImage,
