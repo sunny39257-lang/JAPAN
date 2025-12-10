@@ -91,11 +91,9 @@
             pointer-events: none;
         }
 
-        /* Banner Edit Button */
-        .banner-edit-btn {
+        /* Banner Buttons */
+        .banner-btn {
             position: absolute;
-            bottom: 20px;
-            right: 20px;
             z-index: 20;
             background: rgba(255, 255, 255, 0.9);
             color: #01579B;
@@ -109,7 +107,13 @@
             font-size: 14px;
             backdrop-filter: blur(4px);
             border: 2px solid white;
+            cursor: pointer;
+            transition: transform 0.2s;
         }
+        .banner-btn:active { transform: scale(0.9); }
+        
+        .banner-edit-btn { bottom: 20px; right: 20px; }
+        .banner-settings-btn { top: 20px; right: 20px; }
 
         @keyframes snowfall {
             from { background-position: 0 0; }
@@ -360,8 +364,13 @@
         <div class="header-image-container relative group">
             <img :src="bannerUrl || 'https://images.unsplash.com/photo-1542051841857-5f90071e7989?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80'" alt="Hokkaido">
             
-            <!-- Banner Edit Button -->
-            <label class="banner-edit-btn cursor-pointer active:scale-90 transition-transform">
+            <!-- Settings Button (Top Right) -->
+            <button @click="showSettingsModal = true" class="banner-btn banner-settings-btn">
+                <i class="fa-solid fa-gear"></i>
+            </button>
+
+            <!-- Banner Edit Button (Bottom Right) -->
+            <label class="banner-btn banner-edit-btn">
                 <input type="file" @change="handleBannerUpload" class="hidden" accept="image/*">
                 <i class="fa-solid fa-camera"></i>
             </label>
@@ -626,6 +635,32 @@
         <div v-if="anyModalOpen" class="fixed inset-0 z-[60] flex items-center justify-center px-4">
             <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" @click="closeAllModals"></div>
             
+            <!-- 7. Settings Modal (New) -->
+            <div v-if="showSettingsModal" class="modal-content bg-white rounded-3xl w-full max-w-sm shadow-2xl relative z-10 p-6">
+                <button @click="closeAllModals" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"><i class="fa-solid fa-xmark text-lg"></i></button>
+                <h3 class="font-bold text-lg mb-6 text-center text-slate-800">旅程設定</h3>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="form-label">出發日期</label>
+                        <input v-model="tripSettings.startDate" type="date" class="w-full bg-slate-50 rounded-xl p-3 text-sm outline-none border border-slate-100 focus:border-deep-sea-blue transition-colors">
+                    </div>
+                    
+                    <div>
+                        <label class="form-label">旅遊天數</label>
+                        <div class="flex items-center gap-3">
+                             <button @click="tripSettings.duration = Math.max(1, tripSettings.duration - 1)" class="w-10 h-10 rounded-xl bg-slate-100 text-slate-500 font-bold hover:bg-slate-200 transition-colors">-</button>
+                             <div class="flex-1 text-center font-bold text-xl text-slate-700">{{ tripSettings.duration }} 天</div>
+                             <button @click="tripSettings.duration = tripSettings.duration + 1" class="w-10 h-10 rounded-xl bg-slate-100 text-slate-500 font-bold hover:bg-slate-200 transition-colors">+</button>
+                        </div>
+                    </div>
+
+                    <button @click="saveTripSettings" class="w-full py-3 rounded-xl bg-deep-sea-blue text-white font-bold text-sm shadow-lg shadow-blue-900/30 mt-4">
+                        更新行程表
+                    </button>
+                </div>
+            </div>
+
             <!-- 1. Itinerary Add/Edit Modal (Updated with Images) -->
             <div v-if="showItineraryModal" class="modal-content bg-white rounded-3xl w-full max-w-sm max-h-[85vh] overflow-y-auto shadow-2xl relative z-10 p-6">
                 <button @click="closeAllModals" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -1136,13 +1171,23 @@
     import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, setDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
     import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-storage.js";
 
-    const { createApp, ref, computed, onMounted } = Vue
+    const { createApp, ref, computed, onMounted, watch } = Vue
 
     createApp({
         setup() {
-            // Firebase Setup - Environment Variables for Previewer Stability
-            const firebaseConfig = JSON.parse(__firebase_config);
-            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+            // FIX: Use HARDCODED config for GitHub Pages deployment compatibility
+            // This replaces the environment variable JSON.parse(__firebase_config) which causes crashes on static hosts
+            const firebaseConfig = {
+               apiKey: "AIzaSyA8wiv63sS1lbCkOOeYlZpL1RlKHvvAAYA",
+                authDomain: "hokkaido-b390b.firebaseapp.com",
+                projectId: "hokkaido-b390b",
+                storageBucket: "hokkaido-b390b.firebasestorage.app",
+                messagingSenderId: "199459788936",
+                appId: "1:199459788936:web:f430fac50b022959f8e73d",
+                measurementId: "G-3XGXW53RDB"
+            };
+            
+            const appId = 'hokkaido-trip-2026';
 
             const app = initializeApp(firebaseConfig);
             const auth = getAuth(app);
@@ -1179,22 +1224,46 @@
             const currentTab = ref('itinerary');
             const shoppingSubTab = ref('souvenir');
             
-            const dates = ref([
-                { date: '2/1', weekday: '五', hasCar: false },
-                { date: '2/2', weekday: '六', hasCar: true },
-                { date: '2/3', weekday: '日', hasCar: true },
-                { date: '2/4', weekday: '一', hasCar: true },
-                { date: '2/5', weekday: '二', hasCar: true },
-                { date: '2/6', weekday: '三', hasCar: true },
-                { date: '2/7', weekday: '四', hasCar: false },
-            ]);
+            // Trip Settings
+            const tripSettings = ref({
+                startDate: '2026-02-01',
+                duration: 7
+            });
+            const dates = ref([]);
+
+            // Helper: Generate Dates based on Settings
+            const generateDates = () => {
+                const result = [];
+                const start = new Date(tripSettings.value.startDate);
+                const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+                
+                for(let i = 0; i < tripSettings.value.duration; i++) {
+                    const d = new Date(start);
+                    d.setDate(start.getDate() + i);
+                    
+                    const month = d.getMonth() + 1;
+                    const date = d.getDate();
+                    const day = d.getDay();
+                    
+                    result.push({
+                        date: `${month}/${date}`,
+                        fullDate: d.toISOString().split('T')[0], // for logic usage
+                        weekday: weekdays[day],
+                        hasCar: false // Default to false, logic could be expanded
+                    });
+                }
+                dates.value = result;
+            };
+
+            // Initial Generation
+            generateDates();
 
             // Reactive Data Containers
             const hotels = ref([]);
-            const itineraryData = ref([[], [], [], [], [], [], []]);
+            const itineraryData = ref({}); // Changed to Object to map by index dynamically
             const shoppingList = ref([]);
             const expenses = ref([]);
-            const bannerUrl = ref(''); // For custom banner
+            const bannerUrl = ref(''); 
 
             const weatherData = ref([
                 { condition: 'snow', temp: '0/-5', feel: '-8' },
@@ -1204,7 +1273,7 @@
                 { condition: 'snow', temp: '1/-4', feel: '-6' },
                 { condition: 'snow', temp: '2/-3', feel: '-5' },
                 { condition: 'cloudy', temp: '3/-2', feel: '-3' },
-            ]);
+            ]); // Weather data logic would need to be dynamic too, but keeping simple for now
 
             const selectedDateIndex = ref(0);
             
@@ -1217,6 +1286,7 @@
             const showHotelModal = ref(false); 
             const showHotelDetailModal = ref(false); 
             const showImagePreviewModal = ref(false);
+            const showSettingsModal = ref(false); // New
             const previewImageUrl = ref('');
 
             const isEditMode = ref(false);
@@ -1238,6 +1308,7 @@
 
             // Computed
             const currentItinerary = computed(() => {
+                // Safeguard: make sure array exists
                 return itineraryData.value[selectedDateIndex.value] || [];
             });
 
@@ -1245,24 +1316,19 @@
                 return shoppingList.value.filter(item => item.category === shoppingSubTab.value);
             });
             
-            const currentWeather = computed(() => weatherData.value[selectedDateIndex.value] || null);
-            const currentDateInfo = computed(() => dates.value[selectedDateIndex.value]);
+            const currentWeather = computed(() => weatherData.value[selectedDateIndex.value % weatherData.value.length] || weatherData.value[0]);
+            const currentDateInfo = computed(() => dates.value[selectedDateIndex.value] || dates.value[0]);
 
             const totalExpensesJPY = computed(() => expenses.value.reduce((sum, exp) => sum + exp.amount, 0));
             const totalExpensesTWD = computed(() => Math.round(totalExpensesJPY.value * EXCHANGE_RATE));
             
-            const anyModalOpen = computed(() => showItineraryModal.value || showShoppingModal.value || showExpenseModal.value || showShoppingDetailModal.value || showItineraryDetailModal.value || showHotelModal.value || showHotelDetailModal.value || showImagePreviewModal.value);
+            const anyModalOpen = computed(() => showItineraryModal.value || showShoppingModal.value || showExpenseModal.value || showShoppingDetailModal.value || showItineraryDetailModal.value || showHotelModal.value || showHotelDetailModal.value || showImagePreviewModal.value || showSettingsModal.value);
 
             // --- Firebase Logic ---
 
             onMounted(async () => {
                 try {
-                    // Auth Priority: Custom Token -> Anonymous
-                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                    } else {
-                        await signInAnonymously(auth);
-                    }
+                    await signInAnonymously(auth);
                 } catch (error) {
                     console.error("Auth Error:", error);
                     showToast("登入驗證失敗，請重整頁面", 'error');
@@ -1279,47 +1345,59 @@
             });
 
             const setupFirestoreListeners = (uid) => {
-                // 1. Itinerary Listener
+                // 1. Settings Listener (Trip Info & Banner)
+                const settingsRef = doc(db, 'artifacts', appId, 'users', uid, 'settings', 'preference');
+                onSnapshot(settingsRef, (doc) => {
+                    if (doc.exists()) {
+                        const data = doc.data();
+                        bannerUrl.value = data.headerImage || '';
+                        
+                        // Update Trip Settings if exists
+                        if(data.tripStartDate && data.tripDuration) {
+                            tripSettings.value.startDate = data.tripStartDate;
+                            tripSettings.value.duration = data.tripDuration;
+                            generateDates(); // Regenerate dates on load
+                        }
+                    }
+                });
+
+                // 2. Itinerary Listener
                 const itineraryRef = collection(db, 'artifacts', appId, 'users', uid, 'itinerary_items');
                 onSnapshot(itineraryRef, (snapshot) => {
-                    const temp = [[], [], [], [], [], [], []];
+                    const temp = {};
                     snapshot.forEach(doc => {
                         const data = doc.data();
                         const dayIdx = data.dayIndex || 0;
-                        if (dayIdx >= 0 && dayIdx < 7) {
-                            temp[dayIdx].push({ ...data, id: doc.id });
-                        }
+                        
+                        if(!temp[dayIdx]) temp[dayIdx] = [];
+                        temp[dayIdx].push({ ...data, id: doc.id });
                     });
-                    // Sort by startTime
-                    temp.forEach(day => day.sort((a, b) => (a.startTime || '').localeCompare(b.startTime || '')));
+                    
+                    // Sort each day
+                    Object.keys(temp).forEach(key => {
+                        temp[key].sort((a, b) => (a.startTime || '').localeCompare(b.startTime || ''));
+                    });
+                    
                     itineraryData.value = temp;
                 }, (error) => showToast("讀取行程失敗", 'error'));
 
-                // 2. Shopping Listener
+                // 3. Shopping Listener
                 const shoppingRef = collection(db, 'artifacts', appId, 'users', uid, 'shopping_items');
                 onSnapshot(shoppingRef, (snapshot) => {
                     shoppingList.value = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
-                }, (error) => showToast("讀取清單失敗", 'error'));
+                });
 
-                // 3. Expenses Listener
+                // 4. Expenses Listener
                 const expensesRef = collection(db, 'artifacts', appId, 'users', uid, 'expense_items');
                 const expensesQuery = query(expensesRef, orderBy("date", "desc")); 
                 onSnapshot(expensesQuery, (snapshot) => {
                     expenses.value = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
                 });
 
-                // 4. Hotels Listener
+                // 5. Hotels Listener
                 const hotelsRef = collection(db, 'artifacts', appId, 'users', uid, 'hotel_items');
                 onSnapshot(hotelsRef, (snapshot) => {
                     hotels.value = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
-                });
-
-                // 5. Settings (Banner) Listener
-                const settingsRef = doc(db, 'artifacts', appId, 'users', uid, 'settings', 'preference');
-                onSnapshot(settingsRef, (doc) => {
-                    if (doc.exists()) {
-                        bannerUrl.value = doc.data().headerImage || '';
-                    }
                 });
             };
 
@@ -1364,7 +1442,7 @@
                 return processedUrls;
             };
 
-            // --- Banner Handling ---
+            // --- Banner & Settings Handling ---
             const handleBannerUpload = async (e) => {
                 const file = e.target.files[0];
                 if (!file || !userId.value) return;
@@ -1384,6 +1462,30 @@
                 } catch (error) {
                     console.error("Banner upload error:", error);
                     showToast("Banner 更新失敗", 'error');
+                } finally {
+                    isLoading.value = false;
+                }
+            };
+
+            const saveTripSettings = async () => {
+                if(!userId.value) return;
+                
+                isLoading.value = true;
+                try {
+                    const settingsRef = doc(db, 'artifacts', appId, 'users', userId.value, 'settings', 'preference');
+                    await setDoc(settingsRef, { 
+                        tripStartDate: tripSettings.value.startDate,
+                        tripDuration: tripSettings.value.duration
+                    }, { merge: true });
+                    
+                    generateDates();
+                    showToast("行程表更新成功！");
+                    closeAllModals();
+                    // Reset selection to day 0 to avoid out of bounds
+                    selectedDateIndex.value = 0;
+                } catch(e) {
+                    console.error(e);
+                    showToast("更新失敗", 'error');
                 } finally {
                     isLoading.value = false;
                 }
@@ -1590,6 +1692,7 @@
                 showImagePreviewModal.value = false;
                 showHotelModal.value = false;
                 showHotelDetailModal.value = false;
+                showSettingsModal.value = false; // Close settings too
                 isLoading.value = false;
             };
 
@@ -1674,12 +1777,13 @@
                 currencyInput, currencyResult, calculateCurrency, formatNumber,
                 getWeatherIcon, getWeatherDescription, getCategoryColor, getCategoryIcon, getTransportIcon,
                 // Modals
-                showItineraryModal, showShoppingModal, showExpenseModal, showShoppingDetailModal, showItineraryDetailModal, showHotelModal, showHotelDetailModal, showImagePreviewModal, anyModalOpen,
+                showItineraryModal, showShoppingModal, showExpenseModal, showShoppingDetailModal, showItineraryDetailModal, showHotelModal, showHotelDetailModal, showImagePreviewModal, showSettingsModal, anyModalOpen,
                 isEditMode, isEditHotel, shoppingSubTab, previewImageUrl, bannerUrl,
                 // Data
                 newItinerary, newShoppingItem, newHotel, newExpense, selectedShoppingItem, selectedItineraryItem, selectedHotelItem,
+                tripSettings,
                 // Methods
-                handleAddClick, closeAllModals, handleBannerUpload,
+                handleAddClick, closeAllModals, handleBannerUpload, saveTripSettings,
                 saveItineraryItem, removeItineraryItem, openItineraryDetail, switchToEditItinerary, handleItineraryImageUpload, removeItineraryImage,
                 saveShoppingItem, removeShoppingItem, openShoppingDetail, switchToEditShopping, handleImageUpload, removeImage, openImagePreview,
                 saveHotelItem, removeHotelItem, openHotelDetail, switchToEditHotel, handleHotelImageUpload, removeHotelImage,
