@@ -17,6 +17,7 @@
                     colors: {
                         'deep-sea-blue': '#01579B',
                         'accent-yellow': '#FFD54F',
+                        'expense-header': '#007EA7', /* 仿照圖片的藍色 */
                     },
                     padding: { 'safe-bottom': 'env(safe-area-inset-bottom)' }
                 }
@@ -28,7 +29,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
         
         body {
-            background-color: #F0F2F5;
+            background-color: #F8FAFC;
             font-family: 'Noto Sans TC', sans-serif;
             color: #334155;
             margin: 0; padding: 0;
@@ -121,7 +122,7 @@
             z-index: 110; box-shadow: 0 4px 15px rgba(0,0,0,0.2); pointer-events: none; width: max-content;
         }
 
-        /* Lightbox for zooming */
+        /* Lightbox */
         .lightbox {
             position: fixed; inset: 0; background: black; z-index: 100;
             display: flex; justify-content: center; align-items: center;
@@ -156,7 +157,7 @@
     <div v-if="toastMessage" class="toast">{{ toastMessage }}</div>
 
     <!-- Header (Banner) -->
-    <div class="header-bg">
+    <div v-if="currentTab !== 'expenses'" class="header-bg">
         <div class="header-image-container relative w-full h-full group">
             <div v-if="!bannerLoaded" class="absolute inset-0 bg-slate-200 animate-pulse z-0"></div>
             <label class="cursor-pointer block w-full h-full relative">
@@ -174,7 +175,7 @@
         </div>
     </div>
 
-    <main class="px-4 pt-4">
+    <main class="px-4 pt-4" :class="{ 'pt-10': currentTab === 'expenses' }">
         
         <!-- Tab: 行程 (Itinerary) -->
         <div v-if="currentTab === 'itinerary'">
@@ -281,28 +282,54 @@
             </div>
         </div>
 
-        <!-- Tab: 花費 (Expenses) -->
+        <!-- Tab: 花費 (Expenses) - REDESIGNED -->
         <div v-if="currentTab === 'expenses'" class="pb-24">
-            <div class="bg-gradient-to-br from-deep-sea-blue to-blue-800 text-white rounded-2xl p-6 mb-6 shadow-lg">
-                <p class="text-xs text-blue-200 mb-1">總支出預估</p>
-                <h2 class="text-4xl font-bold mb-1">¥ {{ formatNumber(totalExpensesJPY) }}</h2>
-                <p class="text-sm text-blue-200 opacity-80">≈ NT$ {{ formatNumber(totalExpensesTWD) }}</p>
+            <!-- Blue Card Header -->
+            <div class="bg-gradient-to-r from-[#007EA7] to-[#00A8E8] text-white rounded-3xl p-6 mb-8 shadow-xl relative overflow-hidden">
+                <div class="relative z-10 text-center">
+                    <p class="text-xs text-blue-100 mb-2 opacity-90">目前總花費 (JPY)</p>
+                    <h2 class="text-5xl font-bold mb-4 tracking-tight">¥ {{ formatNumber(totalExpensesJPY) }}</h2>
+                    <p class="text-sm text-blue-100 font-medium text-right">約 NT$ {{ formatNumber(totalExpensesTWD) }}</p>
+                </div>
+                <!-- Decorative Circle -->
+                <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+                <div class="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
             </div>
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                <div v-for="exp in expenses" :key="exp.id" class="flex items-center justify-between p-4 border-b border-slate-50 last:border-0">
-                    <div class="flex items-center">
-                        <div class="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm shadow-sm mr-3" :class="getCategoryColor(exp.category)">
-                            <i :class="getCategoryIcon(exp.category)"></i>
-                        </div>
-                        <div>
-                            <p class="font-bold text-slate-700 text-sm">{{ exp.name }}</p>
-                            <p class="text-[10px] text-slate-400">{{ exp.date }} · {{ exp.payment === 'card' ? '刷卡' : '現金' }}</p>
+
+            <!-- List Header -->
+            <div class="flex items-center gap-2 mb-4 px-1">
+                <i class="fa-solid fa-receipt text-slate-300"></i>
+                <h3 class="font-bold text-slate-700">支出紀錄</h3>
+            </div>
+            
+            <!-- Expenses List -->
+            <div class="space-y-4">
+                <div v-for="exp in expenses" :key="exp.id" class="flex items-center bg-white p-4 rounded-2xl shadow-sm border border-slate-50">
+                    <!-- Icon -->
+                    <div class="w-12 h-12 rounded-full flex items-center justify-center text-white text-lg shadow-md mr-4 shrink-0" 
+                         :class="getExpenseCatInfo(exp.category).color">
+                        <i :class="getExpenseCatInfo(exp.category).icon"></i>
+                    </div>
+                    
+                    <!-- Info -->
+                    <div class="flex-1 min-w-0 mr-2">
+                        <div class="font-bold text-slate-700 text-base truncate">{{ exp.name }}</div>
+                        <div class="text-xs text-slate-400 mt-0.5 font-medium">
+                            {{ exp.date }} · {{ getPaymentLabel(exp.payment) }}
                         </div>
                     </div>
-                    <div class="flex items-center">
-                        <span class="font-bold text-slate-700 text-sm mr-3">¥{{ formatNumber(exp.amount) }}</span>
-                        <button @click="removeExpense(exp.id)" class="text-slate-300 hover:text-red-400"><i class="fa-solid fa-trash-can"></i></button>
+                    
+                    <!-- Amount & Delete -->
+                    <div class="text-right">
+                        <div class="font-bold text-slate-700 text-base mb-1">¥{{ formatNumber(exp.amount) }}</div>
+                        <button @click="removeExpense(exp.id)" class="text-red-300 text-xs px-2 py-1 rounded hover:bg-red-50 hover:text-red-500 transition-colors">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
                     </div>
+                </div>
+
+                <div v-if="expenses.length === 0" class="text-center py-10 text-slate-400 text-sm">
+                    尚無支出紀錄
                 </div>
             </div>
         </div>
@@ -403,7 +430,6 @@
                                     {{ getHotelDurationLabel(hotel) }}
                                  </div>
                                  <div v-if="hotel.note" class="flex items-center gap-2 text-slate-500 text-xs mb-1.5">
-                                     <!-- 修正: 備註 ICON 改為筆 -->
                                      <i class="fa-solid fa-pen w-4 text-center text-slate-300"></i>
                                      <span>{{ hotel.note }}</span>
                                  </div>
@@ -629,7 +655,7 @@
         </div>
     </div>
 
-    <!-- 3. Itinerary Add/Edit Modal -->
+    <!-- 3. Itinerary Add/Edit Modal (Updated: With Date Selector) -->
     <div v-if="showItineraryModal" class="fixed inset-0 z-[60] flex items-center justify-center px-4">
         <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" @click="closeAllModals"></div>
         <div class="bg-white rounded-3xl w-full max-w-sm max-h-[85vh] overflow-y-auto p-6 relative z-10">
@@ -637,6 +663,16 @@
             <h3 class="font-bold text-lg mb-4 text-center">{{ isEditMode ? '編輯' : '新增' }}行程</h3>
             
             <div class="space-y-4">
+                <!-- 新增：日期選擇 -->
+                <div>
+                    <label class="form-label text-deep-sea-blue">📅 日期</label>
+                    <select v-model="newItinerary.dayIndex" class="input-field border-blue-200 bg-blue-50 font-bold">
+                        <option v-for="(d, i) in dates" :key="i" :value="i">
+                            Day {{ i + 1 }} - {{ d.date }} ({{ d.weekday }})
+                        </option>
+                    </select>
+                </div>
+
                 <div><label class="form-label">類型</label>
                     <select v-model="newItinerary.category" class="input-field">
                         <option value="sightseeing">📸 景點</option>
@@ -741,7 +777,7 @@
                     </div>
                 </div>
 
-                <!-- 5. 其他 (修正: 加入高鐵選項) -->
+                <!-- 5. 其他 -->
                 <div v-else class="space-y-3">
                      <div><label class="form-label">名稱</label><input v-model="newItinerary.name" class="input-field"></div>
                      <div class="grid grid-cols-2 gap-3">
@@ -753,7 +789,7 @@
                                 <option value="car">自駕</option>
                                 <option value="bus">巴士</option>
                                 <option value="public">地鐵</option>
-                                <option value="hsr">高鐵</option> <!-- 新增高鐵 -->
+                                <option value="hsr">高鐵</option>
                                 <option value="flight">飛機</option>
                             </select>
                         </div>
@@ -770,7 +806,7 @@
         </div>
     </div>
 
-    <!-- 4. Shopping Add/Edit Modal (補回遺失的部分) -->
+    <!-- 4. Shopping Add/Edit Modal -->
     <div v-if="showShoppingModal" class="fixed inset-0 z-[60] flex items-center justify-center px-4">
         <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" @click="closeAllModals"></div>
         <div class="bg-white rounded-3xl w-full max-w-sm max-h-[85vh] overflow-y-auto p-6 relative z-10">
@@ -841,21 +877,50 @@
         </div>
     </div>
     
-    <!-- 6. Expense Modal -->
+    <!-- 6. Expense Modal (UPDATED) -->
     <div v-if="showExpenseModal" class="fixed inset-0 z-[60] flex items-center justify-center px-4">
         <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" @click="closeAllModals"></div>
-        <div class="bg-white rounded-3xl w-full max-w-sm p-6 relative z-10">
+        <div class="bg-white rounded-3xl w-full max-w-sm max-h-[90vh] overflow-y-auto p-6 relative z-10">
             <button @click="closeAllModals" class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
-            <h3 class="font-bold text-lg mb-6 text-center">記一筆</h3>
+            <h3 class="font-bold text-lg mb-6 text-center">新增支出</h3>
             <div class="space-y-4">
-                 <div><label class="form-label">項目</label><input v-model="newExpense.name" class="input-field"></div>
-                 <div><label class="form-label">金額 (¥)</label><input v-model.number="newExpense.amount" type="number" class="input-field font-bold text-lg text-deep-sea-blue"></div>
-                 <div><label class="form-label">付款方式</label>
-                    <div class="flex gap-2">
-                        <button @click="newExpense.payment='cash'" class="flex-1 py-2 rounded-lg border text-sm" :class="newExpense.payment==='cash'?'bg-deep-sea-blue text-white':'text-slate-400'">現金</button>
-                        <button @click="newExpense.payment='card'" class="flex-1 py-2 rounded-lg border text-sm" :class="newExpense.payment==='card'?'bg-deep-sea-blue text-white':'text-slate-400'">信用卡</button>
+                 
+                 <!-- Category -->
+                 <div>
+                    <label class="form-label">類別</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button v-for="cat in ['transport','food','accommodation','ticket','shopping','other']" 
+                                :key="cat"
+                                @click="newExpense.category = cat"
+                                class="py-2 rounded-lg border text-xs font-bold transition-all flex flex-col items-center justify-center gap-1"
+                                :class="newExpense.category === cat ? 'bg-deep-sea-blue text-white border-transparent' : 'bg-slate-50 text-slate-500 border-slate-100'">
+                             <i :class="getExpenseCatInfo(cat).icon"></i>
+                             <span>{{ {transport:'交通',food:'飲食',accommodation:'住宿',ticket:'門票',shopping:'購物',other:'其他'}[cat] }}</span>
+                        </button>
                     </div>
                  </div>
+
+                 <!-- Name -->
+                 <div><label class="form-label">名稱</label><input v-model="newExpense.name" class="input-field" placeholder="例如：午餐、JR車票"></div>
+                 
+                 <!-- Date -->
+                 <div><label class="form-label">日期</label><input v-model="newExpense.date" type="date" class="input-field"></div>
+
+                 <!-- Amount -->
+                 <div><label class="form-label">金額 (¥)</label><input v-model.number="newExpense.amount" type="number" class="input-field font-bold text-lg text-deep-sea-blue"></div>
+                 
+                 <!-- Payment -->
+                 <div><label class="form-label">付款方式</label>
+                    <div class="flex gap-2">
+                        <button @click="newExpense.payment='cash'" class="flex-1 py-2 rounded-lg border text-xs font-bold" :class="newExpense.payment==='cash'?'bg-slate-700 text-white':'text-slate-400'">現金</button>
+                        <button @click="newExpense.payment='mobile'" class="flex-1 py-2 rounded-lg border text-xs font-bold" :class="newExpense.payment==='mobile'?'bg-slate-700 text-white':'text-slate-400'">行動支付</button>
+                        <button @click="newExpense.payment='ic'" class="flex-1 py-2 rounded-lg border text-xs font-bold" :class="newExpense.payment==='ic'?'bg-green-600 text-white':'text-slate-400'">西瓜卡</button>
+                    </div>
+                 </div>
+
+                 <!-- Note -->
+                 <div><label class="form-label">備註</label><textarea v-model="newExpense.note" rows="2" class="input-field"></textarea></div>
+
                  <button @click="addExpense" class="w-full py-3 bg-accent-yellow text-yellow-900 rounded-xl font-bold mt-2">儲存</button>
             </div>
         </div>
@@ -999,13 +1064,12 @@
                 sightseeing: '景點', food: '飲食', shopping: '購物', flight: '航班', transport: '交通', accommodation: '住宿'
             }[cat] || '行程');
             
-            // 修正: 增加高鐵 ICON 映射
             const getTransportIcon = (t) => ({ 
                 walk: 'fa-solid fa-person-walking', 
                 car: 'fa-solid fa-car', 
                 bus: 'fa-solid fa-bus', 
                 public: 'fa-solid fa-train-subway', 
-                hsr: 'fa-solid fa-train', // 高鐵
+                hsr: 'fa-solid fa-train',
                 flight: 'fa-solid fa-plane' 
             }[t] || 'fa-solid fa-arrow-right');
             
@@ -1028,6 +1092,27 @@
                     const endDate = endObj.getDate();
                     return `${startDate} - ${endMonth}/${endDate} (${diffDays}晚)`;
                 } catch (e) { return `${startDate} (入住)`; }
+            };
+
+            // Expense Helpers
+            const getExpenseCatInfo = (cat) => {
+                const map = {
+                    transport: { color: 'bg-blue-500', icon: 'fa-solid fa-train' },
+                    food: { color: 'bg-red-500', icon: 'fa-solid fa-utensils' },
+                    accommodation: { color: 'bg-purple-500', icon: 'fa-solid fa-bed' },
+                    ticket: { color: 'bg-teal-500', icon: 'fa-solid fa-ticket' },
+                    shopping: { color: 'bg-pink-500', icon: 'fa-solid fa-bag-shopping' },
+                    other: { color: 'bg-gray-500', icon: 'fa-solid fa-ellipsis' }
+                };
+                return map[cat] || map.other;
+            };
+            
+            const getPaymentLabel = (code) => {
+                if(code === 'cash') return '現金';
+                if(code === 'mobile') return '行動支付';
+                if(code === 'ic') return '西瓜卡/IC';
+                if(code === 'card') return '信用卡';
+                return '其他';
             };
 
             onMounted(async () => {
@@ -1126,6 +1211,7 @@
             const handleAddClick = () => {
                 if(currentTab.value === 'itinerary') {
                     isEditMode.value = false;
+                    // dayIndex defaults to selectedDateIndex
                     newItinerary.value = { category: 'sightseeing', transportType: 'walk', images: [], files: [], dayIndex: selectedDateIndex.value };
                     showItineraryModal.value = true;
                 } else if(currentTab.value === 'shopping') {
@@ -1133,7 +1219,11 @@
                     newShoppingItem.value = { category: shoppingSubTab.value, images: [] };
                     showShoppingModal.value = true;
                 } else if(currentTab.value === 'expenses') {
-                    newExpense.value = { payment: 'cash' };
+                    newExpense.value = { 
+                        payment: 'cash', 
+                        category: 'food',
+                        date: new Date().toISOString().split('T')[0]
+                    };
                     showExpenseModal.value = true;
                 }
             };
@@ -1143,7 +1233,9 @@
                 const imgUrls = await processImageUploads(newItinerary.value.images);
                 const fileObjects = await processUploads(newItinerary.value.files);
                 
-                const data = { ...newItinerary.value, images: imgUrls, files: fileObjects, dayIndex: selectedDateIndex.value };
+                // Use the dayIndex from the modal (user selected), not just the current tab
+                const data = { ...newItinerary.value, images: imgUrls, files: fileObjects };
+                
                 delete data.order; 
                 delete data.id;
                 
@@ -1172,7 +1264,9 @@
             const addExpense = async () => {
                 if(!newExpense.value.name || !newExpense.value.amount) return;
                 isLoading.value = true;
-                await addDoc(collection(db, 'trips', TRIP_ID, 'expense_items'), { ...newExpense.value, date: new Date().toISOString().split('T')[0] });
+                // Use user selected date or default today
+                const dateVal = newExpense.value.date || new Date().toISOString().split('T')[0];
+                await addDoc(collection(db, 'trips', TRIP_ID, 'expense_items'), { ...newExpense.value, date: dateVal });
                 isLoading.value = false; closeAllModals();
             };
             const removeExpense = async (id) => { if(confirm("刪除記帳？")) await deleteDoc(doc(db, 'trips', TRIP_ID, 'expense_items', id)); };
@@ -1268,7 +1362,7 @@
                 currentTab, dates, selectedDateIndex, currentItinerary,
                 shoppingSubTab, filteredShoppingList, expenses, totalExpensesJPY, totalExpensesTWD,
                 currencyInput, currencyResult, calculateCurrency, formatNumber, getDateString, getDateSimple, getHotelDurationLabel,
-                getCategoryColor, getCategoryIcon, getCategoryName, getTransportIcon,
+                getCategoryColor, getCategoryIcon, getCategoryName, getTransportIcon, getExpenseCatInfo, getPaymentLabel,
                 showSettingsModal, showItineraryModal, showItineraryDetailModal, showShoppingModal, showShoppingDetailModal, showExpenseModal,
                 tripSettings, saveTripSettings, changeDuration,
                 newItinerary, isEditMode, handleAddClick, handleImageUpload, handleFileUpload, removeImage, removeFile, saveItineraryItem, removeItineraryItem, openDetailPreview, switchToEditItinerary, openFile,
