@@ -335,11 +335,12 @@
         .fade-leave-to {
             opacity: 0;
         }
+        [v-cloak] { display: none; }
     </style>
 </head>
 <body>
 
-<div id="app" class="app-container">
+<div id="app" class="app-container" v-cloak>
 
     <!-- Global Loading Indicator -->
     <div v-if="isLoading" class="loading-overlay">
@@ -1175,8 +1176,7 @@
 
     createApp({
         setup() {
-            // FIX: Use HARDCODED config for GitHub Pages deployment compatibility
-            // This replaces the environment variable JSON.parse(__firebase_config) which causes crashes on static hosts
+            // 使用您的 Firebase 配置 (請確保這些 Key 已經在 Firebase Console 開通)
             const firebaseConfig = {
                apiKey: "AIzaSyA8wiv63sS1lbCkOOeYlZpL1RlKHvvAAYA",
                 authDomain: "hokkaido-b390b.firebaseapp.com",
@@ -1187,14 +1187,16 @@
                 measurementId: "G-3XGXW53RDB"
             };
             
-            const appId = 'hokkaido-trip-2026';
+            // 重要修改：為了讓全家共用行程，我們不再使用使用者 ID 分隔，而是使用統一的路徑
+            const TRIP_ID = 'family_hokkaido_2026';
+            const DATA_PATH = 'shared_data'; // 將資料放在公用資料夾
 
             const app = initializeApp(firebaseConfig);
             const auth = getAuth(app);
             const db = getFirestore(app);
             const storage = getStorage(app);
             
-            const userId = ref(null);
+            const userId = ref(null); // 仍保留 UserID 用於上傳圖片檔名辨識，但邏輯不依賴它做權限區隔
             const isLoading = ref(false);
 
             // Toast Notification System
@@ -1260,11 +1262,12 @@
 
             // Reactive Data Containers
             const hotels = ref([]);
-            const itineraryData = ref({}); // Changed to Object to map by index dynamically
+            const itineraryData = ref({}); 
             const shoppingList = ref([]);
             const expenses = ref([]);
             const bannerUrl = ref(''); 
 
+            // Weather Data (Mockup - in real app could be fetched)
             const weatherData = ref([
                 { condition: 'snow', temp: '0/-5', feel: '-8' },
                 { condition: 'snow', temp: '-1/-7', feel: '-10' },
@@ -1273,7 +1276,7 @@
                 { condition: 'snow', temp: '1/-4', feel: '-6' },
                 { condition: 'snow', temp: '2/-3', feel: '-5' },
                 { condition: 'cloudy', temp: '3/-2', feel: '-3' },
-            ]); // Weather data logic would need to be dynamic too, but keeping simple for now
+            ]); 
 
             const selectedDateIndex = ref(0);
             
@@ -1286,7 +1289,7 @@
             const showHotelModal = ref(false); 
             const showHotelDetailModal = ref(false); 
             const showImagePreviewModal = ref(false);
-            const showSettingsModal = ref(false); // New
+            const showSettingsModal = ref(false); 
             const previewImageUrl = ref('');
 
             const isEditMode = ref(false);
@@ -1308,7 +1311,6 @@
 
             // Computed
             const currentItinerary = computed(() => {
-                // Safeguard: make sure array exists
                 return itineraryData.value[selectedDateIndex.value] || [];
             });
 
@@ -1328,41 +1330,45 @@
 
             onMounted(async () => {
                 try {
+                    // Anonymous sign-in is still needed for security rules
                     await signInAnonymously(auth);
                 } catch (error) {
                     console.error("Auth Error:", error);
-                    showToast("登入驗證失敗，請重整頁面", 'error');
+                    showToast("登入驗證失敗，請檢查 Firebase 設定", 'error');
                 }
 
                 onAuthStateChanged(auth, (user) => {
                     if (user) {
                         userId.value = user.uid;
-                        setupFirestoreListeners(user.uid);
+                        // Notice: We don't pass user.uid to listeners anymore
+                        setupFirestoreListeners(); 
                     }
                 });
                 
                 calculateCurrency();
             });
 
-            const setupFirestoreListeners = (uid) => {
-                // 1. Settings Listener (Trip Info & Banner)
-                const settingsRef = doc(db, 'artifacts', appId, 'users', uid, 'settings', 'preference');
+            const setupFirestoreListeners = () => {
+                // Shared Data Path: trips/{TRIP_ID}/{DATA_PATH}
+                // This ensures everyone sees the same data
+                
+                // 1. Settings Listener
+                const settingsRef = doc(db, 'trips', TRIP_ID, DATA_PATH, 'settings');
                 onSnapshot(settingsRef, (doc) => {
                     if (doc.exists()) {
                         const data = doc.data();
                         bannerUrl.value = data.headerImage || '';
                         
-                        // Update Trip Settings if exists
                         if(data.tripStartDate && data.tripDuration) {
                             tripSettings.value.startDate = data.tripStartDate;
                             tripSettings.value.duration = data.tripDuration;
-                            generateDates(); // Regenerate dates on load
+                            generateDates();
                         }
                     }
                 });
 
                 // 2. Itinerary Listener
-                const itineraryRef = collection(db, 'artifacts', appId, 'users', uid, 'itinerary_items');
+                const itineraryRef = collection(db, 'trips', TRIP_ID, 'itinerary_items');
                 onSnapshot(itineraryRef, (snapshot) => {
                     const temp = {};
                     snapshot.forEach(doc => {
@@ -1373,29 +1379,29 @@
                         temp[dayIdx].push({ ...data, id: doc.id });
                     });
                     
-                    // Sort each day
+                    // Sort by startTime
                     Object.keys(temp).forEach(key => {
                         temp[key].sort((a, b) => (a.startTime || '').localeCompare(b.startTime || ''));
                     });
                     
                     itineraryData.value = temp;
-                }, (error) => showToast("讀取行程失敗", 'error'));
+                }, (error) => showToast("讀取行程失敗: " + error.message, 'error'));
 
                 // 3. Shopping Listener
-                const shoppingRef = collection(db, 'artifacts', appId, 'users', uid, 'shopping_items');
+                const shoppingRef = collection(db, 'trips', TRIP_ID, 'shopping_items');
                 onSnapshot(shoppingRef, (snapshot) => {
                     shoppingList.value = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
                 });
 
                 // 4. Expenses Listener
-                const expensesRef = collection(db, 'artifacts', appId, 'users', uid, 'expense_items');
+                const expensesRef = collection(db, 'trips', TRIP_ID, 'expense_items');
                 const expensesQuery = query(expensesRef, orderBy("date", "desc")); 
                 onSnapshot(expensesQuery, (snapshot) => {
                     expenses.value = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
                 });
 
                 // 5. Hotels Listener
-                const hotelsRef = collection(db, 'artifacts', appId, 'users', uid, 'hotel_items');
+                const hotelsRef = collection(db, 'trips', TRIP_ID, 'hotel_items');
                 onSnapshot(hotelsRef, (snapshot) => {
                     hotels.value = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
                 });
@@ -1412,7 +1418,7 @@
                 return new Blob([u8arr], {type:mime});
             }
 
-            // Helper: Process Images (Upload new ones, keep old URLs)
+            // Helper: Process Images
             const processImagesAndUpload = async (imagesArray) => {
                 if (!imagesArray || imagesArray.length === 0) return [];
                 isLoading.value = true;
@@ -1424,7 +1430,8 @@
                             // Needs Upload
                             const blob = dataURLtoBlob(img);
                             const filename = `img_${Date.now()}_${Math.random().toString(36).substring(7)}`;
-                            const fileRef = storageRef(storage, `users/${userId.value}/${filename}`);
+                            // Store in a shared folder or by user - by user is fine for storage organization
+                            const fileRef = storageRef(storage, `uploads/${userId.value}/${filename}`);
                             await uploadBytes(fileRef, blob);
                             const url = await getDownloadURL(fileRef);
                             processedUrls.push(url);
@@ -1435,7 +1442,7 @@
                     }
                 } catch (error) {
                     console.error("Upload failed", error);
-                    showToast("照片上傳失敗", 'error');
+                    showToast("照片上傳失敗 (請檢查 Storage 設定)", 'error');
                 } finally {
                     isLoading.value = false;
                 }
@@ -1450,12 +1457,12 @@
                 isLoading.value = true;
                 try {
                     const filename = `banner_${Date.now()}`;
-                    const fileRef = storageRef(storage, `users/${userId.value}/${filename}`);
+                    const fileRef = storageRef(storage, `uploads/${userId.value}/${filename}`);
                     await uploadBytes(fileRef, file);
                     const url = await getDownloadURL(fileRef);
 
-                    // Save URL to Firestore
-                    const settingsRef = doc(db, 'artifacts', appId, 'users', userId.value, 'settings', 'preference');
+                    // Save URL to Firestore (Shared Settings)
+                    const settingsRef = doc(db, 'trips', TRIP_ID, DATA_PATH, 'settings');
                     await setDoc(settingsRef, { headerImage: url }, { merge: true });
                     
                     showToast("Banner 更新成功！");
@@ -1468,11 +1475,9 @@
             };
 
             const saveTripSettings = async () => {
-                if(!userId.value) return;
-                
                 isLoading.value = true;
                 try {
-                    const settingsRef = doc(db, 'artifacts', appId, 'users', userId.value, 'settings', 'preference');
+                    const settingsRef = doc(db, 'trips', TRIP_ID, DATA_PATH, 'settings');
                     await setDoc(settingsRef, { 
                         tripStartDate: tripSettings.value.startDate,
                         tripDuration: tripSettings.value.duration
@@ -1481,7 +1486,6 @@
                     generateDates();
                     showToast("行程表更新成功！");
                     closeAllModals();
-                    // Reset selection to day 0 to avoid out of bounds
                     selectedDateIndex.value = 0;
                 } catch(e) {
                     console.error(e);
@@ -1495,7 +1499,6 @@
             // --- Itinerary CRUD ---
             const saveItineraryItem = async () => {
                 if(!newItinerary.value.name) return;
-                if(!userId.value) return;
                 
                 isLoading.value = true;
                 try {
@@ -1507,7 +1510,7 @@
                     const itemData = { ...newItinerary.value, images: finalImages, dayIndex: selectedDateIndex.value };
                     delete itemData.id; 
 
-                    const colRef = collection(db, 'artifacts', appId, 'users', userId.value, 'itinerary_items');
+                    const colRef = collection(db, 'trips', TRIP_ID, 'itinerary_items');
 
                     if(isEditMode.value && newItinerary.value.id) {
                         await updateDoc(doc(colRef, newItinerary.value.id), itemData);
@@ -1525,10 +1528,9 @@
             };
 
             const removeItineraryItem = async (id) => {
-                if(!userId.value) return;
                 if(confirm("確定刪除嗎？")) { 
                     try {
-                        await deleteDoc(doc(db, 'artifacts', appId, 'users', userId.value, 'itinerary_items', id));
+                        await deleteDoc(doc(db, 'trips', TRIP_ID, 'itinerary_items', id));
                         showToast("已刪除");
                         closeAllModals();
                     } catch(e) {
@@ -1541,7 +1543,6 @@
 
             const saveShoppingItem = async () => {
                 if(!newShoppingItem.value.name) return;
-                if(!userId.value) return;
                 
                 isLoading.value = true;
                 try {
@@ -1550,7 +1551,7 @@
                     const itemData = { ...newShoppingItem.value, images: finalImages };
                     delete itemData.id;
 
-                    const colRef = collection(db, 'artifacts', appId, 'users', userId.value, 'shopping_items');
+                    const colRef = collection(db, 'trips', TRIP_ID, 'shopping_items');
 
                     if(isEditMode.value && newShoppingItem.value.id) {
                         await updateDoc(doc(colRef, newShoppingItem.value.id), itemData);
@@ -1568,9 +1569,8 @@
             };
 
             const removeShoppingItem = async (id) => {
-                if(!userId.value) return;
                 if(confirm("確定刪除嗎？")) {
-                    await deleteDoc(doc(db, 'artifacts', appId, 'users', userId.value, 'shopping_items', id));
+                    await deleteDoc(doc(db, 'trips', TRIP_ID, 'shopping_items', id));
                     showToast("已刪除");
                     closeAllModals();
                 }
@@ -1580,7 +1580,6 @@
 
             const saveHotelItem = async () => {
                 if(!newHotel.value.name) return;
-                if(!userId.value) return;
                 
                 isLoading.value = true;
                 try {
@@ -1588,7 +1587,7 @@
                     const itemData = { ...newHotel.value, images: finalImages };
                     delete itemData.id;
 
-                    const colRef = collection(db, 'artifacts', appId, 'users', userId.value, 'hotel_items');
+                    const colRef = collection(db, 'trips', TRIP_ID, 'hotel_items');
 
                     if(isEditHotel.value && newHotel.value.id) {
                         await updateDoc(doc(colRef, newHotel.value.id), itemData);
@@ -1606,9 +1605,8 @@
             };
 
             const removeHotelItem = async (id) => {
-                if(!userId.value) return;
                 if(confirm("確定刪除嗎？")) {
-                    await deleteDoc(doc(db, 'artifacts', appId, 'users', userId.value, 'hotel_items', id));
+                    await deleteDoc(doc(db, 'trips', TRIP_ID, 'hotel_items', id));
                     closeAllModals();
                 }
             };
@@ -1617,12 +1615,11 @@
 
             const addExpense = async () => {
                 if(!newExpense.value.name || !newExpense.value.amount) return;
-                if(!userId.value) return;
                 
                 isLoading.value = true;
                 try {
                     const itemData = { ...newExpense.value, date: newExpense.value.date || new Date().toISOString().split('T')[0] };
-                    const colRef = collection(db, 'artifacts', appId, 'users', userId.value, 'expense_items');
+                    const colRef = collection(db, 'trips', TRIP_ID, 'expense_items');
                     await addDoc(colRef, itemData);
                     showToast("記帳成功");
                     closeAllModals();
@@ -1634,9 +1631,8 @@
             };
 
             const removeExpense = async (id) => {
-                if(!userId.value) return;
                 if(confirm("確定刪除嗎？")) {
-                    await deleteDoc(doc(db, 'artifacts', appId, 'users', userId.value, 'expense_items', id));
+                    await deleteDoc(doc(db, 'trips', TRIP_ID, 'expense_items', id));
                     showToast("已刪除");
                 }
             };
@@ -1692,7 +1688,7 @@
                 showImagePreviewModal.value = false;
                 showHotelModal.value = false;
                 showHotelDetailModal.value = false;
-                showSettingsModal.value = false; // Close settings too
+                showSettingsModal.value = false; 
                 isLoading.value = false;
             };
 
