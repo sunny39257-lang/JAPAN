@@ -157,7 +157,7 @@
     <div v-if="toastMessage" class="toast">{{ toastMessage }}</div>
 
     <!-- Header (Banner) -->
-    <!-- 修改 3: 移除 v-if，現在所有頁面都有 Banner -->
+    <!-- 更新：全域顯示 Banner，移除 v-if -->
     <div class="header-bg">
         <div class="header-image-container relative w-full h-full group">
             <div v-if="!bannerLoaded" class="absolute inset-0 bg-slate-200 animate-pulse z-0"></div>
@@ -274,7 +274,7 @@
                          <div v-else class="w-full h-full flex items-center justify-center text-slate-300"><i class="fa-solid fa-image"></i></div>
                     </div>
                     
-                    <!-- Info (修改 4: 增加商店名與地址顯示) -->
+                    <!-- Info (更新：增加商店與地址) -->
                     <div class="flex-1 min-w-0 flex flex-col justify-center">
                         <h4 class="font-bold text-slate-800 text-sm truncate mb-1">{{ item.name }}</h4>
                         
@@ -291,7 +291,7 @@
                         </div>
                     </div>
 
-                    <!-- Actions (修改 4: 右側增加導航按鈕) -->
+                    <!-- Actions (更新：右側增加導航按鈕) -->
                     <div class="flex flex-col items-center gap-2">
                         <a v-if="item.address" :href="'https://www.google.com/maps/search/?api=1&query='+item.address" @click.stop target="_blank" 
                            class="w-8 h-8 rounded-full bg-blue-50 text-deep-sea-blue flex items-center justify-center shadow-sm hover:bg-blue-100 transition-colors">
@@ -336,7 +336,7 @@
                 <h3 class="font-bold text-slate-700">支出紀錄</h3>
             </div>
             
-            <!-- Expenses List (修改 1: 刪除鈕移至右下，新增編輯鈕) -->
+            <!-- Expenses List (更新：編輯與刪除按鈕) -->
             <div class="space-y-4">
                 <div v-for="exp in expenses" :key="exp.id" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-50 relative">
                     <div class="flex items-start">
@@ -360,7 +360,7 @@
                         <!-- Right Side: Amount & Actions -->
                         <div class="flex flex-col justify-between items-end h-full min-h-[60px]">
                             <!-- Amount (Top Right) -->
-                            <div class="font-bold text-slate-700 text-base mb-3">¥{{ formatNumber(exp.amount) }}</div>
+                            <div class="font-bold text-slate-700 text-lg mb-3">¥{{ formatNumber(exp.amount) }}</div>
                             
                             <!-- Actions (Bottom Right) -->
                             <div class="flex items-center gap-2">
@@ -530,11 +530,11 @@
             </div>
             
             <div class="flex-1 p-4 overflow-y-auto">
-                <!-- View Mode -->
+                <!-- View Mode (支援換行與 Emoji) -->
                 <div v-if="!isEditingBankOffers" class="whitespace-pre-wrap text-sm text-slate-700 leading-relaxed">
                     {{ bankOffersContent || '尚未輸入優惠資訊' }}
                 </div>
-                <!-- Edit Mode (修改 2: 支援 Emoji 與符號) -->
+                <!-- Edit Mode (支援 Emoji 與符號) -->
                 <textarea v-else v-model="bankOffersContent" class="w-full h-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:border-deep-sea-blue resize-none" placeholder="請輸入信用卡優惠、回饋資訊... (支援 Emoji 與符號)"></textarea>
             </div>
 
@@ -1350,14 +1350,14 @@
                 if(confirm("刪除此商品？")) { await deleteDoc(doc(db, 'trips', TRIP_ID, 'shopping_items', id)); closeAllModals(); }
             };
 
-            // Added Edit Expense Logic
+            // Expense Logic
             const editExpense = (exp) => {
                 newExpense.value = { ...exp };
                 isEditMode.value = true;
                 showExpenseModal.value = true;
             };
 
-            const saveExpense = async () => { // Renamed from addExpense
+            const saveExpense = async () => { 
                 if(!newExpense.value.name || !newExpense.value.amount) return;
                 isLoading.value = true;
                 const dateVal = newExpense.value.date || new Date().toISOString().split('T')[0];
@@ -1473,7 +1473,7 @@
                 newItinerary, isEditMode, handleAddClick, handleImageUpload, handleFileUpload, removeImage, removeFile, saveItineraryItem, removeItineraryItem, openDetailPreview, switchToEditItinerary, openFile,
                 previewItem, allAccommodations, allFlights,
                 newShoppingItem, selectedShoppingItem, currentGalleryIndex, galleryNav, openShoppingDetail, switchToEditShopping, saveShoppingItem, removeShoppingItem,
-                newExpense, saveExpense, editExpense, removeExpense, // Updated names
+                newExpense, saveExpense, editExpense, removeExpense,
                 closeAllModals, handleBannerUpload, openLightbox
             };
         }
