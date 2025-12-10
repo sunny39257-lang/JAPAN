@@ -17,14 +17,10 @@
                     colors: {
                         'snow-white': '#F0FFFF',
                         'ice-blue': '#B3E5FC',
-                        'light-snow-blue': '#E5F3F7',
                         'deep-sea-blue': '#01579B',
                         'accent-yellow': '#FFD54F',
-                        'soft-gray': '#F8FAFC'
                     },
-                    padding: {
-                        'safe-bottom': 'env(safe-area-inset-bottom)',
-                    }
+                    padding: { 'safe-bottom': 'env(safe-area-inset-bottom)' }
                 }
             }
         }
@@ -55,7 +51,7 @@
         .header-bg {
             background-color: #ffffff;
             position: relative;
-            height: 220px;
+            height: 200px;
             overflow: hidden;
             border-bottom-left-radius: 40px;
             border-bottom-right-radius: 40px;
@@ -63,277 +59,87 @@
             z-index: 10;
         }
         
-        .header-image-container {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            background-color: #eee;
-        }
-        
         .header-image-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: opacity 0.3s ease;
+            width: 100%; height: 100%; object-fit: cover;
         }
 
-        .snow-layer {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1.5" fill="%23fff" opacity="0.8"/><circle cx="20" cy="80" r="1" fill="%23fff" opacity="0.6"/><circle cx="70" cy="30" r="2" fill="%23fff" opacity="0.9"/></svg>');
-            background-size: 150px 150px;
-            opacity: 0.8;
-            animation: snowfall 8s linear infinite;
-            z-index: 5;
-            pointer-events: none;
-        }
-
-        /* Banner Buttons */
         .banner-btn {
-            position: absolute;
-            z-index: 20;
+            position: absolute; z-index: 20;
             background: rgba(255, 255, 255, 0.9);
-            color: #01579B;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            font-size: 14px;
-            backdrop-filter: blur(4px);
-            border: 2px solid white;
-            cursor: pointer;
-            transition: transform 0.2s;
+            color: #01579B; width: 36px; height: 36px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2); cursor: pointer;
         }
-        .banner-btn:active { transform: scale(0.9); }
-        
         .banner-edit-btn { bottom: 20px; right: 20px; }
         .banner-settings-btn { top: 20px; right: 20px; }
 
-        @keyframes snowfall {
-            from { background-position: 0 0; }
-            to { background-position: 50px 100px; }
-        }
-
-        /* ****** Bottom Navigation ****** */
+        /* ****** Navigation ****** */
         .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100%;
-            max-width: 480px;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+            position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+            width: 100%; max-width: 480px;
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
             border-top: 1px solid rgba(229, 231, 235, 0.5);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 12px 16px;
-            padding-bottom: calc(12px + env(safe-area-inset-bottom));
-            z-index: 50;
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
-            border-top-left-radius: 24px;
-            border-top-right-radius: 24px;
+            display: flex; justify-content: space-around; align-items: center;
+            padding: 12px 16px; padding-bottom: calc(12px + env(safe-area-inset-bottom));
+            z-index: 50; border-top-left-radius: 24px; border-top-right-radius: 24px;
         }
 
         .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: #94A3B8;
-            font-size: 0.75rem;
-            gap: 4px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            width: 60px;
+            display: flex; flex-direction: column; align-items: center;
+            color: #94A3B8; font-size: 0.75rem; gap: 4px; width: 60px;
         }
-
-        .nav-item i {
-            font-size: 1.25rem;
-            margin-bottom: 2px;
-            transition: transform 0.2s;
-        }
-
-        .nav-item.active {
-            color: #01579B;
-            font-weight: bold;
-        }
-        
-        .nav-item.active i {
-            transform: translateY(-2px);
-        }
-
+        .nav-item.active { color: #01579B; font-weight: bold; }
         .fab-center {
-            width: 56px;
-            height: 56px;
-            background: #FFD54F;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #01579B;
-            font-size: 1.5rem;
-            box-shadow: 0 4px 15px rgba(255, 213, 79, 0.6);
-            margin-top: -28px;
-            border: 4px solid #fff;
-            transition: transform 0.2s;
-        }
-        
-        .fab-center:active {
-            transform: scale(0.95);
+            width: 56px; height: 56px; background: #FFD54F;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            color: #01579B; font-size: 1.5rem; margin-top: -28px;
+            border: 4px solid #fff; box-shadow: 0 4px 15px rgba(255, 213, 79, 0.6);
         }
 
         .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-        .app-main {
-            padding-top: 20px !important;
-            position: relative;
-            z-index: 5;
-        }
-
-        .date-selector-sticky {
-            background-color: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(8px);
-            z-index: 20;
-            top: 0;
-            padding-top: 10px;
-            padding-bottom: 10px;
-            margin-bottom: 15px;
-            border-bottom-left-radius: 20px;
-            border-bottom-right-radius: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-        }
-
+        
+        /* Specific Styles */
         .timeline-line {
-            position: absolute;
-            left: 23px;
-            top: 24px;
-            bottom: -24px;
-            width: 2px;
-            background-color: #E2E8F0;
-            z-index: 0;
+            position: absolute; left: 23px; top: 24px; bottom: -24px;
+            width: 2px; background-color: #E2E8F0; z-index: 0;
         }
+        
+        .modal-enter-from, .modal-leave-to { opacity: 0; transform: scale(0.95); }
+        .modal-enter-active, .modal-leave-active { transition: all 0.2s ease; }
 
-        /* Modal Transitions */
-        .modal-enter-active, .modal-leave-active {
-            transition: opacity 0.3s ease;
-        }
-        .modal-enter-from, .modal-leave-to {
-            opacity: 0;
-        }
-        .modal-enter-active .modal-content, .modal-leave-active .modal-content {
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        .modal-enter-from .modal-content, .modal-leave-to .modal-content {
-            transform: scale(0.9) translateY(20px);
-        }
-
-        .expense-card-bg {
-            background: linear-gradient(135deg, #01579B 0%, #0277BD 100%);
-        }
-
-        .form-label {
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: #64748B;
-            margin-bottom: 0.35rem;
-            display: block;
-            margin-left: 0.25rem;
-        }
-
-        /* Image Gallery Styles */
-        .image-preview-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 0.5rem;
-        }
-        .image-preview-item {
-            aspect-ratio: 1;
-            position: relative;
-            border-radius: 0.75rem;
-            overflow: hidden;
-            border: 1px solid #e2e8f0;
-        }
-        .image-preview-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        /* Loader Overlay */
         .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255,255,255,0.7);
-            z-index: 100;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(3px);
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.8); z-index: 100;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
         }
         .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #01579B;
-            border-radius: 50%;
+            width: 40px; height: 40px; border: 4px solid #f3f3f3;
+            border-top: 4px solid #01579B; border-radius: 50%;
             animation: spin 1s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        .lightbox-overlay {
-            background-color: rgba(0, 0, 0, 0.95);
-            backdrop-filter: blur(5px);
+
+        .form-label {
+            font-size: 0.75rem; font-weight: 700; color: #64748B;
+            margin-bottom: 0.35rem; display: block; margin-left: 0.25rem;
         }
 
-        /* Toast Notification */
-        .toast-container {
-            position: fixed;
-            bottom: 90px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            width: 90%;
-            max-width: 400px;
-            pointer-events: none;
+        /* Gallery Controls */
+        .gallery-nav-btn {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            width: 32px; height: 32px; background: rgba(0,0,0,0.3);
+            color: white; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; cursor: pointer;
+            backdrop-filter: blur(2px); z-index: 20;
         }
+        .gallery-prev { left: 10px; }
+        .gallery-next { right: 10px; }
+
         .toast {
-            background: rgba(30, 41, 59, 0.95);
-            color: white;
-            padding: 12px 20px;
-            border-radius: 12px;
-            font-size: 0.875rem;
-            font-weight: 500;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            backdrop-filter: blur(4px);
-        }
-        .toast.error {
-            background: rgba(239, 68, 68, 0.95);
-        }
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .fade-leave-active {
-            transition: opacity 0.3s;
-        }
-        .fade-leave-to {
-            opacity: 0;
+            background: rgba(30, 41, 59, 0.95); color: white;
+            padding: 12px 20px; border-radius: 12px; font-size: 0.875rem;
+            position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
+            z-index: 110; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
         [v-cloak] { display: none; }
     </style>
@@ -342,137 +148,100 @@
 
 <div id="app" class="app-container" v-cloak>
 
-    <!-- Global Loading Indicator -->
+    <!-- Global Loading -->
     <div v-if="isLoading" class="loading-overlay">
-        <div class="spinner"></div>
+        <div class="spinner mb-3"></div>
+        <div class="text-slate-600 font-bold text-sm bg-white/80 px-3 py-1 rounded-full">{{ loadingText || '處理中...' }}</div>
     </div>
 
-    <!-- Toast Notifications -->
-    <div class="toast-container">
-        <transition-group name="fade">
-            <div v-for="toast in toasts" :key="toast.id" class="toast" :class="{ error: toast.type === 'error' }">
-                <div class="flex items-center">
-                    <i v-if="toast.type === 'success'" class="fa-solid fa-check-circle text-green-400 mr-2"></i>
-                    <i v-else class="fa-solid fa-triangle-exclamation text-white mr-2"></i>
-                    {{ toast.message }}
-                </div>
-            </div>
-        </transition-group>
+    <!-- Toast -->
+    <div v-if="toastMessage" class="toast">
+        {{ toastMessage }}
     </div>
 
-    <!-- Header Image Area with Banner Edit -->
+    <!-- Header -->
     <div class="header-bg">
-        <div class="header-image-container relative group">
-            <img :src="bannerUrl || 'https://images.unsplash.com/photo-1542051841857-5f90071e7989?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80'" alt="Hokkaido">
-            
-            <!-- Settings Button (Top Right) -->
-            <button @click="showSettingsModal = true" class="banner-btn banner-settings-btn">
-                <i class="fa-solid fa-gear"></i>
-            </button>
-
-            <!-- Banner Edit Button (Bottom Right) -->
+        <div class="header-image-container relative">
+            <img :src="bannerUrl || 'https://images.unsplash.com/photo-1542051841857-5f90071e7989?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80'" alt="Header">
+            <button @click="showSettingsModal = true" class="banner-btn banner-settings-btn"><i class="fa-solid fa-gear"></i></button>
             <label class="banner-btn banner-edit-btn">
                 <input type="file" @change="handleBannerUpload" class="hidden" accept="image/*">
                 <i class="fa-solid fa-camera"></i>
             </label>
         </div>
-        <div class="snow-layer"></div>
     </div>
 
     <main class="px-4 app-main">
         
-        <!-- Tab: 行程 -->
-        <div v-if="currentTab === 'itinerary'" class="animate-fade-in pb-20">
-            
+        <!-- Tab: 行程 (Itinerary) -->
+        <div v-if="currentTab === 'itinerary'" class="pb-24">
             <!-- Date Selector -->
-            <div class="flex overflow-x-auto hide-scrollbar space-x-3 px-1 sticky date-selector-sticky -mx-4 px-4 snap-x">
+            <div class="flex overflow-x-auto hide-scrollbar space-x-3 px-1 sticky date-selector-sticky -mx-4 px-4 snap-x z-20 bg-white/95 backdrop-blur-md py-3 rounded-b-2xl shadow-sm mb-4">
                 <div v-for="(day, index) in dates" :key="index"
                      @click="selectedDateIndex = index"
-                     class="snap-center flex-shrink-0 w-[60px] h-[70px] rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-all duration-200 border border-transparent"
-                     :class="selectedDateIndex === index ? 
-                     'bg-deep-sea-blue text-white shadow-lg shadow-blue-900/20 translate-y-[-2px]' : 
-                     'bg-slate-50 text-slate-400 hover:bg-slate-100'">
-                    
+                     class="snap-center flex-shrink-0 w-[60px] h-[70px] rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-all border border-transparent"
+                     :class="selectedDateIndex === index ? 'bg-deep-sea-blue text-white shadow-lg translate-y-[-2px]' : 'bg-slate-50 text-slate-400'">
                     <span class="text-xs font-medium mb-1">{{ day.weekday }}</span>
                     <span class="text-lg font-bold leading-none">{{ day.date.split('/')[1] }}</span>
                     <span class="text-[10px] opacity-60 mt-1">{{ day.date.split('/')[0] }}月</span>
                 </div>
             </div>
 
-            <!-- Weather Card -->
-            <div v-if="currentWeather" class="mb-6 bg-gradient-to-br from-white to-blue-50 border border-white rounded-3xl p-5 flex justify-between items-center shadow-sm relative overflow-hidden">
-                <div class="flex items-center text-deep-sea-blue space-x-4 relative z-10">
-                    <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm text-2xl text-blue-400">
-                        <i :class="getWeatherIcon(currentWeather.condition)"></i>
-                    </div>
-                    <div>
-                        <div class="flex items-baseline">
-                            <span class="text-3xl font-bold tracking-tighter">{{ currentWeather.temp.split('/')[0] }}°</span>
-                            <span class="text-sm text-slate-400 ml-1">/ {{ currentWeather.temp.split('/')[1] }}°</span>
-                        </div>
-                        <span class="text-xs text-slate-500 font-medium bg-white/60 px-2 py-0.5 rounded-lg backdrop-blur-sm">體感 {{ currentWeather.feel }}°C</span>
-                    </div>
-                </div>
-                
-                <div class="text-right z-10">
-                    <div class="text-sm font-bold text-slate-700 mb-1">{{ getWeatherDescription(currentWeather.condition) }}</div>
-                    <div v-if="currentDateInfo.hasCar" class="inline-flex items-center bg-accent-yellow/20 text-yellow-700 text-xs px-2.5 py-1 rounded-full font-bold border border-accent-yellow/30">
-                        <i class="fa-solid fa-car-side mr-1.5"></i> 租車日
-                    </div>
-                </div>
-            </div>
-
-            <!-- Timeline Itinerary -->
+            <!-- Timeline -->
             <div class="space-y-0 pl-2">
                 <div v-if="currentItinerary.length === 0" class="text-center py-10 text-slate-400 text-sm">
                     <i class="fa-solid fa-map-location-dot text-4xl mb-3 opacity-20 block"></i>
-                    這天還沒有行程喔
+                    這天還沒有行程喔，按 + 新增
                 </div>
-                <div v-for="(item, idx) in currentItinerary" :key="item.id" 
-                     class="relative group pb-6 last:pb-24 cursor-pointer"
-                     @click="openItineraryDetail(item)">
-                    
+
+                <div v-for="(item, idx) in currentItinerary" :key="item.id" class="relative group pb-6 last:pb-24">
+                    <!-- Connector Line -->
                     <div v-if="idx < currentItinerary.length - 1" class="timeline-line border-l-2 border-dashed border-slate-200"></div>
 
+                    <!-- Travel Time (Visual) -->
                     <div v-if="idx > 0" class="pl-12 mb-3 flex items-center text-xs text-slate-400">
                         <div class="flex items-center bg-slate-50 px-2 py-1 rounded-lg border border-slate-100">
                             <i :class="getTransportIcon(item.transportType)" class="mr-1.5 text-slate-400"></i>
-                            <span>約 {{ item.travelTime || '15 分鐘' }}</span>
+                            <span>接續行程</span>
                         </div>
                     </div>
 
                     <div class="flex items-start relative z-10">
-                        <div class="flex flex-col items-center mr-4 w-12 flex-shrink-0">
-                            <div class="w-10 h-10 rounded-full text-white shadow-md flex items-center justify-center text-sm ring-4 ring-white" :class="getCategoryColor(item.category)">
+                        <!-- Icon Column -->
+                        <div class="flex flex-col items-center mr-3 w-12 flex-shrink-0">
+                            <div class="w-10 h-10 rounded-full text-white shadow-md flex items-center justify-center text-sm ring-4 ring-white z-10" :class="getCategoryColor(item.category)">
                                 <i :class="getCategoryIcon(item.category)"></i>
                             </div>
                             <span v-if="item.startTime" class="text-xs font-bold text-slate-500 mt-2 bg-white px-1 rounded">{{ item.startTime }}</span>
                         </div>
 
-                        <div class="flex-1 bg-white rounded-2xl shadow-[0_2px_15px_rgba(0,0,0,0.04)] border border-slate-100 relative overflow-hidden active:scale-[0.99] transition-transform flex">
-                            <!-- Left Content -->
-                            <div class="p-4 flex-1">
-                                <div class="flex justify-between items-start mb-2">
-                                    <h3 class="text-base font-bold text-slate-800 leading-snug">{{ item.name }}</h3>
-                                </div>
-
-                                <div v-if="item.category === 'flight'" class="flex items-center gap-3 mb-2 text-xs text-slate-500 bg-sky-50 p-2 rounded-lg">
-                                    <span class="font-bold text-sky-700">{{ item.flightNo }}</span>
-                                    <span v-if="item.depAirport || item.arrAirport">{{ item.depAirport }} <i class="fa-solid fa-arrow-right text-[10px] mx-1"></i> {{ item.arrAirport }}</span>
-                                </div>
-
-                                <div v-if="item.note" class="bg-slate-50 rounded-lg p-2.5 border border-slate-100/50">
-                                    <p class="text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-wider">Note</p>
-                                    <p class="text-sm text-slate-600 leading-relaxed line-clamp-2">{{ item.note }}</p>
+                        <!-- Card Content -->
+                        <div class="flex-1 bg-white rounded-2xl shadow-sm border border-slate-100 relative overflow-hidden flex cursor-pointer active:scale-[0.99] transition-transform"
+                             @click="openItineraryDetail(item)">
+                            
+                            <!-- Left: Info -->
+                            <div class="p-3 flex-1 min-w-0">
+                                <h3 class="text-base font-bold text-slate-800 leading-snug truncate">{{ item.name }}</h3>
+                                <p class="text-xs text-slate-500 truncate mt-1" v-if="item.note">{{ item.note }}</p>
+                                
+                                <div v-if="item.category === 'flight'" class="mt-2 inline-flex items-center bg-sky-50 text-sky-700 px-2 py-1 rounded text-xs font-bold">
+                                    <i class="fa-solid fa-plane mr-1"></i> {{ item.flightNo }}
                                 </div>
                             </div>
 
-                            <!-- Right Thumbnail (if images exist) -->
-                            <div v-if="item.images && item.images.length > 0" class="w-24 bg-slate-100 flex-shrink-0 relative">
+                            <!-- Right: Reorder Buttons & Image -->
+                            <div class="flex flex-col items-center justify-between border-l border-slate-100 bg-slate-50 w-10">
+                                <button @click.stop="reorderItem(item, -1)" class="h-1/2 w-full flex items-center justify-center text-slate-400 hover:text-deep-sea-blue active:bg-slate-200">
+                                    <i class="fa-solid fa-caret-up"></i>
+                                </button>
+                                <button @click.stop="reorderItem(item, 1)" class="h-1/2 w-full flex items-center justify-center text-slate-400 hover:text-deep-sea-blue active:bg-slate-200">
+                                    <i class="fa-solid fa-caret-down"></i>
+                                </button>
+                            </div>
+                            
+                            <!-- Small Thumbnail if exists -->
+                             <div v-if="item.images && item.images.length > 0" class="w-16 bg-slate-100 relative">
                                 <img :src="item.images[0]" class="w-full h-full object-cover">
-                                <div v-if="item.images.length > 1" class="absolute bottom-1 right-1 bg-black/50 text-white text-[10px] px-1.5 rounded backdrop-blur-sm">
-                                    +{{ item.images.length - 1 }}
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -480,703 +249,372 @@
             </div>
         </div>
 
-        <!-- Tab: 購物 -->
-        <div v-if="currentTab === 'shopping'" class="animate-fade-in pb-24">
-            
+        <!-- Tab: 購物 (Shopping - List View) -->
+        <div v-if="currentTab === 'shopping'" class="pb-24">
             <!-- Sub Tabs -->
             <div class="flex p-1 bg-slate-100 rounded-2xl mb-4">
-                <button @click="shoppingSubTab = 'souvenir'" 
-                        class="flex-1 py-2.5 rounded-xl text-sm font-bold flex items-center justify-center transition-all"
+                <button @click="shoppingSubTab = 'souvenir'" class="flex-1 py-2 rounded-xl text-sm font-bold transition-all"
                         :class="shoppingSubTab === 'souvenir' ? 'bg-white text-pink-500 shadow-sm' : 'text-slate-400'">
-                    <i class="fa-solid fa-gift mr-2"></i> 伴手禮
+                    伴手禮
                 </button>
-                <button @click="shoppingSubTab = 'cosmetic'" 
-                        class="flex-1 py-2.5 rounded-xl text-sm font-bold flex items-center justify-center transition-all"
+                <button @click="shoppingSubTab = 'cosmetic'" class="flex-1 py-2 rounded-xl text-sm font-bold transition-all"
                         :class="shoppingSubTab === 'cosmetic' ? 'bg-white text-teal-500 shadow-sm' : 'text-slate-400'">
-                    <i class="fa-solid fa-capsules mr-2"></i> 藥妝
+                    藥妝
                 </button>
             </div>
 
-            <div class="grid grid-cols-2 gap-3">
+            <!-- List View -->
+            <div class="flex flex-col gap-3">
                 <div v-for="(item, idx) in filteredShoppingList" :key="item.id" 
                      @click="openShoppingDetail(item)" 
-                     class="bg-white rounded-2xl p-2 shadow-sm border border-slate-100 group relative cursor-pointer active:scale-95 transition-transform">
-                    <div class="aspect-square bg-slate-50 rounded-xl overflow-hidden mb-2 relative">
+                     class="bg-white rounded-xl p-3 shadow-sm border border-slate-100 flex items-center gap-4 cursor-pointer active:bg-slate-50">
+                    
+                    <!-- Thumbnail -->
+                    <div class="w-16 h-16 bg-slate-100 rounded-lg overflow-hidden flex-shrink-0 relative border border-slate-200">
                          <img v-if="item.images && item.images.length > 0" :src="item.images[0]" class="w-full h-full object-cover">
-                         <div v-else class="w-full h-full flex items-center justify-center text-slate-300">
-                             <i class="fa-solid fa-image text-2xl"></i>
-                         </div>
-                         <div v-if="item.images && item.images.length > 1" class="absolute bottom-2 right-2 bg-black/50 text-white text-[10px] px-1.5 py-0.5 rounded-md backdrop-blur-sm">
-                            <i class="fa-solid fa-layer-group mr-1"></i>{{ item.images.length }}
+                         <div v-else class="w-full h-full flex items-center justify-center text-slate-300"><i class="fa-solid fa-image"></i></div>
+                         <div v-if="item.images && item.images.length > 1" class="absolute bottom-0 right-0 bg-black/60 text-white text-[9px] px-1 rounded-tl-md">
+                            +{{ item.images.length - 1 }}
                          </div>
                     </div>
-                    <p class="text-sm font-bold text-slate-700 px-1 truncate">{{ item.name }}</p>
-                    <p class="text-xs text-slate-400 px-1 truncate mt-0.5" v-if="item.shopName">@{{ item.shopName }}</p>
+
+                    <!-- Details -->
+                    <div class="flex-1 min-w-0">
+                        <h4 class="font-bold text-slate-800 text-sm truncate">{{ item.name }}</h4>
+                        <div class="text-xs text-slate-500 mt-1 flex items-center gap-2">
+                            <span v-if="item.price" class="bg-yellow-50 text-yellow-700 px-1.5 py-0.5 rounded">¥{{ item.price }}</span>
+                            <span v-if="item.quantity">x{{ item.quantity }}</span>
+                        </div>
+                        <p class="text-[10px] text-slate-400 mt-1 truncate" v-if="item.shopName"><i class="fa-solid fa-location-dot mr-1"></i>{{ item.shopName }}</p>
+                    </div>
+
+                    <div class="text-slate-300 text-sm"><i class="fa-solid fa-chevron-right"></i></div>
                 </div>
                 
-                <button @click="handleAddClick" class="aspect-square rounded-2xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center text-slate-400 hover:bg-slate-50 hover:border-slate-300 transition-colors">
-                    <i class="fa-solid fa-plus text-2xl mb-2"></i>
-                    <span class="text-xs font-bold">新增物品</span>
+                <!-- Add Button -->
+                <button @click="handleAddClick" class="w-full py-4 border-2 border-dashed border-slate-300 rounded-xl text-slate-400 font-bold text-sm flex items-center justify-center hover:bg-slate-50">
+                    <i class="fa-solid fa-plus mr-2"></i> 新增購物清單
                 </button>
             </div>
         </div>
 
-        <!-- Tab: 花費 -->
-        <div v-if="currentTab === 'expenses'" class="animate-fade-in pb-24">
-            <div class="expense-card-bg text-white rounded-3xl p-6 mb-6 relative overflow-hidden shadow-xl shadow-blue-900/20">
-                <div class="absolute -right-6 -top-6 bg-white/20 w-32 h-32 rounded-full blur-2xl"></div>
-                <div class="absolute -left-6 -bottom-6 bg-black/10 w-32 h-32 rounded-full blur-2xl"></div>
-                
-                <p class="text-xs text-blue-100 mb-1">總支出預估</p>
-                <h2 class="text-4xl font-bold mb-1 tracking-tight">¥ {{ formatNumber(totalExpensesJPY) }}</h2>
-                <p class="text-sm text-blue-100 opacity-80">≈ NT$ {{ formatNumber(totalExpensesTWD) }}</p>
+        <!-- Tab: 花費 (Expenses) -->
+        <div v-if="currentTab === 'expenses'" class="pb-24">
+            <div class="bg-gradient-to-br from-deep-sea-blue to-blue-800 text-white rounded-3xl p-6 mb-6 shadow-xl relative overflow-hidden">
+                <p class="text-xs text-blue-200 mb-1">總支出預估</p>
+                <h2 class="text-4xl font-bold mb-1">¥ {{ formatNumber(totalExpensesJPY) }}</h2>
+                <p class="text-sm text-blue-200 opacity-80">≈ NT$ {{ formatNumber(totalExpensesTWD) }}</p>
             </div>
 
             <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                <div v-for="(exp, idx) in expenses" :key="idx" class="flex items-center justify-between p-4 border-b border-slate-50 last:border-0 hover:bg-slate-50 transition-colors">
+                <div v-for="exp in expenses" :key="exp.id" class="flex items-center justify-between p-4 border-b border-slate-50 last:border-0">
                     <div class="flex items-center">
                         <div class="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm shadow-sm mr-3" :class="getCategoryColor(exp.category)">
                             <i :class="getCategoryIcon(exp.category)"></i>
                         </div>
                         <div>
                             <p class="font-bold text-slate-700 text-sm">{{ exp.name }}</p>
-                            <p class="text-[10px] text-slate-400">{{ exp.date }} · {{ exp.payment === 'card' ? '信用卡' : '現金' }}</p>
+                            <p class="text-[10px] text-slate-400">{{ exp.date }} · {{ exp.payment === 'card' ? '刷卡' : '現金' }}</p>
                         </div>
                     </div>
                     <div class="flex items-center">
                         <span class="font-bold text-slate-700 text-sm mr-3">¥{{ formatNumber(exp.amount) }}</span>
-                        <button @click="removeExpense(exp.id)" class="text-slate-300 hover:text-red-400 px-2">
-                            <i class="fa-solid fa-trash-can"></i>
-                        </button>
+                        <button @click="removeExpense(exp.id)" class="text-slate-300 hover:text-red-400"><i class="fa-solid fa-trash-can"></i></button>
                     </div>
-                </div>
-                <div v-if="expenses.length === 0" class="p-8 text-center text-slate-400 text-sm">
-                    <i class="fa-solid fa-receipt text-3xl mb-2 block opacity-20"></i>
-                    還沒有記帳紀錄
                 </div>
             </div>
         </div>
-        
-        <!-- Tab: 資訊 (住宿/Hotels) -->
-        <div v-if="currentTab === 'info'" class="space-y-5 animate-fade-in pb-24">
-            <div class="bg-gradient-to-r from-deep-sea-blue to-cyan-800 rounded-3xl p-6 text-white shadow-lg shadow-blue-900/20 relative overflow-hidden">
-                <h3 class="font-bold text-sm mb-4 flex items-center opacity-80"><i class="fa-solid fa-coins mr-2"></i> 即時匯率試算</h3>
-                <div class="flex items-center gap-3 relative z-10">
-                    <div class="flex-1 bg-white/10 rounded-2xl p-3 backdrop-blur-sm border border-white/10">
-                        <label class="text-[10px] text-cyan-200 block mb-1">JPY 日幣</label>
-                        <input type="number" inputmode="decimal" v-model="currencyInput" @input="calculateCurrency" class="w-full bg-transparent border-none text-white text-xl font-bold p-0 focus:ring-0 placeholder-white/30" placeholder="0">
-                    </div>
-                    <i class="fa-solid fa-arrow-right text-white/50 text-sm"></i>
-                    <div class="flex-1 bg-white rounded-2xl p-3 text-deep-sea-blue shadow-lg">
-                        <label class="text-[10px] text-slate-400 block mb-1">TWD 台幣</label>
-                        <div class="text-xl font-bold">$ {{ currencyResult }}</div>
-                    </div>
+
+        <!-- Tab: 資訊 (Hotels/Info) -->
+        <div v-if="currentTab === 'info'" class="pb-24 space-y-5">
+            <!-- Rate Calculator -->
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex items-center gap-3">
+                <div class="flex-1">
+                    <label class="text-[10px] text-slate-400 block mb-1">日幣 JPY</label>
+                    <input type="number" v-model="currencyInput" @input="calculateCurrency" class="w-full bg-slate-50 rounded-lg p-2 font-bold text-deep-sea-blue">
+                </div>
+                <i class="fa-solid fa-arrow-right text-slate-300 mt-4"></i>
+                <div class="flex-1">
+                    <label class="text-[10px] text-slate-400 block mb-1">台幣 TWD</label>
+                    <div class="w-full bg-slate-100 rounded-lg p-2 font-bold text-slate-600">$ {{ currencyResult }}</div>
                 </div>
             </div>
-            
-            <!-- Hotels List (Cards) -->
+
+            <!-- Hotels -->
             <div class="space-y-4">
-                <h3 class="font-bold text-slate-800 text-lg px-2">住宿安排</h3>
-                <div v-for="(hotel, idx) in hotels" :key="idx" 
-                     @click="openHotelDetail(hotel)"
-                     class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 cursor-pointer active:scale-95 transition-transform">
-                    <div class="flex gap-4">
-                        <!-- Hotel Image Thumbnail -->
+                <div class="flex justify-between items-center px-1">
+                    <h3 class="font-bold text-slate-800 text-lg">住宿資訊</h3>
+                </div>
+                
+                <div v-for="hotel in hotels" :key="hotel.id" @click="openHotelDetail(hotel)" 
+                     class="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100">
+                    
+                    <div class="flex p-4 gap-4">
                         <div class="w-20 h-20 bg-slate-100 rounded-xl overflow-hidden flex-shrink-0">
-                             <img v-if="hotel.images && hotel.images.length > 0" :src="hotel.images[0]" class="w-full h-full object-cover">
-                             <div v-else class="w-full h-full flex items-center justify-center text-slate-300">
-                                 <i class="fa-solid fa-hotel text-xl"></i>
-                             </div>
+                            <img v-if="hotel.images && hotel.images.length > 0" :src="hotel.images[0]" class="w-full h-full object-cover">
+                            <div v-else class="w-full h-full flex items-center justify-center text-slate-300"><i class="fa-solid fa-hotel text-xl"></i></div>
                         </div>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-slate-800 text-base leading-tight mb-1">{{ hotel.name }}</h4>
-                            <span class="inline-block bg-indigo-50 text-indigo-600 text-[10px] font-bold px-2 py-0.5 rounded-full mb-2">{{ hotel.date }}</span>
-                            <div class="flex gap-2">
-                                <button @click.stop="openMap(hotel.name)" class="flex-1 bg-slate-50 text-slate-500 text-xs py-1.5 rounded-lg hover:bg-slate-100"><i class="fa-solid fa-location-arrow mr-1"></i>導航</button>
-                                <a @click.stop :href="'tel:' + hotel.phone" class="flex-1 bg-slate-50 text-slate-500 text-xs py-1.5 rounded-lg text-center hover:bg-slate-100"><i class="fa-solid fa-phone mr-1"></i>電話</a>
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-bold text-slate-800 text-base mb-1 truncate">{{ hotel.name }}</h4>
+                            <div class="flex flex-col gap-1 text-xs text-slate-500">
+                                <span><i class="fa-regular fa-calendar mr-1"></i> {{ hotel.checkInDate }} - {{ hotel.checkOutDate }}</span>
+                                <span v-if="hotel.address" class="truncate"><i class="fa-solid fa-map-pin mr-1"></i> {{ hotel.address }}</span>
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- File Attachment Indicator -->
+                    <div v-if="hotel.files && hotel.files.length > 0" class="bg-slate-50 px-4 py-2 border-t border-slate-100 flex items-center text-xs text-blue-600 font-bold">
+                        <i class="fa-solid fa-paperclip mr-2"></i> 已上傳訂單文件 ({{ hotel.files.length }})
+                    </div>
                 </div>
+                
+                <button @click="handleAddClick" class="w-full py-3 bg-white border border-slate-200 text-slate-500 rounded-xl font-bold text-sm">
+                    <i class="fa-solid fa-plus mr-2"></i> 新增住宿
+                </button>
             </div>
-
         </div>
-
     </main>
 
-    <!-- Bottom Navigation Bar -->
+    <!-- Bottom Nav -->
     <nav class="bottom-nav">
         <button class="nav-item" :class="{ active: currentTab === 'itinerary' }" @click="currentTab = 'itinerary'">
-            <i class="fa-solid fa-map-location-dot"></i>
-            <span>行程</span>
+            <i class="fa-solid fa-map-location-dot"></i><span>行程</span>
         </button>
-        
         <button class="nav-item" :class="{ active: currentTab === 'shopping' }" @click="currentTab = 'shopping'">
-            <i class="fa-solid fa-bag-shopping"></i>
-            <span>購物</span>
+            <i class="fa-solid fa-bag-shopping"></i><span>購物</span>
         </button>
-
-        <button class="fab-center" @click="handleAddClick">
-            <i class="fa-solid fa-plus"></i>
-        </button>
-        
+        <button class="fab-center" @click="handleAddClick"><i class="fa-solid fa-plus"></i></button>
         <button class="nav-item" :class="{ active: currentTab === 'expenses' }" @click="currentTab = 'expenses'">
-            <i class="fa-solid fa-wallet"></i>
-            <span>花費</span>
+            <i class="fa-solid fa-wallet"></i><span>花費</span>
         </button>
-
         <button class="nav-item" :class="{ active: currentTab === 'info' }" @click="currentTab = 'info'">
-            <i class="fa-solid fa-circle-info"></i>
-            <span>資訊</span>
+            <i class="fa-solid fa-circle-info"></i><span>資訊</span>
         </button>
     </nav>
 
-    <!-- Modals -->
-    <transition name="modal">
-        <div v-if="anyModalOpen" class="fixed inset-0 z-[60] flex items-center justify-center px-4">
-            <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" @click="closeAllModals"></div>
-            
-            <!-- 7. Settings Modal (New) -->
-            <div v-if="showSettingsModal" class="modal-content bg-white rounded-3xl w-full max-w-sm shadow-2xl relative z-10 p-6">
-                <button @click="closeAllModals" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"><i class="fa-solid fa-xmark text-lg"></i></button>
-                <h3 class="font-bold text-lg mb-6 text-center text-slate-800">旅程設定</h3>
-                
-                <div class="space-y-4">
-                    <div>
-                        <label class="form-label">出發日期</label>
-                        <input v-model="tripSettings.startDate" type="date" class="w-full bg-slate-50 rounded-xl p-3 text-sm outline-none border border-slate-100 focus:border-deep-sea-blue transition-colors">
-                    </div>
-                    
-                    <div>
-                        <label class="form-label">旅遊天數</label>
-                        <div class="flex items-center gap-3">
-                             <button @click="tripSettings.duration = Math.max(1, tripSettings.duration - 1)" class="w-10 h-10 rounded-xl bg-slate-100 text-slate-500 font-bold hover:bg-slate-200 transition-colors">-</button>
-                             <div class="flex-1 text-center font-bold text-xl text-slate-700">{{ tripSettings.duration }} 天</div>
-                             <button @click="tripSettings.duration = tripSettings.duration + 1" class="w-10 h-10 rounded-xl bg-slate-100 text-slate-500 font-bold hover:bg-slate-200 transition-colors">+</button>
-                        </div>
-                    </div>
+    <!-- ================= MODALS ================= -->
 
-                    <button @click="saveTripSettings" class="w-full py-3 rounded-xl bg-deep-sea-blue text-white font-bold text-sm shadow-lg shadow-blue-900/30 mt-4">
-                        更新行程表
-                    </button>
+    <!-- Settings Modal -->
+    <div v-if="showSettingsModal" class="fixed inset-0 z-[60] flex items-center justify-center px-4">
+        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" @click="closeAllModals"></div>
+        <div class="bg-white rounded-3xl w-full max-w-sm p-6 relative z-10">
+            <h3 class="font-bold text-lg mb-6 text-center">旅程設定</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="form-label">出發日期</label>
+                    <input type="date" v-model="tripSettings.startDate" class="w-full bg-slate-50 rounded-xl p-3 text-sm">
                 </div>
+                <div>
+                    <label class="form-label">管理天數 (增/減)</label>
+                    <div class="flex items-center justify-between bg-slate-50 rounded-xl p-3">
+                        <button @click="changeDuration(-1)" class="w-10 h-10 bg-white shadow rounded-lg text-slate-600"><i class="fa-solid fa-minus"></i></button>
+                        <span class="font-bold text-lg">{{ tripSettings.duration }} 天</span>
+                        <button @click="changeDuration(1)" class="w-10 h-10 bg-white shadow rounded-lg text-slate-600"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                </div>
+                <button @click="saveTripSettings" class="w-full py-3 bg-deep-sea-blue text-white rounded-xl font-bold mt-2">儲存設定</button>
             </div>
-
-            <!-- 1. Itinerary Add/Edit Modal (Updated with Images) -->
-            <div v-if="showItineraryModal" class="modal-content bg-white rounded-3xl w-full max-w-sm max-h-[85vh] overflow-y-auto shadow-2xl relative z-10 p-6">
-                <button @click="closeAllModals" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"><i class="fa-solid fa-xmark text-lg"></i></button>
-                <h3 class="font-bold text-lg mb-6 text-center text-slate-800">{{ isEditMode ? '編輯行程' : '新增行程' }}</h3>
-                <div class="space-y-4">
-                    <!-- Category -->
-                    <div>
-                        <label class="form-label">類型</label>
-                        <select v-model="newItinerary.category" class="w-full bg-slate-50 rounded-xl p-3 text-sm outline-none border border-slate-100">
-                            <option value="sightseeing">📸 景點</option>
-                            <option value="food">🍴 飲食</option>
-                            <option value="shopping">🛍️ 購物</option>
-                            <option value="accommodation">🏨 住宿</option>
-                            <option value="flight">✈️ 航班</option>
-                            <option value="transport">🚌 交通</option>
-                        </select>
-                    </div>
-
-                    <!-- Dynamic Name -->
-                    <div>
-                         <label class="form-label">{{ newItinerary.category === 'flight' ? '機場名稱 (可選)' : '名稱' }}</label>
-                        <input v-model="newItinerary.name" :placeholder="newItinerary.category === 'flight' ? '例如: 新千歲機場' : '要去哪裡?'" class="w-full bg-slate-50 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-deep-sea-blue transition-all">
-                    </div>
-
-                    <!-- Flight Fields (Updated) -->
-                    <div v-if="newItinerary.category === 'flight'" class="space-y-4 bg-sky-50 p-4 rounded-2xl border border-sky-100">
-                         <div>
-                            <label class="form-label text-sky-700">航班號</label>
-                            <input v-model="newItinerary.flightNo" placeholder="例如: CI130" class="w-full bg-white rounded-xl p-3 text-sm outline-none border border-sky-200">
-                         </div>
-                         
-                         <div class="grid grid-cols-3 gap-2">
-                            <div class="col-span-2">
-                                <label class="form-label text-sky-700">出發機場</label>
-                                <input v-model="newItinerary.depAirport" placeholder="TPE" class="w-full bg-white rounded-xl p-3 text-sm outline-none border border-sky-200">
-                            </div>
-                            <div>
-                                <label class="form-label text-sky-700">航廈</label>
-                                <input v-model="newItinerary.depTerminal" placeholder="1" class="w-full bg-white rounded-xl p-3 text-sm outline-none border border-sky-200">
-                            </div>
-                         </div>
-
-                         <div>
-                            <label class="form-label text-sky-700">出發時間</label>
-                            <!-- Bind to startTime for sorting compatibility -->
-                            <input v-model="newItinerary.startTime" type="time" class="w-full bg-white rounded-xl p-3 text-sm outline-none border border-sky-200"> 
-                         </div>
-
-                         <div class="grid grid-cols-3 gap-2">
-                            <div class="col-span-2">
-                                <label class="form-label text-sky-700">抵達機場</label>
-                                <input v-model="newItinerary.arrAirport" placeholder="CTS" class="w-full bg-white rounded-xl p-3 text-sm outline-none border border-sky-200">
-                            </div>
-                            <div>
-                                <label class="form-label text-sky-700">航廈</label>
-                                <input v-model="newItinerary.arrTerminal" placeholder="I" class="w-full bg-white rounded-xl p-3 text-sm outline-none border border-sky-200">
-                            </div>
-                         </div>
-
-                         <div>
-                            <label class="form-label text-sky-700">抵達時間</label>
-                            <input v-model="newItinerary.arrTime" type="time" class="w-full bg-white rounded-xl p-3 text-sm outline-none border border-sky-200">
-                         </div>
-                    </div>
-
-                    <!-- Standard Address -->
-                    <div v-else>
-                         <label class="form-label">地址/地點</label>
-                         <input v-model="newItinerary.address" placeholder="Google Map 搜尋用" class="w-full bg-slate-50 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-deep-sea-blue transition-all">
-                    </div>
-
-                    <!-- Time & Transport (Hidden for Flight) -->
-                    <div class="grid grid-cols-2 gap-3" v-if="newItinerary.category !== 'flight'">
-                        <div>
-                            <label class="form-label">開始時間</label>
-                            <input v-model="newItinerary.startTime" type="time" class="w-full bg-slate-50 rounded-xl p-3 text-sm outline-none">
-                        </div>
-                        <div>
-                             <label class="form-label">交通方式</label>
-                             <select v-model="newItinerary.transportType" class="w-full bg-slate-50 rounded-xl p-3 text-sm outline-none">
-                                <option value="walk">🚶 步行</option>
-                                <option value="car">🚗 自駕</option>
-                                <option value="bus">🚌 巴士</option>
-                                <option value="public">🚇 地鐵/JR</option>
-                                <option value="flight">✈️ 飛機</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="form-label">備註</label>
-                        <textarea v-model="newItinerary.note" placeholder="細節..." rows="3" class="w-full bg-slate-50 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-deep-sea-blue transition-all"></textarea>
-                    </div>
-
-                    <!-- Itinerary Image Upload -->
-                    <div>
-                        <label class="form-label">照片 (可多選)</label>
-                        <div class="image-preview-grid mb-3" v-if="newItinerary.images && newItinerary.images.length > 0">
-                            <div v-for="(img, idx) in newItinerary.images" :key="idx" class="image-preview-item">
-                                <img :src="img">
-                                <button @click="removeItineraryImage(idx)" class="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-[10px] shadow-sm"><i class="fa-solid fa-xmark"></i></button>
-                            </div>
-                             <label class="image-preview-item flex flex-col items-center justify-center bg-slate-50 border-dashed border-2 border-slate-200 cursor-pointer hover:bg-slate-100 text-slate-400">
-                                <input type="file" @change="handleItineraryImageUpload" class="hidden" multiple accept="image/*">
-                                <i class="fa-solid fa-plus text-lg"></i>
-                            </label>
-                        </div>
-                        <label v-else class="w-full h-24 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center cursor-pointer hover:bg-slate-100 transition-colors overflow-hidden">
-                            <input type="file" @change="handleItineraryImageUpload" class="hidden" multiple accept="image/*">
-                            <div class="text-center text-slate-400">
-                                <i class="fa-solid fa-camera text-xl mb-1 block"></i>
-                                <span class="text-xs">上傳照片</span>
-                            </div>
-                        </label>
-                    </div>
-
-                    <div class="flex gap-3 pt-2">
-                        <button v-if="isEditMode" @click="removeItineraryItem(newItinerary.id)" class="px-4 py-3 rounded-xl bg-red-50 text-red-500 hover:bg-red-100 transition-colors">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                        <button @click="saveItineraryItem" class="flex-1 py-3 rounded-xl bg-deep-sea-blue text-white font-bold text-sm shadow-lg shadow-blue-900/30">
-                            {{ isEditMode ? '儲存變更' : '新增行程' }}
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 2. Itinerary Detail View (Updated with FULL Details) -->
-            <div v-if="showItineraryDetailModal && selectedItineraryItem" class="modal-content bg-white rounded-3xl w-full max-w-sm shadow-2xl relative z-10 p-0 overflow-hidden">
-                 <!-- Image Header -->
-                 <div class="relative h-64 bg-slate-900 group cursor-pointer" @click="openImagePreview(selectedItineraryItem.images ? selectedItineraryItem.images[0] : null)">
-                    <img v-if="selectedItineraryItem.images && selectedItineraryItem.images.length > 0" :src="selectedItineraryItem.images[0]" class="w-full h-full object-cover">
-                    <!-- Fallback Icon Header if no image -->
-                    <div v-else class="w-full h-full flex items-center justify-center bg-slate-100 text-slate-300 text-5xl">
-                         <i :class="getCategoryIcon(selectedItineraryItem.category)"></i>
-                    </div>
-                    <button @click="closeAllModals" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-black/30 text-white backdrop-blur-md z-20"><i class="fa-solid fa-xmark"></i></button>
-                    <div v-if="selectedItineraryItem.images && selectedItineraryItem.images.length > 0" class="absolute bottom-4 right-4 bg-black/50 text-white text-xs px-2 py-1 rounded-full backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity">
-                        <i class="fa-solid fa-expand mr-1"></i>放大
-                    </div>
-                 </div>
-
-                 <!-- Thumbnails -->
-                 <div class="flex gap-2 p-4 pb-0 overflow-x-auto" v-if="selectedItineraryItem.images && selectedItineraryItem.images.length > 1">
-                     <div v-for="(img, idx) in selectedItineraryItem.images" :key="idx" 
-                          class="w-16 h-16 rounded-lg overflow-hidden border-2 cursor-pointer flex-shrink-0"
-                          :class="idx === 0 ? 'border-deep-sea-blue' : 'border-transparent'"
-                          @click="openImagePreview(img)">
-                         <img :src="img" class="w-full h-full object-cover">
-                     </div>
-                 </div>
-
-                 <div class="p-6 bg-white rounded-t-3xl relative -mt-4">
-                     <div class="flex justify-between items-start mb-4">
-                         <div>
-                             <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">{{ selectedItineraryItem.startTime }}</span>
-                             <h3 class="text-2xl font-bold text-slate-800">{{ selectedItineraryItem.name }}</h3>
-                         </div>
-                         <!-- Category Icon (Small if header is image) -->
-                         <div class="w-10 h-10 rounded-full flex items-center justify-center text-white shadow-md" :class="getCategoryColor(selectedItineraryItem.category)">
-                             <i :class="getCategoryIcon(selectedItineraryItem.category)"></i>
-                         </div>
-                     </div>
-                     
-                     <!-- General Info (Transport & Address) -->
-                     <div class="grid grid-cols-2 gap-3 mb-6" v-if="selectedItineraryItem.category !== 'flight'">
-                        <div class="bg-slate-50 p-3 rounded-xl">
-                            <p class="text-[10px] text-slate-400">交通方式</p>
-                            <div class="font-bold text-slate-700 flex items-center mt-0.5">
-                                <i :class="getTransportIcon(selectedItineraryItem.transportType)" class="mr-1.5 text-deep-sea-blue"></i>
-                                <span class="text-sm">
-                                    {{ 
-                                        {
-                                            walk: '步行', car: '自駕', bus: '巴士', 
-                                            public: '地鐵/JR', flight: '飛機'
-                                        }[selectedItineraryItem.transportType] || '其他'
-                                    }}
-                                </span>
-                            </div>
-                        </div>
-                        <div class="bg-slate-50 p-3 rounded-xl col-span-2" v-if="selectedItineraryItem.address">
-                            <p class="text-[10px] text-slate-400">地點 / 地址</p>
-                            <p class="font-bold text-slate-700 text-sm mt-0.5">{{ selectedItineraryItem.address }}</p>
-                        </div>
-                     </div>
-
-                     <!-- Flight Info Display (Updated) -->
-                     <div v-if="selectedItineraryItem.category === 'flight'" class="space-y-4 mb-6">
-                         <!-- Flight Number Tag -->
-                         <div class="inline-flex items-center bg-sky-100 text-sky-700 px-3 py-1 rounded-full text-xs font-bold">
-                             <i class="fa-solid fa-plane-up mr-2"></i> {{ selectedItineraryItem.flightNo }}
-                         </div>
-
-                         <!-- Route Visual -->
-                         <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 relative overflow-hidden">
-                             <div class="flex justify-between items-center relative z-10">
-                                 <!-- Departure -->
-                                 <div class="text-center">
-                                     <div class="text-3xl font-black text-slate-800 leading-none">{{ selectedItineraryItem.depAirport || 'DEP' }}</div>
-                                     <div class="text-xs text-slate-500 font-bold mt-1 bg-white px-2 py-0.5 rounded-md border border-slate-200 inline-block">
-                                         T{{ selectedItineraryItem.depTerminal || '-' }}
-                                     </div>
-                                     <div class="text-sm font-bold text-sky-600 mt-2">{{ selectedItineraryItem.startTime }}</div>
-                                 </div>
-
-                                 <!-- Icon -->
-                                 <div class="flex flex-col items-center px-4">
-                                     <i class="fa-solid fa-plane text-slate-300 text-xl transform rotate-90 mb-1"></i>
-                                     <div class="h-0.5 w-16 bg-slate-200"></div>
-                                 </div>
-
-                                 <!-- Arrival -->
-                                 <div class="text-center">
-                                     <div class="text-3xl font-black text-slate-800 leading-none">{{ selectedItineraryItem.arrAirport || 'ARR' }}</div>
-                                     <div class="text-xs text-slate-500 font-bold mt-1 bg-white px-2 py-0.5 rounded-md border border-slate-200 inline-block">
-                                         T{{ selectedItineraryItem.arrTerminal || '-' }}
-                                     </div>
-                                     <div class="text-sm font-bold text-slate-700 mt-2">{{ selectedItineraryItem.arrTime || '--:--' }}</div>
-                                 </div>
-                             </div>
-                         </div>
-                     </div>
-
-                     <div v-if="selectedItineraryItem.note" class="mb-6">
-                         <p class="text-xs font-bold text-slate-400 mb-2">備註</p>
-                         <p class="text-sm text-slate-600 leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-100">{{ selectedItineraryItem.note }}</p>
-                     </div>
-
-                     <div class="flex gap-3">
-                         <button v-if="selectedItineraryItem.address" @click="openMap(selectedItineraryItem.address)" class="flex-1 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold text-sm"><i class="fa-solid fa-location-arrow mr-2"></i> 導航</button>
-                         <button @click="switchToEditItinerary" class="flex-1 py-3 bg-deep-sea-blue text-white rounded-xl font-bold text-sm shadow-lg shadow-blue-900/20"><i class="fa-solid fa-pen mr-2"></i> 編輯</button>
-                     </div>
-                 </div>
-            </div>
-
-            <!-- 3. Hotel Add/Edit Modal (New for Info Tab) -->
-            <div v-if="showHotelModal" class="modal-content bg-white rounded-3xl w-full max-w-sm shadow-2xl relative z-10 p-6">
-                <button @click="closeAllModals" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"><i class="fa-solid fa-xmark text-lg"></i></button>
-                <h3 class="font-bold text-lg mb-6 text-center text-slate-800">{{ isEditHotel ? '編輯住宿' : '新增住宿' }}</h3>
-                <div class="space-y-4">
-                    <div>
-                        <label class="form-label">飯店名稱</label>
-                        <input v-model="newHotel.name" placeholder="例如: 札幌大通東急STAY" class="w-full bg-slate-50 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-deep-sea-blue">
-                    </div>
-                    <div>
-                        <label class="form-label">入住日期說明</label>
-                        <input v-model="newHotel.date" placeholder="例如: 2/1 - 2/3 (2晚)" class="w-full bg-slate-50 rounded-xl p-3 text-sm outline-none">
-                    </div>
-                    <div>
-                        <label class="form-label">聯絡電話</label>
-                        <input v-model="newHotel.phone" placeholder="+81..." class="w-full bg-slate-50 rounded-xl p-3 text-sm outline-none">
-                    </div>
-                    
-                    <!-- Hotel Image Upload -->
-                    <div>
-                        <label class="form-label">飯店照片</label>
-                        <div class="image-preview-grid mb-3" v-if="newHotel.images && newHotel.images.length > 0">
-                            <div v-for="(img, idx) in newHotel.images" :key="idx" class="image-preview-item">
-                                <img :src="img">
-                                <button @click="removeHotelImage(idx)" class="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-[10px] shadow-sm"><i class="fa-solid fa-xmark"></i></button>
-                            </div>
-                             <label class="image-preview-item flex flex-col items-center justify-center bg-slate-50 border-dashed border-2 border-slate-200 cursor-pointer hover:bg-slate-100 text-slate-400">
-                                <input type="file" @change="handleHotelImageUpload" class="hidden" multiple accept="image/*">
-                                <i class="fa-solid fa-plus text-lg"></i>
-                            </label>
-                        </div>
-                        <label v-else class="w-full h-24 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center cursor-pointer hover:bg-slate-100 transition-colors overflow-hidden">
-                            <input type="file" @change="handleHotelImageUpload" class="hidden" multiple accept="image/*">
-                            <div class="text-center text-slate-400">
-                                <i class="fa-solid fa-camera text-xl mb-1 block"></i>
-                                <span class="text-xs">上傳照片</span>
-                            </div>
-                        </label>
-                    </div>
-
-                    <div class="flex gap-3 pt-2">
-                         <button v-if="isEditHotel" @click="removeHotelItem(newHotel.id)" class="px-4 py-3 rounded-xl bg-red-50 text-red-500 hover:bg-red-100 transition-colors">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                        <button @click="saveHotelItem" class="flex-1 py-3 rounded-xl bg-deep-sea-blue text-white font-bold text-sm shadow-lg shadow-blue-900/30">
-                            {{ isEditHotel ? '儲存變更' : '新增住宿' }}
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 4. Hotel Detail View (Info Tab) -->
-            <div v-if="showHotelDetailModal && selectedHotelItem" class="modal-content bg-white rounded-3xl w-full max-w-sm shadow-2xl relative z-10 p-0 overflow-hidden">
-                <div class="relative h-64 bg-slate-900 group cursor-pointer" @click="openImagePreview(selectedHotelItem.images ? selectedHotelItem.images[0] : null)">
-                    <img v-if="selectedHotelItem.images && selectedHotelItem.images.length > 0" :src="selectedHotelItem.images[0]" class="w-full h-full object-cover">
-                    <div v-else class="w-full h-full flex items-center justify-center text-slate-500 bg-slate-200">
-                        <i class="fa-solid fa-hotel text-5xl"></i>
-                    </div>
-                    <button @click="closeAllModals" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-black/30 text-white backdrop-blur-md z-20"><i class="fa-solid fa-xmark"></i></button>
-                    <div v-if="selectedHotelItem.images && selectedHotelItem.images.length > 0" class="absolute bottom-4 right-4 bg-black/50 text-white text-xs px-2 py-1 rounded-full backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity">
-                        <i class="fa-solid fa-expand mr-1"></i>放大
-                    </div>
-                </div>
-                
-                 <!-- Thumbnails -->
-                 <div class="flex gap-2 p-4 pb-0 overflow-x-auto" v-if="selectedHotelItem.images && selectedHotelItem.images.length > 1">
-                     <div v-for="(img, idx) in selectedHotelItem.images" :key="idx" 
-                          class="w-16 h-16 rounded-lg overflow-hidden border-2 cursor-pointer flex-shrink-0"
-                          :class="idx === 0 ? 'border-deep-sea-blue' : 'border-transparent'"
-                          @click="openImagePreview(img)">
-                         <img :src="img" class="w-full h-full object-cover">
-                     </div>
-                 </div>
-
-                <div class="p-6 bg-white">
-                    <h3 class="text-2xl font-bold text-slate-800 mb-2">{{ selectedHotelItem.name }}</h3>
-                    <div class="inline-block bg-indigo-50 text-indigo-600 text-xs font-bold px-2 py-1 rounded-md mb-4">{{ selectedHotelItem.date }}</div>
-                    
-                    <div class="grid grid-cols-2 gap-3 mb-6">
-                         <button @click="openMap(selectedHotelItem.name)" class="py-3 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm hover:bg-slate-100"><i class="fa-solid fa-location-arrow mr-2"></i> 導航</button>
-                         <a :href="'tel:' + selectedHotelItem.phone" class="py-3 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm text-center hover:bg-slate-100 flex items-center justify-center"><i class="fa-solid fa-phone mr-2"></i> {{ selectedHotelItem.phone }}</a>
-                    </div>
-                    
-                    <button @click="switchToEditHotel" class="w-full py-3 bg-deep-sea-blue text-white rounded-xl font-bold text-sm shadow-lg shadow-blue-900/20"><i class="fa-solid fa-pen mr-2"></i> 編輯住宿</button>
-                </div>
-            </div>
-
-            <!-- Expense Modal (Existing) -->
-            <div v-if="showExpenseModal" class="modal-content bg-white rounded-3xl w-full max-w-sm shadow-2xl relative z-10 p-6">
-                <button @click="closeAllModals" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"><i class="fa-solid fa-xmark text-lg"></i></button>
-                <h3 class="font-bold text-lg mb-6 text-center text-slate-800">記一筆</h3>
-                <div class="space-y-4">
-                     <div>
-                         <label class="form-label">消費項目</label>
-                         <input v-model="newExpense.name" placeholder="例如: 湯咖哩" class="w-full bg-slate-50 rounded-xl p-4 text-sm outline-none focus:ring-2 focus:ring-deep-sea-blue">
-                     </div>
-                     <div>
-                        <label class="form-label">金額</label>
-                        <div class="relative">
-                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">¥</span>
-                            <input v-model.number="newExpense.amount" type="number" inputmode="decimal" placeholder="0" class="w-full bg-slate-50 rounded-xl p-4 pl-8 text-xl font-bold outline-none focus:ring-2 focus:ring-deep-sea-blue text-deep-sea-blue">
-                        </div>
-                     </div>
-                     <div>
-                        <label class="form-label">付款方式</label>
-                        <div class="flex gap-2">
-                            <button @click="newExpense.payment='cash'" class="flex-1 py-3 rounded-xl text-sm font-bold border-2 transition-all" :class="newExpense.payment==='cash' ? 'border-deep-sea-blue bg-deep-sea-blue text-white' : 'border-slate-100 text-slate-400'">現金</button>
-                            <button @click="newExpense.payment='card'" class="flex-1 py-3 rounded-xl text-sm font-bold border-2 transition-all" :class="newExpense.payment==='card' ? 'border-deep-sea-blue bg-deep-sea-blue text-white' : 'border-slate-100 text-slate-400'">信用卡</button>
-                        </div>
-                     </div>
-                     <button @click="addExpense" class="w-full py-3 rounded-xl bg-accent-yellow text-yellow-900 font-bold text-sm shadow-lg shadow-yellow-400/30 mt-2">儲存</button>
-                </div>
-            </div>
-            
-            <!-- Shopping Add/Edit Modal (Existing) -->
-            <div v-if="showShoppingModal" class="modal-content bg-white rounded-3xl w-full max-w-sm shadow-2xl relative z-10 p-6">
-                <button @click="closeAllModals" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"><i class="fa-solid fa-xmark text-lg"></i></button>
-                <h3 class="font-bold text-lg mb-6 text-center text-slate-800">{{ isEditMode ? '編輯物品' : '新增物品' }}</h3>
-                
-                <div class="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
-                    <div class="flex items-center gap-2 mb-2">
-                        <span class="text-xs font-bold px-2 py-1 rounded bg-slate-100 text-slate-500">
-                            {{ shoppingSubTab === 'souvenir' ? '🎁 伴手禮' : '💄 藥妝' }}
-                        </span>
-                    </div>
-
-                    <div>
-                        <label class="form-label">商品名稱</label>
-                        <input v-model="newShoppingItem.name" type="text" placeholder="必買!" class="w-full bg-slate-50 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-deep-sea-blue">
-                    </div>
-
-                    <div>
-                        <label class="form-label">商店名稱</label>
-                        <input v-model="newShoppingItem.shopName" type="text" placeholder="在哪買?" class="w-full bg-slate-50 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-deep-sea-blue">
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="form-label">預估單價 (¥)</label>
-                            <input v-model="newShoppingItem.price" type="number" inputmode="decimal" placeholder="0" class="w-full bg-slate-50 rounded-xl p-3 text-sm outline-none">
-                        </div>
-                        <div>
-                            <label class="form-label">數量</label>
-                            <input v-model="newShoppingItem.quantity" type="number" placeholder="1" class="w-full bg-slate-50 rounded-xl p-3 text-sm outline-none">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="form-label">營業時間</label>
-                        <div class="flex items-center bg-slate-50 rounded-xl p-2 border border-slate-100 justify-center gap-1">
-                            <select v-model="newShoppingItem.openHour" class="bg-transparent font-bold outline-none text-center appearance-none w-8">
-                                <option v-for="h in 24" :value="(h-1).toString().padStart(2,'0')">{{ (h-1).toString().padStart(2,'0') }}</option>
-                            </select>
-                            <span>:</span>
-                            <select v-model="newShoppingItem.openMin" class="bg-transparent font-bold outline-none text-center appearance-none w-8">
-                                <option value="00">00</option><option value="30">30</option>
-                            </select>
-                            <span class="text-slate-300 mx-2">~</span>
-                            <select v-model="newShoppingItem.closeHour" class="bg-transparent font-bold outline-none text-center appearance-none w-8">
-                                <option v-for="h in 24" :value="(h-1).toString().padStart(2,'0')">{{ (h-1).toString().padStart(2,'0') }}</option>
-                            </select>
-                            <span>:</span>
-                            <select v-model="newShoppingItem.closeMin" class="bg-transparent font-bold outline-none text-center appearance-none w-8">
-                                <option value="00">00</option><option value="30">30</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Multiple Image Upload Section -->
-                    <div>
-                        <label class="form-label">照片 (可多選)</label>
-                        
-                        <!-- Image Grid -->
-                        <div class="image-preview-grid mb-3" v-if="newShoppingItem.images && newShoppingItem.images.length > 0">
-                            <div v-for="(img, idx) in newShoppingItem.images" :key="idx" class="image-preview-item">
-                                <img :src="img">
-                                <button @click="removeImage(idx)" class="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-[10px] shadow-sm">
-                                    <i class="fa-solid fa-xmark"></i>
-                                </button>
-                            </div>
-                             <label class="image-preview-item flex flex-col items-center justify-center bg-slate-50 border-dashed border-2 border-slate-200 cursor-pointer hover:bg-slate-100 text-slate-400">
-                                <input type="file" @change="handleImageUpload" class="hidden" multiple accept="image/*">
-                                <i class="fa-solid fa-plus text-lg"></i>
-                            </label>
-                        </div>
-
-                        <label v-else class="w-full h-32 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center cursor-pointer hover:bg-slate-100 transition-colors overflow-hidden">
-                            <input type="file" @change="handleImageUpload" class="hidden" multiple accept="image/*">
-                            <div class="text-center text-slate-400">
-                                <i class="fa-solid fa-camera text-2xl mb-2 block"></i>
-                                <span class="text-xs">上傳照片</span>
-                            </div>
-                        </label>
-                    </div>
-
-                    <div class="flex gap-2 pt-2">
-                        <button v-if="isEditMode" @click="removeShoppingItem(newShoppingItem.id)" class="px-4 py-3 rounded-xl bg-red-50 text-red-500"><i class="fa-solid fa-trash"></i></button>
-                        <button @click="saveShoppingItem" class="flex-1 py-3 rounded-xl bg-deep-sea-blue text-white font-bold text-sm shadow-lg shadow-blue-900/30">
-                            {{ isEditMode ? '儲存變更' : '加入清單' }}
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Shopping Detail View (Existing) -->
-            <div v-if="showShoppingDetailModal && selectedShoppingItem" class="modal-content bg-white rounded-3xl w-full max-w-sm shadow-2xl relative z-10 p-0 overflow-hidden">
-                <!-- Main Large Image -->
-                <div class="relative h-64 bg-slate-900 group cursor-pointer" @click="openImagePreview(selectedShoppingItem.images ? selectedShoppingItem.images[0] : null)">
-                    <img v-if="selectedShoppingItem.images && selectedShoppingItem.images.length > 0" :src="selectedShoppingItem.images[0]" class="w-full h-full object-cover">
-                    <div v-else class="w-full h-full flex items-center justify-center text-slate-500">
-                        <i class="fa-solid fa-image text-4xl"></i>
-                    </div>
-                    
-                    <button @click.stop="closeAllModals" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-black/30 text-white backdrop-blur-md z-20"><i class="fa-solid fa-xmark"></i></button>
-                    <div v-if="selectedShoppingItem.images && selectedShoppingItem.images.length > 0" class="absolute bottom-4 right-4 bg-black/50 text-white text-xs px-2 py-1 rounded-full backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity">
-                        <i class="fa-solid fa-expand mr-1"></i>放大檢視
-                    </div>
-                </div>
-
-                <div class="flex gap-2 p-4 pb-0 overflow-x-auto" v-if="selectedShoppingItem.images && selectedShoppingItem.images.length > 1">
-                     <div v-for="(img, idx) in selectedShoppingItem.images" :key="idx" 
-                          class="w-16 h-16 rounded-lg overflow-hidden border-2 cursor-pointer flex-shrink-0"
-                          :class="idx === 0 ? 'border-deep-sea-blue' : 'border-transparent'"
-                          @click="openImagePreview(img)">
-                         <img :src="img" class="w-full h-full object-cover">
-                     </div>
-                </div>
-
-                <div class="p-6 bg-white relative">
-                    <div class="flex justify-between items-start mb-2">
-                         <span class="text-xs font-bold px-2 py-1 rounded bg-slate-100 text-slate-500 mb-2 inline-block">
-                            {{ selectedShoppingItem.category === 'souvenir' ? '🎁 伴手禮' : '💄 藥妝' }}
-                        </span>
-                    </div>
-                    <h3 class="text-2xl font-bold text-slate-800 mb-1">{{ selectedShoppingItem.name }}</h3>
-                    <p class="text-sm text-slate-500 font-bold mb-4" v-if="selectedShoppingItem.shopName">@{{ selectedShoppingItem.shopName }}</p>
-
-                    <div class="grid grid-cols-3 gap-3 mb-6">
-                        <div class="bg-slate-50 p-3 rounded-xl text-center">
-                            <p class="text-[10px] text-slate-400">數量</p>
-                            <p class="font-bold text-slate-700">{{ selectedShoppingItem.quantity || 1 }}</p>
-                        </div>
-                        <div class="bg-slate-50 p-3 rounded-xl text-center">
-                            <p class="text-[10px] text-slate-400">單價</p>
-                            <p class="font-bold text-slate-700">¥{{ selectedShoppingItem.price || '-' }}</p>
-                        </div>
-                        <div class="bg-slate-50 p-3 rounded-xl text-center">
-                            <p class="text-[10px] text-slate-400">營業時間</p>
-                            <p class="font-bold text-slate-700 text-xs mt-1">
-                                {{ selectedShoppingItem.openHour || '09' }}:{{ selectedShoppingItem.openMin || '00' }}~{{ selectedShoppingItem.closeHour || '20' }}:{{ selectedShoppingItem.closeMin || '00' }}
-                            </p>
-                        </div>
-                    </div>
-
-                    <button @click="switchToEditShopping" class="w-full py-3 bg-deep-sea-blue text-white rounded-xl font-bold text-sm shadow-lg shadow-blue-900/20"><i class="fa-solid fa-pen mr-2"></i> 編輯物品</button>
-                </div>
-            </div>
-
-            <!-- 6. Full Screen Image Preview (Lightbox) -->
-             <div v-if="showImagePreviewModal" class="fixed inset-0 z-[70] lightbox-overlay flex justify-center items-center" @click="showImagePreviewModal = false">
-                <button class="absolute top-6 right-6 text-white text-3xl"><i class="fa-solid fa-xmark"></i></button>
-                <img :src="previewImageUrl" class="max-w-full max-h-screen object-contain p-4 transition-transform duration-300 transform scale-100">
-            </div>
-
         </div>
-    </transition>
+    </div>
+
+    <!-- Itinerary Add/Edit Modal -->
+    <div v-if="showItineraryModal" class="fixed inset-0 z-[60] flex items-center justify-center px-4">
+        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" @click="closeAllModals"></div>
+        <div class="bg-white rounded-3xl w-full max-w-sm max-h-[85vh] overflow-y-auto p-6 relative z-10">
+            <h3 class="font-bold text-lg mb-4 text-center">{{ isEditMode ? '編輯' : '新增' }}行程</h3>
+            
+            <div class="space-y-4">
+                <select v-model="newItinerary.category" class="w-full bg-slate-50 rounded-xl p-3 text-sm">
+                    <option value="sightseeing">📸 景點</option>
+                    <option value="food">🍴 飲食</option>
+                    <option value="shopping">🛍️ 購物</option>
+                    <option value="flight">✈️ 航班</option>
+                    <option value="transport">🚌 交通</option>
+                </select>
+                
+                <input v-model="newItinerary.name" placeholder="名稱" class="w-full bg-slate-50 rounded-xl p-3 text-sm">
+                
+                <div class="grid grid-cols-2 gap-3">
+                    <input v-model="newItinerary.startTime" type="time" class="bg-slate-50 rounded-xl p-3 text-sm">
+                    <select v-model="newItinerary.transportType" class="bg-slate-50 rounded-xl p-3 text-sm">
+                        <option value="walk">步行</option>
+                        <option value="car">自駕</option>
+                        <option value="bus">巴士</option>
+                        <option value="public">地鐵</option>
+                    </select>
+                </div>
+                
+                <textarea v-model="newItinerary.note" placeholder="備註..." class="w-full bg-slate-50 rounded-xl p-3 text-sm" rows="2"></textarea>
+                
+                <!-- Image Upload with Compression -->
+                <div>
+                    <label class="form-label">照片</label>
+                    <div class="image-preview-grid">
+                        <div v-for="(img, idx) in newItinerary.images" :key="idx" class="image-preview-item">
+                            <img :src="img">
+                            <button @click="removeImage(idx, newItinerary)" class="absolute top-1 right-1 bg-red-500 text-white w-5 h-5 rounded-full text-[10px]"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                        <label class="image-preview-item flex items-center justify-center bg-slate-50 border-2 border-dashed border-slate-200 cursor-pointer">
+                            <input type="file" @change="(e) => handleImageUpload(e, newItinerary)" class="hidden" multiple accept="image/*">
+                            <i class="fa-solid fa-plus text-slate-400"></i>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="flex gap-2">
+                    <button v-if="isEditMode" @click="removeItineraryItem(newItinerary.id)" class="px-4 py-3 bg-red-50 text-red-500 rounded-xl"><i class="fa-solid fa-trash"></i></button>
+                    <button @click="saveItineraryItem" class="flex-1 py-3 bg-deep-sea-blue text-white rounded-xl font-bold">儲存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hotel Add/Edit Modal -->
+    <div v-if="showHotelModal" class="fixed inset-0 z-[60] flex items-center justify-center px-4">
+        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" @click="closeAllModals"></div>
+        <div class="bg-white rounded-3xl w-full max-w-sm max-h-[90vh] overflow-y-auto p-6 relative z-10">
+            <h3 class="font-bold text-lg mb-4 text-center">{{ isEditHotel ? '編輯' : '新增' }}住宿</h3>
+            
+            <div class="space-y-4">
+                <div><label class="form-label">飯店名稱</label><input v-model="newHotel.name" class="w-full bg-slate-50 rounded-xl p-3 text-sm"></div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div><label class="form-label">入住日期</label><input v-model="newHotel.checkInDate" type="date" class="w-full bg-slate-50 rounded-xl p-3 text-sm"></div>
+                    <div><label class="form-label">退房日期</label><input v-model="newHotel.checkOutDate" type="date" class="w-full bg-slate-50 rounded-xl p-3 text-sm"></div>
+                </div>
+                <div><label class="form-label">地址</label><input v-model="newHotel.address" class="w-full bg-slate-50 rounded-xl p-3 text-sm"></div>
+                <div><label class="form-label">備註</label><textarea v-model="newHotel.note" class="w-full bg-slate-50 rounded-xl p-3 text-sm"></textarea></div>
+
+                <!-- File Upload for Booking (PDF/Image) -->
+                <div>
+                    <label class="form-label">訂單檔案/截圖 (支援 PDF/圖片)</label>
+                    <div class="space-y-2">
+                        <div v-for="(file, idx) in newHotel.files" :key="idx" class="flex items-center justify-between bg-slate-50 p-2 rounded-lg text-sm">
+                            <span class="truncate max-w-[200px] text-blue-600 underline cursor-pointer" @click="openFile(file)">{{ getFileName(file) }}</span>
+                            <button @click="removeFile(idx, newHotel)" class="text-red-500"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                        <label class="block w-full py-3 border-2 border-dashed border-slate-200 rounded-xl text-center text-slate-400 cursor-pointer">
+                            <input type="file" @change="(e) => handleFileUpload(e, newHotel)" class="hidden" multiple accept="image/*,application/pdf">
+                            <i class="fa-solid fa-cloud-arrow-up mr-1"></i> 上傳檔案
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Hotel Photos -->
+                <div>
+                    <label class="form-label">飯店外觀/房間照片</label>
+                    <div class="image-preview-grid">
+                        <div v-for="(img, idx) in newHotel.images" :key="idx" class="image-preview-item">
+                            <img :src="img">
+                            <button @click="removeImage(idx, newHotel)" class="absolute top-1 right-1 bg-red-500 text-white w-5 h-5 rounded-full text-[10px]"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                        <label class="image-preview-item flex items-center justify-center bg-slate-50 border-2 border-dashed border-slate-200 cursor-pointer">
+                            <input type="file" @change="(e) => handleImageUpload(e, newHotel)" class="hidden" multiple accept="image/*">
+                            <i class="fa-solid fa-plus text-slate-400"></i>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="flex gap-2 pt-2">
+                    <button v-if="isEditHotel" @click="removeHotelItem(newHotel.id)" class="px-4 py-3 bg-red-50 text-red-500 rounded-xl"><i class="fa-solid fa-trash"></i></button>
+                    <button @click="saveHotelItem" class="flex-1 py-3 bg-deep-sea-blue text-white rounded-xl font-bold">儲存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shopping Detail Modal (With Gallery Navigation) -->
+    <div v-if="showShoppingDetailModal && selectedShoppingItem" class="fixed inset-0 z-[60] flex items-center justify-center px-4">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" @click="closeAllModals"></div>
+        <div class="bg-white rounded-3xl w-full max-w-sm overflow-hidden relative z-10">
+            <!-- Image Area with Controls -->
+            <div class="relative h-72 bg-slate-100 group">
+                <img v-if="selectedShoppingItem.images && selectedShoppingItem.images.length > 0" 
+                     :src="selectedShoppingItem.images[currentGalleryIndex]" 
+                     class="w-full h-full object-contain bg-black">
+                <div v-else class="w-full h-full flex items-center justify-center text-slate-300"><i class="fa-solid fa-image text-4xl"></i></div>
+                
+                <button @click="closeAllModals" class="absolute top-3 right-3 w-8 h-8 bg-black/40 text-white rounded-full flex items-center justify-center backdrop-blur-sm"><i class="fa-solid fa-xmark"></i></button>
+                
+                <!-- Prev/Next Buttons -->
+                <div v-if="selectedShoppingItem.images && selectedShoppingItem.images.length > 1">
+                    <button @click.stop="galleryNav(-1)" class="gallery-nav-btn gallery-prev"><i class="fa-solid fa-chevron-left"></i></button>
+                    <button @click.stop="galleryNav(1)" class="gallery-nav-btn gallery-next"><i class="fa-solid fa-chevron-right"></i></button>
+                    <div class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/50 px-2 py-0.5 rounded-full text-white text-xs">
+                        {{ currentGalleryIndex + 1 }} / {{ selectedShoppingItem.images.length }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-5">
+                <h3 class="text-xl font-bold text-slate-800 mb-2">{{ selectedShoppingItem.name }}</h3>
+                <p class="text-sm text-slate-500 mb-4" v-if="selectedShoppingItem.shopName"><i class="fa-solid fa-store mr-1"></i> {{ selectedShoppingItem.shopName }}</p>
+                
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <div class="bg-slate-50 p-3 rounded-xl text-center">
+                        <span class="text-xs text-slate-400 block">單價</span>
+                        <span class="font-bold">¥{{ selectedShoppingItem.price || '-' }}</span>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-xl text-center">
+                        <span class="text-xs text-slate-400 block">數量</span>
+                        <span class="font-bold">x{{ selectedShoppingItem.quantity || 1 }}</span>
+                    </div>
+                </div>
+                
+                <button @click="switchToEditShopping" class="w-full py-3 bg-deep-sea-blue text-white rounded-xl font-bold shadow-lg shadow-blue-900/20">編輯內容</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Shopping Add/Edit Modal -->
+    <div v-if="showShoppingModal" class="fixed inset-0 z-[60] flex items-center justify-center px-4">
+         <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" @click="closeAllModals"></div>
+         <div class="bg-white rounded-3xl w-full max-w-sm max-h-[85vh] overflow-y-auto p-6 relative z-10">
+             <h3 class="font-bold text-lg mb-4 text-center">{{ isEditMode ? '編輯' : '新增' }}購物</h3>
+             <div class="space-y-4">
+                 <input v-model="newShoppingItem.name" placeholder="商品名稱" class="w-full bg-slate-50 rounded-xl p-3 text-sm">
+                 <input v-model="newShoppingItem.shopName" placeholder="商店 (選填)" class="w-full bg-slate-50 rounded-xl p-3 text-sm">
+                 <div class="grid grid-cols-2 gap-3">
+                     <input v-model="newShoppingItem.price" type="number" placeholder="單價" class="bg-slate-50 rounded-xl p-3 text-sm">
+                     <input v-model="newShoppingItem.quantity" type="number" placeholder="數量" class="bg-slate-50 rounded-xl p-3 text-sm">
+                 </div>
+
+                 <!-- Shopping Images -->
+                <div>
+                    <label class="form-label">商品照片</label>
+                    <div class="image-preview-grid">
+                        <div v-for="(img, idx) in newShoppingItem.images" :key="idx" class="image-preview-item">
+                            <img :src="img">
+                            <button @click="removeImage(idx, newShoppingItem)" class="absolute top-1 right-1 bg-red-500 text-white w-5 h-5 rounded-full text-[10px]"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                        <label class="image-preview-item flex items-center justify-center bg-slate-50 border-2 border-dashed border-slate-200 cursor-pointer">
+                            <input type="file" @change="(e) => handleImageUpload(e, newShoppingItem)" class="hidden" multiple accept="image/*">
+                            <i class="fa-solid fa-plus text-slate-400"></i>
+                        </label>
+                    </div>
+                </div>
+
+                 <div class="flex gap-2 mt-4">
+                     <button v-if="isEditMode" @click="removeShoppingItem(newShoppingItem.id)" class="px-4 py-3 bg-red-50 text-red-500 rounded-xl"><i class="fa-solid fa-trash"></i></button>
+                     <button @click="saveShoppingItem" class="flex-1 py-3 bg-deep-sea-blue text-white rounded-xl font-bold">儲存</button>
+                 </div>
+             </div>
+         </div>
+    </div>
 
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-    import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
-    import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, setDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+    import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, setDoc, writeBatch } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
     import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-storage.js";
 
-    const { createApp, ref, computed, onMounted, watch } = Vue
+    const { createApp, ref, computed, onMounted } = Vue
 
     createApp({
         setup() {
-            // 使用您的 Firebase 配置 (請確保這些 Key 已經在 Firebase Console 開通)
+            // Firebase Config
             const firebaseConfig = {
                apiKey: "AIzaSyA8wiv63sS1lbCkOOeYlZpL1RlKHvvAAYA",
                 authDomain: "hokkaido-b390b.firebaseapp.com",
@@ -1186,541 +624,375 @@
                 appId: "1:199459788936:web:f430fac50b022959f8e73d",
                 measurementId: "G-3XGXW53RDB"
             };
-            
-            // 重要修改：為了讓全家共用行程，我們不再使用使用者 ID 分隔，而是使用統一的路徑
+
             const TRIP_ID = 'family_hokkaido_2026';
-            const DATA_PATH = 'shared_data'; // 將資料放在公用資料夾
+            const DATA_PATH = 'shared_data';
 
             const app = initializeApp(firebaseConfig);
             const auth = getAuth(app);
             const db = getFirestore(app);
             const storage = getStorage(app);
             
-            const userId = ref(null); // 仍保留 UserID 用於上傳圖片檔名辨識，但邏輯不依賴它做權限區隔
+            const userId = ref(null);
             const isLoading = ref(false);
+            const loadingText = ref('');
+            const toastMessage = ref('');
 
-            // Toast Notification System
-            const toasts = ref([]);
-            const showToast = (message, type = 'success') => {
-                const id = Date.now();
-                toasts.value.push({ id, message, type });
-                setTimeout(() => {
-                    toasts.value = toasts.value.filter(t => t.id !== id);
-                }, 3000);
+            const showToast = (msg) => {
+                toastMessage.value = msg;
+                setTimeout(() => toastMessage.value = '', 3000);
             };
 
-            // Data
-            const EXCHANGE_RATE = 0.215;
-            const CATEGORY_MAP = {
-                sightseeing: { color: 'bg-emerald-400', icon: 'fa-solid fa-camera' },
-                food: { color: 'bg-orange-400', icon: 'fa-solid fa-utensils' },
-                shopping: { color: 'bg-pink-400', icon: 'fa-solid fa-bag-shopping' },
-                accommodation: { color: 'bg-indigo-400', icon: 'fa-solid fa-bed' },
-                flight: { color: 'bg-sky-500', icon: 'fa-solid fa-plane-departure' },
-                transport: { color: 'bg-slate-400', icon: 'fa-solid fa-van-shuttle' },
-                ticket: { color: 'bg-teal-400', icon: 'fa-solid fa-ticket' },
-                other: { color: 'bg-gray-400', icon: 'fa-solid fa-circle-info' },
-                stay: { color: 'bg-indigo-400', icon: 'fa-solid fa-hotel' },
+            // Image Compression Helper (Frontend)
+            // This is the key fix for "slow uploads"
+            const compressImage = async (file) => {
+                return new Promise((resolve) => {
+                    const maxWidth = 1200; // Resize to max 1200px width
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = (event) => {
+                        const img = new Image();
+                        img.src = event.target.result;
+                        img.onload = () => {
+                            const canvas = document.createElement('canvas');
+                            let width = img.width;
+                            let height = img.height;
+                            
+                            if (width > maxWidth) {
+                                height = Math.round(height * (maxWidth / width));
+                                width = maxWidth;
+                            }
+                            
+                            canvas.width = width;
+                            canvas.height = height;
+                            const ctx = canvas.getContext('2d');
+                            ctx.drawImage(img, 0, 0, width, height);
+                            
+                            // Convert to Blob (JPEG quality 0.7)
+                            canvas.toBlob((blob) => {
+                                resolve(blob);
+                            }, 'image/jpeg', 0.7);
+                        };
+                    };
+                });
             };
 
+            // Data Refs
             const currentTab = ref('itinerary');
             const shoppingSubTab = ref('souvenir');
-            
-            // Trip Settings
-            const tripSettings = ref({
-                startDate: '2026-02-01',
-                duration: 7
-            });
             const dates = ref([]);
-
-            // Helper: Generate Dates based on Settings
-            const generateDates = () => {
-                const result = [];
-                const start = new Date(tripSettings.value.startDate);
-                const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
-                
-                for(let i = 0; i < tripSettings.value.duration; i++) {
-                    const d = new Date(start);
-                    d.setDate(start.getDate() + i);
-                    
-                    const month = d.getMonth() + 1;
-                    const date = d.getDate();
-                    const day = d.getDay();
-                    
-                    result.push({
-                        date: `${month}/${date}`,
-                        fullDate: d.toISOString().split('T')[0], // for logic usage
-                        weekday: weekdays[day],
-                        hasCar: false // Default to false, logic could be expanded
-                    });
-                }
-                dates.value = result;
-            };
-
-            // Initial Generation
-            generateDates();
-
-            // Reactive Data Containers
-            const hotels = ref([]);
-            const itineraryData = ref({}); 
+            const tripSettings = ref({ startDate: '2026-02-01', duration: 7 });
+            
+            const itineraryData = ref({});
             const shoppingList = ref([]);
             const expenses = ref([]);
-            const bannerUrl = ref(''); 
-
-            // Weather Data (Mockup - in real app could be fetched)
-            const weatherData = ref([
-                { condition: 'snow', temp: '0/-5', feel: '-8' },
-                { condition: 'snow', temp: '-1/-7', feel: '-10' },
-                { condition: 'snow', temp: '-2/-10', feel: '-12' },
-                { condition: 'snow', temp: '-3/-8', feel: '-11' },
-                { condition: 'snow', temp: '1/-4', feel: '-6' },
-                { condition: 'snow', temp: '2/-3', feel: '-5' },
-                { condition: 'cloudy', temp: '3/-2', feel: '-3' },
-            ]); 
-
+            const hotels = ref([]);
+            const bannerUrl = ref('');
+            
             const selectedDateIndex = ref(0);
             
-            // Modal States
-            const showShoppingModal = ref(false);
-            const showShoppingDetailModal = ref(false); 
-            const showExpenseModal = ref(false);
+            // Modals
+            const showSettingsModal = ref(false);
             const showItineraryModal = ref(false);
-            const showItineraryDetailModal = ref(false);
-            const showHotelModal = ref(false); 
-            const showHotelDetailModal = ref(false); 
-            const showImagePreviewModal = ref(false);
-            const showSettingsModal = ref(false); 
-            const previewImageUrl = ref('');
-
+            const showShoppingModal = ref(false);
+            const showShoppingDetailModal = ref(false);
+            const showHotelModal = ref(false);
+            
+            // Edit/New Items
             const isEditMode = ref(false);
             const isEditHotel = ref(false);
-            
-            // Selected Items
-            const selectedShoppingItem = ref(null);
-            const selectedItineraryItem = ref(null);
-            const selectedHotelItem = ref(null);
-
-            // Forms
             const newItinerary = ref({ images: [] });
             const newShoppingItem = ref({ images: [] });
-            const newHotel = ref({ images: [] });
-            const newExpense = ref({ name: '', amount: null, category: 'food', payment: 'cash' });
+            const newHotel = ref({ images: [], files: [] }); // Added files
+            
+            const selectedShoppingItem = ref(null);
+            const currentGalleryIndex = ref(0); // For Shopping Gallery
             
             const currencyInput = ref(10000);
-            const currencyResult = ref(Math.round(10000 * EXCHANGE_RATE));
+            const currencyResult = ref(0);
 
             // Computed
-            const currentItinerary = computed(() => {
-                return itineraryData.value[selectedDateIndex.value] || [];
-            });
+            const currentItinerary = computed(() => itineraryData.value[selectedDateIndex.value] || []);
+            const filteredShoppingList = computed(() => shoppingList.value.filter(item => item.category === shoppingSubTab.value));
+            const totalExpensesJPY = computed(() => expenses.value.reduce((sum, e) => sum + e.amount, 0));
+            const totalExpensesTWD = computed(() => Math.round(totalExpensesJPY.value * 0.215));
 
-            const filteredShoppingList = computed(() => {
-                return shoppingList.value.filter(item => item.category === shoppingSubTab.value);
-            });
+            // Icons & Helpers
+            const getCategoryColor = (cat) => ({
+                sightseeing: 'bg-emerald-400', food: 'bg-orange-400', shopping: 'bg-pink-400',
+                flight: 'bg-sky-500', transport: 'bg-slate-400', accommodation: 'bg-indigo-400'
+            }[cat] || 'bg-gray-400');
             
-            const currentWeather = computed(() => weatherData.value[selectedDateIndex.value % weatherData.value.length] || weatherData.value[0]);
-            const currentDateInfo = computed(() => dates.value[selectedDateIndex.value] || dates.value[0]);
+            const getCategoryIcon = (cat) => ({
+                sightseeing: 'fa-solid fa-camera', food: 'fa-solid fa-utensils', shopping: 'fa-solid fa-bag-shopping',
+                flight: 'fa-solid fa-plane', transport: 'fa-solid fa-bus', accommodation: 'fa-solid fa-bed'
+            }[cat] || 'fa-solid fa-info');
 
-            const totalExpensesJPY = computed(() => expenses.value.reduce((sum, exp) => sum + exp.amount, 0));
-            const totalExpensesTWD = computed(() => Math.round(totalExpensesJPY.value * EXCHANGE_RATE));
+            const getTransportIcon = (t) => ({ walk: 'fa-solid fa-person-walking', car: 'fa-solid fa-car', bus: 'fa-solid fa-bus', public: 'fa-solid fa-train-subway' }[t] || 'fa-solid fa-arrow-right');
             
-            const anyModalOpen = computed(() => showItineraryModal.value || showShoppingModal.value || showExpenseModal.value || showShoppingDetailModal.value || showItineraryDetailModal.value || showHotelModal.value || showHotelDetailModal.value || showImagePreviewModal.value || showSettingsModal.value);
+            const formatNumber = (n) => n?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            const calculateCurrency = () => currencyResult.value = Math.round(currencyInput.value * 0.215);
 
-            // --- Firebase Logic ---
-
+            // --- Initialization ---
             onMounted(async () => {
-                try {
-                    // Anonymous sign-in is still needed for security rules
-                    await signInAnonymously(auth);
-                } catch (error) {
-                    console.error("Auth Error:", error);
-                    showToast("登入驗證失敗，請檢查 Firebase 設定", 'error');
-                }
-
+                await signInAnonymously(auth);
                 onAuthStateChanged(auth, (user) => {
                     if (user) {
                         userId.value = user.uid;
-                        // Notice: We don't pass user.uid to listeners anymore
-                        setupFirestoreListeners(); 
+                        setupListeners();
                     }
                 });
-                
                 calculateCurrency();
             });
 
-            const setupFirestoreListeners = () => {
-                // Shared Data Path: trips/{TRIP_ID}/{DATA_PATH}
-                // This ensures everyone sees the same data
-                
-                // 1. Settings Listener
-                const settingsRef = doc(db, 'trips', TRIP_ID, DATA_PATH, 'settings');
-                onSnapshot(settingsRef, (doc) => {
-                    if (doc.exists()) {
-                        const data = doc.data();
-                        bannerUrl.value = data.headerImage || '';
-                        
-                        if(data.tripStartDate && data.tripDuration) {
-                            tripSettings.value.startDate = data.tripStartDate;
-                            tripSettings.value.duration = data.tripDuration;
-                            generateDates();
-                        }
+            const generateDates = () => {
+                const arr = [];
+                const start = new Date(tripSettings.value.startDate);
+                const weekdays = ['日','一','二','三','四','五','六'];
+                for(let i=0; i<tripSettings.value.duration; i++){
+                    const d = new Date(start);
+                    d.setDate(start.getDate() + i);
+                    arr.push({ 
+                        date: `${d.getMonth()+1}/${d.getDate()}`,
+                        weekday: weekdays[d.getDay()] 
+                    });
+                }
+                dates.value = arr;
+            };
+
+            const setupListeners = () => {
+                // Settings
+                onSnapshot(doc(db, 'trips', TRIP_ID, DATA_PATH, 'settings'), (docSnap) => {
+                    if(docSnap.exists()){
+                        const d = docSnap.data();
+                        bannerUrl.value = d.headerImage;
+                        if(d.tripStartDate) tripSettings.value.startDate = d.tripStartDate;
+                        if(d.tripDuration) tripSettings.value.duration = d.tripDuration;
+                        generateDates();
                     }
                 });
-
-                // 2. Itinerary Listener
-                const itineraryRef = collection(db, 'trips', TRIP_ID, 'itinerary_items');
-                onSnapshot(itineraryRef, (snapshot) => {
+                // Itinerary
+                onSnapshot(collection(db, 'trips', TRIP_ID, 'itinerary_items'), (snap) => {
                     const temp = {};
-                    snapshot.forEach(doc => {
-                        const data = doc.data();
-                        const dayIdx = data.dayIndex || 0;
-                        
-                        if(!temp[dayIdx]) temp[dayIdx] = [];
-                        temp[dayIdx].push({ ...data, id: doc.id });
+                    snap.forEach(d => {
+                        const data = d.data();
+                        const day = data.dayIndex || 0;
+                        if(!temp[day]) temp[day] = [];
+                        temp[day].push({ ...data, id: d.id });
                     });
-                    
-                    // Sort by startTime
-                    Object.keys(temp).forEach(key => {
-                        temp[key].sort((a, b) => (a.startTime || '').localeCompare(b.startTime || ''));
+                    // Sort by 'order' then 'startTime'
+                    Object.keys(temp).forEach(k => {
+                        temp[k].sort((a,b) => (a.order || 999) - (b.order || 999) || (a.startTime||'').localeCompare(b.startTime||''));
                     });
-                    
                     itineraryData.value = temp;
-                }, (error) => showToast("讀取行程失敗: " + error.message, 'error'));
-
-                // 3. Shopping Listener
-                const shoppingRef = collection(db, 'trips', TRIP_ID, 'shopping_items');
-                onSnapshot(shoppingRef, (snapshot) => {
-                    shoppingList.value = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
                 });
-
-                // 4. Expenses Listener
-                const expensesRef = collection(db, 'trips', TRIP_ID, 'expense_items');
-                const expensesQuery = query(expensesRef, orderBy("date", "desc")); 
-                onSnapshot(expensesQuery, (snapshot) => {
-                    expenses.value = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
-                });
-
-                // 5. Hotels Listener
-                const hotelsRef = collection(db, 'trips', TRIP_ID, 'hotel_items');
-                onSnapshot(hotelsRef, (snapshot) => {
-                    hotels.value = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
-                });
+                // Shopping
+                onSnapshot(collection(db, 'trips', TRIP_ID, 'shopping_items'), (snap) => shoppingList.value = snap.docs.map(d => ({...d.data(), id:d.id})));
+                // Hotels
+                onSnapshot(collection(db, 'trips', TRIP_ID, 'hotel_items'), (snap) => hotels.value = snap.docs.map(d => ({...d.data(), id:d.id})));
             };
 
-            // Helper: Convert DataURL to Blob for Upload
-            const dataURLtoBlob = (dataurl) => {
-                if (!dataurl.startsWith('data:')) return null;
-                var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
-                    bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
-                while(n--){
-                    u8arr[n] = bstr.charCodeAt(n);
-                }
-                return new Blob([u8arr], {type:mime});
-            }
+            // --- Logic Updates ---
 
-            // Helper: Process Images
-            const processImagesAndUpload = async (imagesArray) => {
-                if (!imagesArray || imagesArray.length === 0) return [];
-                isLoading.value = true;
-                const processedUrls = [];
-                
-                try {
-                    for (const img of imagesArray) {
-                        if (img.startsWith('data:')) {
-                            // Needs Upload
-                            const blob = dataURLtoBlob(img);
-                            const filename = `img_${Date.now()}_${Math.random().toString(36).substring(7)}`;
-                            // Store in a shared folder or by user - by user is fine for storage organization
-                            const fileRef = storageRef(storage, `uploads/${userId.value}/${filename}`);
-                            await uploadBytes(fileRef, blob);
-                            const url = await getDownloadURL(fileRef);
-                            processedUrls.push(url);
-                        } else {
-                            // Already URL
-                            processedUrls.push(img);
-                        }
+            // 1. Upload Logic (Compressed)
+            const processUploads = async (filesArray) => {
+                const urls = [];
+                for(const item of filesArray) {
+                    if(item.startsWith('data:')) {
+                        // It's a base64 from FileReader, we need to upload
+                        // Note: In handleImageUpload, we already compressed it to Blob, 
+                        // but here we simplify by assuming the input is the result of FileReader.
+                        // Actually, for better flow: handleImageUpload stores base64 for preview.
+                        // We convert base64 -> Blob -> Upload.
+                        
+                        const res = await fetch(item);
+                        const blob = await res.blob();
+                        
+                        const filename = `upload_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+                        const fileRef = storageRef(storage, `uploads/${filename}`);
+                        await uploadBytes(fileRef, blob);
+                        urls.push(await getDownloadURL(fileRef));
+                    } else {
+                        urls.push(item); // Already a URL
                     }
-                } catch (error) {
-                    console.error("Upload failed", error);
-                    showToast("照片上傳失敗 (請檢查 Storage 設定)", 'error');
-                } finally {
-                    isLoading.value = false;
                 }
-                return processedUrls;
+                return urls;
             };
 
-            // --- Banner & Settings Handling ---
-            const handleBannerUpload = async (e) => {
-                const file = e.target.files[0];
-                if (!file || !userId.value) return;
-
-                isLoading.value = true;
-                try {
-                    const filename = `banner_${Date.now()}`;
-                    const fileRef = storageRef(storage, `uploads/${userId.value}/${filename}`);
-                    await uploadBytes(fileRef, file);
-                    const url = await getDownloadURL(fileRef);
-
-                    // Save URL to Firestore (Shared Settings)
-                    const settingsRef = doc(db, 'trips', TRIP_ID, DATA_PATH, 'settings');
-                    await setDoc(settingsRef, { headerImage: url }, { merge: true });
-                    
-                    showToast("Banner 更新成功！");
-                } catch (error) {
-                    console.error("Banner upload error:", error);
-                    showToast("Banner 更新失敗", 'error');
-                } finally {
-                    isLoading.value = false;
-                }
+            // 2. Date Management (Add/Remove Days)
+            const changeDuration = (delta) => {
+                const newDur = tripSettings.value.duration + delta;
+                if(newDur < 1) return;
+                tripSettings.value.duration = newDur;
             };
 
             const saveTripSettings = async () => {
                 isLoading.value = true;
-                try {
-                    const settingsRef = doc(db, 'trips', TRIP_ID, DATA_PATH, 'settings');
-                    await setDoc(settingsRef, { 
-                        tripStartDate: tripSettings.value.startDate,
-                        tripDuration: tripSettings.value.duration
-                    }, { merge: true });
-                    
-                    generateDates();
-                    showToast("行程表更新成功！");
-                    closeAllModals();
-                    selectedDateIndex.value = 0;
-                } catch(e) {
-                    console.error(e);
-                    showToast("更新失敗", 'error');
-                } finally {
-                    isLoading.value = false;
-                }
+                await setDoc(doc(db, 'trips', TRIP_ID, DATA_PATH, 'settings'), {
+                    tripStartDate: tripSettings.value.startDate,
+                    tripDuration: tripSettings.value.duration
+                }, { merge: true });
+                generateDates();
+                isLoading.value = false;
+                showSettingsModal.value = false;
+                showToast("設定已更新");
             };
 
-
-            // --- Itinerary CRUD ---
-            const saveItineraryItem = async () => {
-                if(!newItinerary.value.name) return;
+            // 3. Manual Reorder
+            const reorderItem = async (item, direction) => {
+                // direction: -1 (up), 1 (down)
+                const dayList = itineraryData.value[selectedDateIndex.value];
+                const currentIndex = dayList.findIndex(i => i.id === item.id);
+                if(currentIndex === -1) return;
                 
-                isLoading.value = true;
-                try {
-                    if(newItinerary.value.category === 'flight') {
-                        newItinerary.value.transportType = 'flight';
-                    }
-
-                    const finalImages = await processImagesAndUpload(newItinerary.value.images);
-                    const itemData = { ...newItinerary.value, images: finalImages, dayIndex: selectedDateIndex.value };
-                    delete itemData.id; 
-
-                    const colRef = collection(db, 'trips', TRIP_ID, 'itinerary_items');
-
-                    if(isEditMode.value && newItinerary.value.id) {
-                        await updateDoc(doc(colRef, newItinerary.value.id), itemData);
-                        showToast("行程更新成功");
-                    } else {
-                        await addDoc(colRef, itemData);
-                        showToast("行程新增成功");
-                    }
-                    closeAllModals();
-                } catch (e) {
-                    showToast("儲存失敗: " + e.message, 'error');
-                } finally {
-                    isLoading.value = false;
-                }
-            };
-
-            const removeItineraryItem = async (id) => {
-                if(confirm("確定刪除嗎？")) { 
-                    try {
-                        await deleteDoc(doc(db, 'trips', TRIP_ID, 'itinerary_items', id));
-                        showToast("已刪除");
-                        closeAllModals();
-                    } catch(e) {
-                        showToast("刪除失敗", 'error');
-                    }
-                }
-            };
-
-            // --- Shopping CRUD ---
-
-            const saveShoppingItem = async () => {
-                if(!newShoppingItem.value.name) return;
+                const targetIndex = currentIndex + direction;
+                if(targetIndex < 0 || targetIndex >= dayList.length) return;
                 
-                isLoading.value = true;
-                try {
-                    if(!isEditMode.value) newShoppingItem.value.category = shoppingSubTab.value;
-                    const finalImages = await processImagesAndUpload(newShoppingItem.value.images);
-                    const itemData = { ...newShoppingItem.value, images: finalImages };
-                    delete itemData.id;
+                const neighbor = dayList[targetIndex];
+                
+                // Swap 'order' values. If undefined, use index as base
+                const itemOrder = item.order ?? currentIndex;
+                const neighborOrder = neighbor.order ?? targetIndex;
 
-                    const colRef = collection(db, 'trips', TRIP_ID, 'shopping_items');
-
-                    if(isEditMode.value && newShoppingItem.value.id) {
-                        await updateDoc(doc(colRef, newShoppingItem.value.id), itemData);
-                        showToast("物品更新成功");
-                    } else {
-                        await addDoc(colRef, itemData);
-                        showToast("物品加入成功");
-                    }
-                    closeAllModals();
-                } catch(e) {
-                    showToast("儲存失敗", 'error');
-                } finally {
-                    isLoading.value = false;
-                }
+                const batch = writeBatch(db);
+                batch.update(doc(db, 'trips', TRIP_ID, 'itinerary_items', item.id), { order: neighborOrder });
+                batch.update(doc(db, 'trips', TRIP_ID, 'itinerary_items', neighbor.id), { order: itemOrder });
+                
+                await batch.commit();
             };
 
-            const removeShoppingItem = async (id) => {
-                if(confirm("確定刪除嗎？")) {
-                    await deleteDoc(doc(db, 'trips', TRIP_ID, 'shopping_items', id));
-                    showToast("已刪除");
-                    closeAllModals();
-                }
+            // 4. Hotel Logic (Files)
+            const handleFileUpload = (e, target) => {
+                const files = e.target.files;
+                if(!files.length) return;
+                if(!target.files) target.files = [];
+                // For PDF/File uploads, we keep them as is (Base64 for preview is heavy for PDF)
+                // For this simple app, we'll upload immediately or read as DataURL if small? 
+                // Let's use DataURL for simplicity in "processUploads" logic, but distinguish later.
+                Array.from(files).forEach(file => {
+                     const reader = new FileReader();
+                     reader.onload = (evt) => target.files.push(evt.target.result); // Push base64
+                     reader.readAsDataURL(file);
+                });
             };
 
-            // --- Hotel CRUD ---
+            const getFileName = (urlOrBase64) => {
+                if(urlOrBase64.startsWith('data:')) return "新檔案 (尚未儲存)";
+                return "已上傳檔案"; // Simplifying filename display
+            };
+
+            const openFile = (url) => {
+                if(!url.startsWith('data:')) window.open(url, '_blank');
+            };
 
             const saveHotelItem = async () => {
-                if(!newHotel.value.name) return;
-                
                 isLoading.value = true;
-                try {
-                    const finalImages = await processImagesAndUpload(newHotel.value.images);
-                    const itemData = { ...newHotel.value, images: finalImages };
-                    delete itemData.id;
-
-                    const colRef = collection(db, 'trips', TRIP_ID, 'hotel_items');
-
-                    if(isEditHotel.value && newHotel.value.id) {
-                        await updateDoc(doc(colRef, newHotel.value.id), itemData);
-                        showToast("住宿更新成功");
-                    } else {
-                        await addDoc(colRef, itemData);
-                        showToast("住宿新增成功");
-                    }
-                    closeAllModals();
-                } catch(e) {
-                    showToast("儲存失敗", 'error');
-                } finally {
-                    isLoading.value = false;
-                }
-            };
-
-            const removeHotelItem = async (id) => {
-                if(confirm("確定刪除嗎？")) {
-                    await deleteDoc(doc(db, 'trips', TRIP_ID, 'hotel_items', id));
-                    closeAllModals();
-                }
-            };
-
-            // --- Expense CRUD ---
-
-            const addExpense = async () => {
-                if(!newExpense.value.name || !newExpense.value.amount) return;
+                loadingText.value = '上傳中...';
+                const imgUrls = await processUploads(newHotel.value.images);
+                const fileUrls = await processUploads(newHotel.value.files || []); // Reuse upload logic
                 
-                isLoading.value = true;
-                try {
-                    const itemData = { ...newExpense.value, date: newExpense.value.date || new Date().toISOString().split('T')[0] };
-                    const colRef = collection(db, 'trips', TRIP_ID, 'expense_items');
-                    await addDoc(colRef, itemData);
-                    showToast("記帳成功");
-                    closeAllModals();
-                } catch(e) {
-                    showToast("記帳失敗", 'error');
-                } finally {
-                    isLoading.value = false;
-                }
+                const data = { ...newHotel.value, images: imgUrls, files: fileUrls };
+                delete data.id;
+                
+                if(isEditHotel.value) await updateDoc(doc(db, 'trips', TRIP_ID, 'hotel_items', newHotel.value.id), data);
+                else await addDoc(collection(db, 'trips', TRIP_ID, 'hotel_items'), data);
+                
+                isLoading.value = false;
+                closeAllModals();
+                showToast("住宿儲存成功");
             };
 
-            const removeExpense = async (id) => {
-                if(confirm("確定刪除嗎？")) {
-                    await deleteDoc(doc(db, 'trips', TRIP_ID, 'expense_items', id));
-                    showToast("已刪除");
+            // Generic Handlers
+            const handleImageUpload = async (e, targetRef) => {
+                const files = e.target.files;
+                if(!files.length) return;
+                loadingText.value = '壓縮圖片中...';
+                isLoading.value = true; // Show spinner while compressing
+                
+                if(!targetRef.images) targetRef.images = [];
+                
+                for(const file of files) {
+                    const compressedBlob = await compressImage(file);
+                    // Convert Blob back to base64 for preview
+                    const reader = new FileReader();
+                    reader.onload = (evt) => targetRef.images.push(evt.target.result);
+                    reader.readAsDataURL(compressedBlob);
                 }
+                isLoading.value = false;
             };
 
-            // --- Common Methods ---
-
-            const calculateCurrency = () => currencyResult.value = Math.round(currencyInput.value * EXCHANGE_RATE);
-            const formatNumber = (num) => num ? num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : '0';
-            
-            const getCategoryColor = (cat) => CATEGORY_MAP[cat]?.color || CATEGORY_MAP.other.color;
-            const getCategoryIcon = (cat) => CATEGORY_MAP[cat]?.icon || CATEGORY_MAP.other.icon;
-            
-            const getWeatherIcon = (c) => ({
-                snow: 'fa-solid fa-snowflake', sunny: 'fa-solid fa-sun', cloudy: 'fa-solid fa-cloud', rain: 'fa-solid fa-cloud-showers-heavy'
-            }[c] || 'fa-solid fa-cloud');
-
-            const getWeatherDescription = (c) => ({
-                snow: '降雪機率高', sunny: '晴朗好天氣', cloudy: '多雲陰天', rain: '有雨請帶傘'
-            }[c] || '天氣未知');
-
-            const getTransportIcon = (t) => ({
-                walk: 'fa-solid fa-person-walking', car: 'fa-solid fa-car', bus: 'fa-solid fa-bus', public: 'fa-solid fa-train-subway', flight: 'fa-solid fa-plane'
-            }[t] || 'fa-solid fa-arrow-right');
+            const removeImage = (idx, target) => target.images.splice(idx, 1);
+            const removeFile = (idx, target) => target.files.splice(idx, 1);
 
             const handleAddClick = () => {
                 if(currentTab.value === 'itinerary') {
                     isEditMode.value = false;
-                    newItinerary.value = { id: null, name: '', category: 'sightseeing', startTime: '', note: '', transportType: 'walk', address: '', images: [] };
+                    const dayList = itineraryData.value[selectedDateIndex.value] || [];
+                    const maxOrder = dayList.length > 0 ? Math.max(...dayList.map(i => i.order || 0)) : 0;
+                    
+                    newItinerary.value = { category: 'sightseeing', transportType: 'walk', images: [], dayIndex: selectedDateIndex.value, order: maxOrder + 1 };
                     showItineraryModal.value = true;
                 } else if(currentTab.value === 'shopping') {
                     isEditMode.value = false;
-                    newShoppingItem.value = { 
-                        id: null, category: shoppingSubTab.value, name: '', shopName: '', 
-                        price: null, quantity: 1, openHour: '09', openMin: '00', closeHour: '21', closeMin: '00', images: [] 
-                    };
+                    newShoppingItem.value = { category: shoppingSubTab.value, images: [] };
                     showShoppingModal.value = true;
                 } else if(currentTab.value === 'info') {
                     isEditHotel.value = false;
-                    newHotel.value = { id: null, name: '', date: '', phone: '', images: [] };
+                    newHotel.value = { images: [], files: [] };
                     showHotelModal.value = true;
-                } else {
-                    newExpense.value = { name: '', amount: null, category: 'food', payment: 'cash' };
-                    showExpenseModal.value = true;
                 }
             };
 
-            const closeAllModals = () => {
-                showItineraryModal.value = false;
-                showShoppingModal.value = false;
-                showExpenseModal.value = false;
-                showShoppingDetailModal.value = false;
-                showItineraryDetailModal.value = false;
-                showImagePreviewModal.value = false;
-                showHotelModal.value = false;
-                showHotelDetailModal.value = false;
-                showSettingsModal.value = false; 
+            const saveItineraryItem = async () => {
+                isLoading.value = true;
+                const urls = await processUploads(newItinerary.value.images);
+                const data = { ...newItinerary.value, images: urls, dayIndex: selectedDateIndex.value };
+                delete data.id;
+                
+                if(isEditMode.value) await updateDoc(doc(db, 'trips', TRIP_ID, 'itinerary_items', newItinerary.value.id), data);
+                else await addDoc(collection(db, 'trips', TRIP_ID, 'itinerary_items'), data);
+                
                 isLoading.value = false;
-            };
-
-            // Detail Logic
-            const openItineraryDetail = (item) => {
-                selectedItineraryItem.value = item;
-                showItineraryDetailModal.value = true;
-            };
-
-            const switchToEditItinerary = () => {
-                showItineraryDetailModal.value = false;
-                isEditMode.value = true;
-                newItinerary.value = JSON.parse(JSON.stringify(selectedItineraryItem.value));
-                if(!newItinerary.value.images) newItinerary.value.images = [];
-                showItineraryModal.value = true;
-            };
-
-            const openHotelDetail = (item) => {
-                selectedHotelItem.value = item;
-                showHotelDetailModal.value = true;
+                closeAllModals();
             };
             
-            const switchToEditHotel = () => {
-                showHotelDetailModal.value = false;
-                isEditHotel.value = true;
-                newHotel.value = JSON.parse(JSON.stringify(selectedHotelItem.value));
-                if(!newHotel.value.images) newHotel.value.images = [];
-                showHotelModal.value = true;
+            const removeItineraryItem = async (id) => {
+                if(confirm("刪除此行程？")) {
+                    await deleteDoc(doc(db, 'trips', TRIP_ID, 'itinerary_items', id));
+                    closeAllModals();
+                }
             };
 
+            const saveShoppingItem = async () => {
+                isLoading.value = true;
+                if(!isEditMode.value) newShoppingItem.value.category = shoppingSubTab.value;
+                const urls = await processUploads(newShoppingItem.value.images);
+                const data = { ...newShoppingItem.value, images: urls };
+                delete data.id;
+                
+                if(isEditMode.value) await updateDoc(doc(db, 'trips', TRIP_ID, 'shopping_items', newShoppingItem.value.id), data);
+                else await addDoc(collection(db, 'trips', TRIP_ID, 'shopping_items'), data);
+                isLoading.value = false;
+                closeAllModals();
+            };
+            
+            const removeShoppingItem = async (id) => {
+                if(confirm("刪除商品？")) {
+                    await deleteDoc(doc(db, 'trips', TRIP_ID, 'shopping_items', id));
+                    closeAllModals();
+                }
+            };
+            
+            // Detail Openers
+            const openItineraryDetail = (item) => {
+                isEditMode.value = true;
+                newItinerary.value = JSON.parse(JSON.stringify(item));
+                showItineraryModal.value = true; // Reusing edit modal for details to simplify
+            };
+            
             const openShoppingDetail = (item) => {
                 selectedShoppingItem.value = item;
+                currentGalleryIndex.value = 0;
                 showShoppingDetailModal.value = true;
             };
 
@@ -1728,62 +1000,72 @@
                 showShoppingDetailModal.value = false;
                 isEditMode.value = true;
                 newShoppingItem.value = JSON.parse(JSON.stringify(selectedShoppingItem.value));
+                if(!newShoppingItem.value.images) newShoppingItem.value.images = [];
                 showShoppingModal.value = true;
             };
 
-            // Image Handlers
-            const handleImageUploadGeneric = (e, targetRef) => {
-                const files = e.target.files;
-                if(files && files.length > 0) {
-                    if (!targetRef.value.images) targetRef.value.images = [];
-                    Array.from(files).forEach(file => {
-                        const reader = new FileReader();
-                        reader.onload = (evt) => targetRef.value.images.push(evt.target.result);
-                        reader.readAsDataURL(file);
-                    });
-                }
+            const galleryNav = (dir) => {
+                if(!selectedShoppingItem.value) return;
+                const len = selectedShoppingItem.value.images.length;
+                let newIdx = currentGalleryIndex.value + dir;
+                if(newIdx < 0) newIdx = len - 1;
+                if(newIdx >= len) newIdx = 0;
+                currentGalleryIndex.value = newIdx;
             };
 
-            const removeImageGeneric = (idx, targetRef) => {
-                if(targetRef.value.images) targetRef.value.images.splice(idx, 1);
+            const openHotelDetail = (hotel) => {
+                isEditHotel.value = true;
+                newHotel.value = JSON.parse(JSON.stringify(hotel));
+                if(!newHotel.value.images) newHotel.value.images = [];
+                if(!newHotel.value.files) newHotel.value.files = [];
+                showHotelModal.value = true;
             };
-
-            const handleItineraryImageUpload = (e) => handleImageUploadGeneric(e, newItinerary);
-            const removeItineraryImage = (idx) => removeImageGeneric(idx, newItinerary);
             
-            const handleHotelImageUpload = (e) => handleImageUploadGeneric(e, newHotel);
-            const removeHotelImage = (idx) => removeImageGeneric(idx, newHotel);
-
-            const handleImageUpload = (e) => handleImageUploadGeneric(e, newShoppingItem);
-            const removeImage = (idx) => removeImageGeneric(idx, newShoppingItem);
-
-            const openImagePreview = (url) => {
-                if(url) {
-                    previewImageUrl.value = url;
-                    showImagePreviewModal.value = true;
+            const removeHotelItem = async (id) => {
+                if(confirm("刪除住宿？")) {
+                    await deleteDoc(doc(db, 'trips', TRIP_ID, 'hotel_items', id));
+                    closeAllModals();
                 }
             };
             
-            const openMap = (q) => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`, '_blank');
+            const handleBannerUpload = async (e) => {
+                const file = e.target.files[0];
+                if(!file) return;
+                isLoading.value = true;
+                // Compress banner too
+                const blob = await compressImage(file);
+                const fileRef = storageRef(storage, `uploads/banner_${Date.now()}`);
+                await uploadBytes(fileRef, blob);
+                const url = await getDownloadURL(fileRef);
+                await setDoc(doc(db, 'trips', TRIP_ID, DATA_PATH, 'settings'), { headerImage: url }, { merge: true });
+                isLoading.value = false;
+            };
+
+            const closeAllModals = () => {
+                showSettingsModal.value = false;
+                showItineraryModal.value = false;
+                showShoppingModal.value = false;
+                showShoppingDetailModal.value = false;
+                showHotelModal.value = false;
+                isLoading.value = false;
+            };
 
             return {
-                isLoading, toasts,
-                currentTab, dates, selectedDateIndex, currentItinerary, currentWeather, currentDateInfo,
-                hotels, shoppingList, filteredShoppingList, expenses, totalExpensesJPY, totalExpensesTWD,
-                currencyInput, currencyResult, calculateCurrency, formatNumber,
-                getWeatherIcon, getWeatherDescription, getCategoryColor, getCategoryIcon, getTransportIcon,
+                isLoading, loadingText, toastMessage, bannerUrl,
+                currentTab, dates, selectedDateIndex, currentItinerary,
+                shoppingSubTab, filteredShoppingList, expenses, totalExpensesJPY, totalExpensesTWD,
+                hotels, currencyInput, currencyResult, calculateCurrency, formatNumber,
+                getCategoryColor, getCategoryIcon, getTransportIcon,
                 // Modals
-                showItineraryModal, showShoppingModal, showExpenseModal, showShoppingDetailModal, showItineraryDetailModal, showHotelModal, showHotelDetailModal, showImagePreviewModal, showSettingsModal, anyModalOpen,
-                isEditMode, isEditHotel, shoppingSubTab, previewImageUrl, bannerUrl,
-                // Data
-                newItinerary, newShoppingItem, newHotel, newExpense, selectedShoppingItem, selectedItineraryItem, selectedHotelItem,
-                tripSettings,
-                // Methods
-                handleAddClick, closeAllModals, handleBannerUpload, saveTripSettings,
-                saveItineraryItem, removeItineraryItem, openItineraryDetail, switchToEditItinerary, handleItineraryImageUpload, removeItineraryImage,
-                saveShoppingItem, removeShoppingItem, openShoppingDetail, switchToEditShopping, handleImageUpload, removeImage, openImagePreview,
-                saveHotelItem, removeHotelItem, openHotelDetail, switchToEditHotel, handleHotelImageUpload, removeHotelImage,
-                addExpense, removeExpense, openMap
+                showSettingsModal, showItineraryModal, showShoppingModal, showShoppingDetailModal, showHotelModal,
+                tripSettings, saveTripSettings, changeDuration,
+                // Itinerary
+                newItinerary, isEditMode, handleAddClick, handleImageUpload, removeImage, saveItineraryItem, removeItineraryItem, openItineraryDetail, reorderItem,
+                // Shopping
+                newShoppingItem, selectedShoppingItem, currentGalleryIndex, galleryNav, openShoppingDetail, switchToEditShopping, saveShoppingItem, removeShoppingItem,
+                // Hotel
+                newHotel, isEditHotel, openHotelDetail, saveHotelItem, removeHotelItem, handleFileUpload, removeFile, openFile, getFileName,
+                closeAllModals, handleBannerUpload
             };
         }
     }).mount('#app');
