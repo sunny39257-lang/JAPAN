@@ -245,7 +245,6 @@
                             <div class="p-3 flex-1 min-w-0">
                                 <div class="flex justify-between items-start">
                                     <h3 class="text-base font-bold text-slate-800 leading-tight truncate pr-1">{{ item.name }}</h3>
-                                    <!-- 修改：字體改為 text-xs (稍大) -->
                                     <span v-if="item.price" class="text-xs bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-bold shrink-0">¥{{ item.price }}</span>
                                 </div>
                                 
@@ -336,15 +335,28 @@
 
         <!-- Tab: 花費 (Expenses) -->
         <div v-if="currentTab === 'expenses'" class="pb-24">
-            <!-- Blue Card Header -->
-            <div class="bg-gradient-to-r from-[#007EA7] to-[#00A8E8] text-white rounded-3xl py-4 px-6 mb-4 shadow-xl relative overflow-hidden">
-                <div class="relative z-10 text-center">
-                    <p class="text-xs text-blue-100 mb-1 opacity-90">目前總花費 (JPY)</p>
-                    <h2 class="text-4xl font-bold mb-2 tracking-tight">¥ {{ formatNumber(totalExpensesJPY) }}</h2>
-                    <p class="text-xs text-blue-100 font-medium text-right">約 NT$ {{ formatNumber(totalExpensesTWD) }}</p>
+            <!-- 修改：移除藍色背景，改為與資訊頁匯率相同的樣式 -->
+            <div class="p-4 mb-2 relative overflow-hidden">
+                 <div class="flex items-center gap-2 mb-4 relative z-10 text-slate-700">
+                    <i class="fa-solid fa-coins text-deep-sea-blue"></i>
+                    <h3 class="font-bold">目前總花費</h3>
                 </div>
-                <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
-                <div class="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
+                
+                <div class="flex items-center gap-3 relative z-10">
+                    <div class="flex-1">
+                        <label class="text-[10px] text-slate-400 block mb-1 ml-1">JPY (日幣)</label>
+                        <div class="bg-white rounded-xl px-3 py-3 border border-slate-200">
+                            <div class="text-2xl font-bold text-deep-sea-blue">¥ {{ formatNumber(totalExpensesJPY) }}</div>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-arrow-right-long text-slate-300 mt-5"></i>
+                    <div class="flex-1">
+                        <label class="text-[10px] text-slate-400 block mb-1 ml-1">約 TWD (台幣)</label>
+                        <div class="bg-white rounded-xl px-3 py-3 border border-slate-200">
+                             <div class="text-xl font-bold text-slate-600">$ {{ formatNumber(totalExpensesTWD) }}</div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- List Header -->
@@ -411,7 +423,6 @@
                     <div class="flex-1">
                         <label class="text-[10px] text-slate-400 block mb-1 ml-1">JPY (日幣)</label>
                         <div class="bg-white rounded-xl px-3 py-2 border border-slate-200">
-                            <!-- 修改：加入 placeholder -->
                             <input type="number" v-model="currencyInput" @input="calculateCurrency" class="w-full bg-transparent text-xl font-bold outline-none text-slate-700 placeholder-slate-300" placeholder="0">
                         </div>
                     </div>
@@ -486,19 +497,29 @@
 
     <!-- Bottom Nav -->
     <nav class="bottom-nav">
+        <!-- 修正順序：資訊 -> 行程 -> (+) -> 購物 -> 花費 -->
+        
+        <!-- 1. 資訊 -->
+        <button class="nav-item" :class="{ active: currentTab === 'info' }" @click="currentTab = 'info'">
+            <i class="fa-solid fa-circle-info"></i><span>資訊</span>
+        </button>
+        
+        <!-- 2. 行程 -->
         <button class="nav-item" :class="{ active: currentTab === 'itinerary' }" @click="currentTab = 'itinerary'">
             <i class="fa-solid fa-map-location-dot"></i><span>行程</span>
         </button>
+        
+        <!-- 3. Add -->
+        <button class="fab-center" @click="handleAddClick"><i class="fa-solid fa-plus"></i></button>
+        
+        <!-- 4. 購物 -->
         <button class="nav-item" :class="{ active: currentTab === 'shopping' }" @click="currentTab = 'shopping'">
             <i class="fa-solid fa-bag-shopping"></i><span>購物</span>
         </button>
-        <!-- FAB Center Button -->
-        <button class="fab-center" @click="handleAddClick"><i class="fa-solid fa-plus"></i></button>
+        
+        <!-- 5. 花費 -->
         <button class="nav-item" :class="{ active: currentTab === 'expenses' }" @click="currentTab = 'expenses'">
             <i class="fa-solid fa-wallet"></i><span>花費</span>
-        </button>
-        <button class="nav-item" :class="{ active: currentTab === 'info' }" @click="currentTab = 'info'">
-            <i class="fa-solid fa-circle-info"></i><span>資訊</span>
         </button>
     </nav>
 
@@ -1167,12 +1188,10 @@
             const previewItem = ref(null);
             const selectedShoppingItem = ref(null);
             const currentGalleryIndex = ref(0);
-            // 修改：預設值為空字串，避免顯示 0
             const currencyInput = ref('');
             const currencyResult = ref(0);
             
             const apiRate = ref(0.215);
-            // 修正：增加防呆判斷，避免 manualRate 為空時導致匯率變 0
             const currentRate = computed(() => {
                 const manual = Number(tripSettings.value.manualRate);
                 return manual > 0 ? manual : apiRate.value;
@@ -1230,7 +1249,6 @@
 
             const formatNumber = (n) => n?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             const calculateCurrency = () => {
-                // 如果 input 是空字串或 0，結果設為 0
                 if (!currencyInput.value) {
                     currencyResult.value = 0;
                     return;
@@ -1359,12 +1377,10 @@
                         const fileRef = storageRef(storage, `uploads/file_${Date.now()}_${Math.random().toString(36).substr(2)}`);
                         await uploadBytes(fileRef, blob);
                         const url = await getDownloadURL(fileRef);
-                        // 需求1：這裡保留原始檔名
                         results.push({ name: item.name, url: url });
                     } else if (item.url) {
                         results.push(item);
                     } else if (typeof item === 'string') {
-                        // 舊資料相容
                         results.push({ name: '附件', url: item });
                     }
                 }
@@ -1461,7 +1477,6 @@
                     const fileObjects = await processUploads(newItinerary.value.files || []);
                     const finalDayIndex = parseInt(newItinerary.value.dayIndex);
                     
-                    // 修正：交通時間顯示邏輯 (強制轉整數，避免 "0" 或空字串顯示)
                     let tTime = '';
                     const h = parseInt(newItinerary.value.transportH || 0);
                     const m = parseInt(newItinerary.value.transportM || 0);
@@ -1477,7 +1492,6 @@
                         dayIndex: finalDayIndex,
                         transportTime: tTime
                     };
-                    // 清理暫存欄位
                     delete data.transportH; 
                     delete data.transportM;
                     delete data.order; delete data.id;
@@ -1497,7 +1511,6 @@
                 isEditMode.value = true;
                 const item = JSON.parse(JSON.stringify(previewItem.value));
                 
-                // 解析 "X小時Y分" 或 "X小時" 或 "Y分"
                 item.transportH = '';
                 item.transportM = '';
                 if(item.transportTime) {
@@ -1547,7 +1560,7 @@
                 
                 if(isEditMode.value) {
                     const id = newExpense.value.id;
-                    delete expenseData.id; // Don't save ID inside doc
+                    delete expenseData.id; 
                     await updateDoc(doc(db, 'trips', TRIP_ID, 'expense_items', id), expenseData);
                 } else {
                     await addDoc(collection(db, 'trips', TRIP_ID, 'expense_items'), expenseData);
@@ -1621,7 +1634,6 @@
                 currentGalleryIndex.value = n;
             };
 
-            // 修正：Banner 上傳增加 try/catch/finally 確保 spinner 消失
             const handleBannerUpload = async (e) => {
                 const file = e.target.files[0]; if(!file) return; 
                 isLoading.value = true;
@@ -1639,7 +1651,6 @@
                 }
             };
             
-            // 需求6: Banner 刪除
             const deleteBanner = async () => {
                 if(confirm('確定刪除封面照片？')) {
                     isLoading.value = true;
