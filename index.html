@@ -53,15 +53,15 @@
         .header-bg {
             height: 200px; width: 100%; position: relative;
             border-bottom-left-radius: 30px; border-bottom-right-radius: 30px;
-            overflow: hidden; background-color: #f1f5f9;
-            /* 移除陰影以加快渲染感 */
+            overflow: hidden; background-color: #e2e8f0;
         }
         
+        /* 需求5: Banner 刪除按鈕 */
         .banner-btn-delete {
             position: absolute; top: 20px; right: 20px; width: 36px; height: 36px;
             background: rgba(255, 255, 255, 0.9); color: #ef4444;
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1); cursor: pointer; z-index: 30;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); cursor: pointer; z-index: 50;
             backdrop-filter: blur(4px);
         }
 
@@ -161,20 +161,20 @@
     <div v-if="toastMessage" class="toast">{{ toastMessage }}</div>
 
     <!-- Header (Banner) -->
-    <div class="header-bg bg-slate-200">
+    <div class="header-bg relative">
         <div class="header-image-container relative w-full h-full group">
-            <!-- 需求5：圖片設為 loading=eager 與 decoding=sync 以最快速度顯示 -->
             <label class="cursor-pointer block w-full h-full relative">
                 <input type="file" @change="handleBannerUpload" class="hidden" accept="image/*">
+                <!-- 需求5: 移除所有延遲顯示的 class，加入 eager 屬性 -->
                 <img :src="bannerUrl || 'https://images.unsplash.com/photo-1542051841857-5f90071e7989?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80'" 
                      alt="Header" referrerpolicy="no-referrer"
-                     class="relative z-10 w-full h-full object-cover"
+                     class="w-full h-full object-cover"
                      loading="eager" decoding="sync">
                 <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity z-20 flex items-center justify-center text-white text-sm font-bold">
                     <i class="fa-solid fa-camera mr-2"></i> 更換封面
                 </div>
             </label>
-            <!-- 需求6：刪除 Banner 按鈕 -->
+            <!-- 需求5: 刪除 Banner 按鈕 -->
             <button v-if="bannerUrl" @click.stop="deleteBanner" class="banner-btn-delete">
                 <i class="fa-solid fa-trash-can"></i>
             </button>
@@ -232,7 +232,30 @@
                         </div>
                     </div>
 
-                    <div class="flex items-start relative z-10">
+                    <!-- 航班 -->
+                    <div v-if="item.category === 'flight'" class="flex items-start relative z-10">
+                        <div class="flex flex-col items-center mr-3 w-12 flex-shrink-0">
+                            <div class="w-10 h-10 rounded-full text-white shadow-md flex items-center justify-center text-sm ring-4 ring-white bg-sky-500">
+                                <i class="fa-solid fa-plane"></i>
+                            </div>
+                            <span v-if="item.startTime" class="text-xs font-bold text-slate-500 mt-1 bg-white px-1 rounded">{{ item.startTime }}</span>
+                        </div>
+                        <div class="flex-1 bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden flex cursor-pointer active:scale-[0.99] transition-transform"
+                             @click="openDetailPreview(item)">
+                            <div class="p-3 flex-1 min-w-0">
+                                <div class="flex justify-between items-start">
+                                    <h3 class="text-base font-bold text-slate-800 leading-tight truncate pr-1">{{ item.name }}</h3>
+                                </div>
+                                <div class="text-xs text-sky-600 font-bold mt-1">
+                                    <i class="fa-solid fa-plane-departure mr-1"></i>{{ item.deptFlightNo }} ({{ item.deptAirport }} <i class="fa-solid fa-arrow-right text-[10px]"></i> {{ item.arrAirport }})
+                                </div>
+                                <p class="text-xs text-slate-500 truncate mt-1" v-if="item.note">{{ item.note }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 一般行程 -->
+                    <div v-else class="flex items-start relative z-10">
                         <div class="flex flex-col items-center mr-3 w-12 flex-shrink-0">
                             <div class="w-10 h-10 rounded-full text-white shadow-md flex items-center justify-center text-sm ring-4 ring-white" :class="getCategoryColor(item.category)">
                                 <i :class="getCategoryIcon(item.category)"></i>
@@ -249,11 +272,7 @@
                                     <span v-if="item.price" class="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-bold shrink-0">¥{{ item.price }}</span>
                                 </div>
                                 
-                                <div v-if="item.category === 'flight'" class="text-xs text-sky-600 font-bold mt-1">
-                                    <i class="fa-solid fa-plane-departure mr-1"></i>{{ item.deptFlightNo }} ({{ item.deptAirport }} <i class="fa-solid fa-arrow-right text-[10px]"></i> {{ item.arrAirport }})
-                                </div>
-
-                                <div v-else-if="item.category === 'food' && item.foodItem" class="text-xs text-orange-600 font-bold mt-1">
+                                <div v-if="item.category === 'food' && item.foodItem" class="text-xs text-orange-600 font-bold mt-1">
                                     <i class="fa-solid fa-utensils mr-1"></i>{{ item.foodItem }}
                                 </div>
                                 
@@ -261,7 +280,7 @@
                             </div>
 
                             <div v-if="item.images && item.images.length > 0" class="w-20 bg-slate-100 relative">
-                                <img :src="item.images[0]" referrerpolicy="no-referrer" class="w-full h-full object-cover" loading="lazy">
+                                <img :src="item.images[0]" referrerpolicy="no-referrer" class="w-full h-full object-cover">
                                 <div v-if="item.images.length > 1" class="absolute bottom-0 right-0 bg-black/50 text-white text-[9px] px-1.5 py-0.5 rounded-tl">
                                     +{{ item.images.length - 1 }}
                                 </div>
@@ -286,22 +305,22 @@
             </div>
 
             <div class="flex flex-col gap-3">
-                <!-- 需求3：父層加上 @click，確保點擊卡片任何地方都能打開視窗 -->
+                <!-- 需求3：修正點擊範圍問題 -->
                 <div v-for="(item, idx) in filteredShoppingList" :key="item.id" 
                      @click="openShoppingDetail(item)"
-                     class="bg-white rounded-xl p-3 shadow-sm border border-slate-100 flex items-center gap-3 cursor-pointer active:bg-slate-50 transition-all"
-                     :class="{'opacity-70 grayscale': item.isPurchased}">
+                     class="bg-white rounded-xl p-3 shadow-sm border border-slate-100 flex items-center gap-3 cursor-pointer active:bg-slate-50 transition-all relative overflow-hidden"
+                     :class="{'opacity-60 grayscale': item.isPurchased}">
                     
-                    <!-- 勾選框 (@click.stop 避免觸發父層點擊) -->
+                    <!-- 勾選框 -->
                     <div @click.stop="toggleShoppingCheck(item)" 
-                         class="w-6 h-6 rounded-full border-2 flex items-center justify-center cursor-pointer transition-colors flex-shrink-0"
+                         class="w-6 h-6 rounded-full border-2 flex items-center justify-center cursor-pointer transition-colors flex-shrink-0 z-20"
                          :class="item.isPurchased ? 'bg-green-500 border-green-500 text-white' : 'border-slate-300 text-transparent'">
                         <i class="fa-solid fa-check text-xs"></i>
                     </div>
 
                     <!-- Image -->
                     <div class="w-20 h-20 bg-slate-100 rounded-lg overflow-hidden flex-shrink-0 relative border border-slate-200">
-                         <img v-if="item.images && item.images.length > 0" :src="item.images[0]" referrerpolicy="no-referrer" class="w-full h-full object-cover" loading="lazy">
+                         <img v-if="item.images && item.images.length > 0" :src="item.images[0]" referrerpolicy="no-referrer" class="w-full h-full object-cover">
                          <div v-else class="w-full h-full flex items-center justify-center text-slate-300"><i class="fa-solid fa-image"></i></div>
                     </div>
                     
@@ -323,7 +342,7 @@
                     </div>
 
                     <!-- Actions -->
-                    <div class="flex flex-col items-center gap-2">
+                    <div class="flex flex-col items-center gap-2 z-20">
                         <a v-if="item.address" :href="'https://www.google.com/maps/search/?api=1&query='+item.address" @click.stop target="_blank" 
                            class="w-8 h-8 rounded-full bg-blue-50 text-deep-sea-blue flex items-center justify-center shadow-sm hover:bg-blue-100 transition-colors">
                             <i class="fa-solid fa-location-arrow text-xs"></i>
@@ -402,9 +421,8 @@
         <!-- Tab: 資訊 (Info) -->
         <div v-if="currentTab === 'info'" class="pb-28">
             
-            <!-- 需求4：匯率換算透明化 (移除 bg-gradient, shadow, text-white) -->
+            <!-- 需求4：匯率換算透明化 (移除藍色背景) -->
             <div class="p-4 mb-2 relative overflow-hidden">
-                
                 <div class="flex items-center gap-2 mb-4 relative z-10 text-slate-700">
                     <i class="fa-solid fa-calculator text-deep-sea-blue"></i>
                     <h3 class="font-bold">匯率換算</h3>
@@ -413,14 +431,14 @@
                 <div class="flex items-center gap-3 relative z-10">
                     <div class="flex-1">
                         <label class="text-[10px] text-slate-400 block mb-1 ml-1">JPY (日幣)</label>
-                        <div class="bg-white rounded-xl px-3 py-2 border border-slate-200">
+                        <div class="bg-white rounded-xl px-3 py-2 border border-slate-200 shadow-sm">
                             <input type="number" v-model="currencyInput" @input="calculateCurrency" class="w-full bg-transparent text-xl font-bold outline-none text-slate-700 placeholder-slate-300">
                         </div>
                     </div>
                     <i class="fa-solid fa-arrow-right-arrow-left text-slate-300 mt-5"></i>
                     <div class="flex-1">
                         <label class="text-[10px] text-slate-400 block mb-1 ml-1">TWD (台幣)</label>
-                        <div class="bg-white rounded-xl px-3 py-2 border border-slate-200">
+                        <div class="bg-white rounded-xl px-3 py-2 border border-slate-200 shadow-sm">
                             <div class="text-xl font-bold text-slate-700">$ {{ formatNumber(currencyResult) }}</div>
                         </div>
                     </div>
@@ -637,9 +655,9 @@
                 <div v-if="previewItem.files && previewItem.files.length > 0" class="mb-6">
                     <p class="text-xs font-bold text-slate-400 mb-2">附件檔案</p>
                     <div class="space-y-2">
+                        <!-- 需求1：顯示正確檔名 -->
                         <div v-for="(file, idx) in previewItem.files" :key="idx" @click="openFile(file)" class="flex items-center p-3 bg-slate-50 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-100">
                             <i class="fa-solid fa-file-pdf text-red-400 text-xl mr-3"></i>
-                            <!-- 需求1：顯示正確檔名 -->
                             <span class="text-sm font-bold text-slate-700 flex-1 truncate">{{ file.name || '附件' }}</span>
                             <i class="fa-solid fa-arrow-up-right-from-square text-slate-300 text-xs ml-2"></i>
                         </div>
@@ -779,7 +797,6 @@
                     <div>
                         <label class="form-label text-indigo-800">訂單檔案</label>
                         <div class="space-y-2">
-                             <!-- 顯示已選檔案 -->
                              <div v-for="(file, idx) in newItinerary.files" :key="idx" class="flex items-center justify-between bg-white p-2 rounded text-xs border border-indigo-100">
                                 <span class="truncate pr-2">{{file.name}}</span>
                                 <button @click="removeFile(idx, newItinerary)" class="text-red-500"><i class="fa-solid fa-xmark"></i></button>
@@ -1051,9 +1068,10 @@
             const toastMessage = ref('');
             const bannerLoaded = ref(false);
 
+            // 修改: 加強壓縮設定 (1024px -> 800px, 0.6 -> 0.5)
             const compressImage = async (file) => {
                 return new Promise((resolve) => {
-                    const maxWidth = 1024;
+                    const maxWidth = 800;
                     const reader = new FileReader();
                     reader.readAsDataURL(file);
                     reader.onload = (event) => {
@@ -1066,7 +1084,7 @@
                             canvas.width = w; canvas.height = h;
                             const ctx = canvas.getContext('2d');
                             ctx.drawImage(img, 0, 0, w, h);
-                            canvas.toBlob((blob) => { resolve(blob); }, 'image/jpeg', 0.6);
+                            canvas.toBlob((blob) => { resolve(blob); }, 'image/jpeg', 0.5);
                         };
                     };
                 });
@@ -1106,7 +1124,6 @@
             const currencyResult = ref(0);
             
             const apiRate = ref(0.215);
-            // 需求4：使用手動匯率或 API 匯率
             const currentRate = computed(() => tripSettings.value.manualRate ? Number(tripSettings.value.manualRate) : apiRate.value);
             const rateSource = computed(() => tripSettings.value.manualRate ? '手動設定' : 'API');
 
@@ -1248,7 +1265,7 @@
                         bankOffersContent.value = d.bankOffersNote || '';
                         if(d.tripStartDate) tripSettings.value.startDate = d.tripStartDate;
                         if(d.tripDuration) tripSettings.value.duration = d.tripDuration;
-                        if(d.manualRate) tripSettings.value.manualRate = d.manualRate; // Load manual rate
+                        if(d.manualRate) tripSettings.value.manualRate = d.manualRate; 
                         generateDates();
                     }
                 });
@@ -1283,12 +1300,11 @@
                         const fileRef = storageRef(storage, `uploads/file_${Date.now()}_${Math.random().toString(36).substr(2)}`);
                         await uploadBytes(fileRef, blob);
                         const url = await getDownloadURL(fileRef);
-                        // 需求1：這裡保留原始檔名
+                        // 修正 1: 這裡確保 item.name 被寫入
                         results.push({ name: item.name, url: url });
                     } else if (item.url) {
                         results.push(item);
                     } else if (typeof item === 'string') {
-                        // 舊資料相容
                         results.push({ name: '附件', url: item });
                     }
                 }
@@ -1342,8 +1358,8 @@
                     isEditMode.value = false;
                     newItinerary.value = { 
                         category: 'sightseeing', 
-                        transportType: '', // 預設空
-                        transportH: '', transportM: '', // 新增時間欄位
+                        transportType: '', 
+                        transportH: '', transportM: '',
                         images: [], 
                         files: [], 
                         paymentMethods: [],
@@ -1372,7 +1388,6 @@
                 else target.paymentMethods.push(pm);
             };
 
-            // 需求6: 購物清單勾選
             const toggleShoppingCheck = async (item) => {
                 item.isPurchased = !item.isPurchased;
                 await updateDoc(doc(db, 'trips', TRIP_ID, 'shopping_items', item.id), { isPurchased: item.isPurchased });
@@ -1385,13 +1400,14 @@
                     const fileObjects = await processUploads(newItinerary.value.files || []);
                     const finalDayIndex = parseInt(newItinerary.value.dayIndex);
                     
-                    // 需求2: 智慧顯示時間
+                    // 修正 2: 交通時間智慧顯示
                     let tTime = '';
-                    const h = newItinerary.value.transportH;
-                    const m = newItinerary.value.transportM;
-                    if(h && m) tTime = `${h}小時${m}分`;
-                    else if(h) tTime = `${h}小時`;
-                    else if(m) tTime = `${m}分`;
+                    const h = parseInt(newItinerary.value.transportH || 0);
+                    const m = parseInt(newItinerary.value.transportM || 0);
+                    
+                    if(h > 0 && m > 0) tTime = `${h}小時${m}分`;
+                    else if(h > 0) tTime = `${h}小時`;
+                    else if(m > 0) tTime = `${m}分`;
 
                     const data = { 
                         ...newItinerary.value, 
@@ -1400,7 +1416,6 @@
                         dayIndex: finalDayIndex,
                         transportTime: tTime
                     };
-                    // 清理暫存欄位
                     delete data.transportH; 
                     delete data.transportM;
                     delete data.order; delete data.id;
@@ -1414,13 +1429,11 @@
                 isLoading.value = false; closeAllModals();
             };
             
-            // 編輯時解析時間字串
             const switchToEditItinerary = () => {
                 showItineraryDetailModal.value = false;
                 isEditMode.value = true;
                 const item = JSON.parse(JSON.stringify(previewItem.value));
                 
-                // 解析 "X小時Y分" 或 "X小時" 或 "Y分"
                 item.transportH = '';
                 item.transportM = '';
                 if(item.transportTime) {
@@ -1455,7 +1468,6 @@
                 if(confirm("刪除此商品？")) { await deleteDoc(doc(db, 'trips', TRIP_ID, 'shopping_items', id)); closeAllModals(); }
             };
 
-            // Expense Logic
             const editExpense = (exp) => {
                 newExpense.value = { ...exp };
                 isEditMode.value = true;
@@ -1470,7 +1482,7 @@
                 
                 if(isEditMode.value) {
                     const id = newExpense.value.id;
-                    delete expenseData.id; // Don't save ID inside doc
+                    delete expenseData.id; 
                     await updateDoc(doc(db, 'trips', TRIP_ID, 'expense_items', id), expenseData);
                 } else {
                     await addDoc(collection(db, 'trips', TRIP_ID, 'expense_items'), expenseData);
@@ -1498,7 +1510,7 @@
                     reader.onload = (evt) => {
                         target.files.push({
                             name: file.name,
-                            content: evt.target.result // Base64 content
+                            content: evt.target.result
                         });
                     };
                     reader.readAsDataURL(file);
@@ -1559,7 +1571,7 @@
                 isLoading.value = false;
             };
             
-            // 需求6: Banner 刪除
+            // 修正 6: Banner 刪除
             const deleteBanner = async () => {
                 if(confirm('確定刪除封面照片？')) {
                     isLoading.value = true;
