@@ -15,12 +15,12 @@
     <!-- Vue 3 -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
-    <!-- 錯誤偵測腳本 (若白畫面會跳出警告) -->
+    <!-- 錯誤捕捉 (如果還是白畫面，會跳出視窗告知原因) -->
     <script>
         window.onerror = function(msg, url, line, col, error) {
-            // 忽略 ResizeObserver 錯誤，這是瀏覽器常見的無害警告
-            if (msg.includes('ResizeObserver')) return false;
-            alert("發生錯誤: " + msg + "\n行數: " + line);
+            // 忽略一些無害的 ResizeObserver 警告
+            if (msg && msg.includes('ResizeObserver')) return false;
+            alert("系統錯誤:\n" + msg + "\n請檢查網路連線或程式碼設定");
             return false;
         };
     </script>
@@ -152,8 +152,6 @@
             border-top: 4px solid #01579B; border-radius: 50%; animation: spin 1s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* [v-cloak] { display: none; }  <-- 暫時移除，避免發生錯誤時全白 */
     </style>
 </head>
 <body>
@@ -183,7 +181,7 @@
                     <i class="fa-solid fa-camera mr-2"></i> 更換封面
                 </div>
             </label>
-            <!-- 刪除 Banner 按鈕 -->
+            <!-- Banner 刪除按鈕 -->
             <button v-if="bannerUrl" @click.stop="deleteBanner" class="banner-btn-delete">
                 <i class="fa-solid fa-trash-can"></i>
             </button>
@@ -328,7 +326,7 @@
 
                     <!-- Image -->
                     <div class="w-20 h-20 bg-slate-100 rounded-lg overflow-hidden flex-shrink-0 relative border border-slate-200">
-                         <img v-if="item.images && item.images.length > 0" :src="item.images[0]" referrerpolicy="no-referrer" class="w-full h-full object-cover">
+                         <img v-if="item.images && item.images.length > 0" :src="item.images[0]" referrerpolicy="no-referrer" class="w-full h-full object-cover" loading="lazy">
                          <div v-else class="w-full h-full flex items-center justify-center text-slate-300"><i class="fa-solid fa-image"></i></div>
                     </div>
                     
@@ -1044,10 +1042,11 @@
 </div>
 
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
-    import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, writeBatch, setDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
-    import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-storage.js";
+    // 重要：使用穩定版 10.7.1，避免版本錯誤導致白畫面
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, writeBatch, setDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
     const { createApp, ref, computed, onMounted } = Vue
 
@@ -1580,7 +1579,7 @@
                 isLoading.value = false;
             };
             
-            // 修正 6: Banner 刪除
+            // 修正 5: Banner 刪除
             const deleteBanner = async () => {
                 if(confirm('確定刪除封面照片？')) {
                     isLoading.value = true;
