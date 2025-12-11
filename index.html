@@ -53,18 +53,17 @@
         .header-bg {
             height: 200px; width: 100%; position: relative;
             border-bottom-left-radius: 30px; border-bottom-right-radius: 30px;
-            overflow: hidden; background-color: #eee;
-            box-shadow: 0 4px 20px rgba(1, 87, 155, 0.1);
+            overflow: hidden; background-color: #f1f5f9;
+            /* 移除陰影以加快渲染感 */
         }
         
-        .banner-btn {
-            position: absolute; width: 36px; height: 36px;
-            background: rgba(255, 255, 255, 0.9); color: #01579B;
+        .banner-btn-delete {
+            position: absolute; top: 20px; right: 20px; width: 36px; height: 36px;
+            background: rgba(255, 255, 255, 0.9); color: #ef4444;
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2); cursor: pointer; z-index: 30;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); cursor: pointer; z-index: 30;
             backdrop-filter: blur(4px);
         }
-        .banner-settings-btn { display: none; }
 
         /* Nav */
         .bottom-nav {
@@ -164,20 +163,24 @@
     <!-- Header (Banner) -->
     <div class="header-bg bg-slate-200">
         <div class="header-image-container relative w-full h-full group">
+            <!-- 需求5：圖片設為 loading=eager 與 decoding=sync 以最快速度顯示 -->
             <label class="cursor-pointer block w-full h-full relative">
                 <input type="file" @change="handleBannerUpload" class="hidden" accept="image/*">
                 <img :src="bannerUrl || 'https://images.unsplash.com/photo-1542051841857-5f90071e7989?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80'" 
                      alt="Header" referrerpolicy="no-referrer"
                      class="relative z-10 w-full h-full object-cover"
-                     loading="eager">
+                     loading="eager" decoding="sync">
                 <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity z-20 flex items-center justify-center text-white text-sm font-bold">
                     <i class="fa-solid fa-camera mr-2"></i> 更換封面
                 </div>
             </label>
+            <!-- 需求6：刪除 Banner 按鈕 -->
+            <button v-if="bannerUrl" @click.stop="deleteBanner" class="banner-btn-delete">
+                <i class="fa-solid fa-trash-can"></i>
+            </button>
         </div>
     </div>
 
-    <!-- 需求7：往上移動，縮短與Banner距離 (改為 pt-1, 移除原本的 pt-4) -->
     <main class="px-4 pt-1">
         
         <!-- Tab: 行程 (Itinerary) -->
@@ -229,7 +232,6 @@
                         </div>
                     </div>
 
-                    <!-- 需求1：航班在列表中正常顯示 (非機票樣式)，點擊後才在彈窗顯示機票UI -->
                     <div class="flex items-start relative z-10">
                         <div class="flex flex-col items-center mr-3 w-12 flex-shrink-0">
                             <div class="w-10 h-10 rounded-full text-white shadow-md flex items-center justify-center text-sm ring-4 ring-white" :class="getCategoryColor(item.category)">
@@ -255,8 +257,6 @@
                                     <i class="fa-solid fa-utensils mr-1"></i>{{ item.foodItem }}
                                 </div>
                                 
-                                <!-- 需求2：付款方式圖示只在點進去後顯示，列表中隱藏 (已移除) -->
-
                                 <p class="text-xs text-slate-500 truncate mt-1" v-if="item.note">{{ item.note }}</p>
                             </div>
 
@@ -286,11 +286,13 @@
             </div>
 
             <div class="flex flex-col gap-3">
+                <!-- 需求3：父層加上 @click，確保點擊卡片任何地方都能打開視窗 -->
                 <div v-for="(item, idx) in filteredShoppingList" :key="item.id" 
+                     @click="openShoppingDetail(item)"
                      class="bg-white rounded-xl p-3 shadow-sm border border-slate-100 flex items-center gap-3 cursor-pointer active:bg-slate-50 transition-all"
                      :class="{'opacity-70 grayscale': item.isPurchased}">
                     
-                    <!-- 需求6：勾選框 -->
+                    <!-- 勾選框 (@click.stop 避免觸發父層點擊) -->
                     <div @click.stop="toggleShoppingCheck(item)" 
                          class="w-6 h-6 rounded-full border-2 flex items-center justify-center cursor-pointer transition-colors flex-shrink-0"
                          :class="item.isPurchased ? 'bg-green-500 border-green-500 text-white' : 'border-slate-300 text-transparent'">
@@ -298,14 +300,13 @@
                     </div>
 
                     <!-- Image -->
-                    <div @click="openShoppingDetail(item)" class="w-20 h-20 bg-slate-100 rounded-lg overflow-hidden flex-shrink-0 relative border border-slate-200">
+                    <div class="w-20 h-20 bg-slate-100 rounded-lg overflow-hidden flex-shrink-0 relative border border-slate-200">
                          <img v-if="item.images && item.images.length > 0" :src="item.images[0]" referrerpolicy="no-referrer" class="w-full h-full object-cover" loading="lazy">
                          <div v-else class="w-full h-full flex items-center justify-center text-slate-300"><i class="fa-solid fa-image"></i></div>
                     </div>
                     
                     <!-- Info -->
-                    <div @click="openShoppingDetail(item)" class="flex-1 min-w-0 flex flex-col justify-center">
-                        <!-- 需求6：刪除線 -->
+                    <div class="flex-1 min-w-0 flex flex-col justify-center">
                         <h4 class="font-bold text-slate-800 text-sm truncate mb-1" :class="{'line-through text-slate-400': item.isPurchased}">{{ item.name }}</h4>
                         
                         <div class="flex items-center gap-2 mb-1">
@@ -328,7 +329,7 @@
                             <i class="fa-solid fa-location-arrow text-xs"></i>
                         </a>
                         <div v-else class="w-8 h-8"></div>
-                        <div @click="openShoppingDetail(item)" class="text-slate-300 text-xs"><i class="fa-solid fa-chevron-right"></i></div>
+                        <div class="text-slate-300 text-xs"><i class="fa-solid fa-chevron-right"></i></div>
                     </div>
                 </div>
             </div>
@@ -401,32 +402,31 @@
         <!-- Tab: 資訊 (Info) -->
         <div v-if="currentTab === 'info'" class="pb-28">
             
-            <!-- 1. 匯率換算 -->
-            <div class="bg-gradient-to-br from-[#006080] to-[#004060] rounded-[2rem] p-6 text-white shadow-xl mb-6 mx-1 relative overflow-hidden">
-                <div class="absolute -top-10 -right-10 w-40 h-40 bg-white/5 rounded-full blur-2xl"></div>
+            <!-- 需求4：匯率換算透明化 (移除 bg-gradient, shadow, text-white) -->
+            <div class="p-4 mb-2 relative overflow-hidden">
                 
-                <div class="flex items-center gap-2 mb-4 relative z-10">
-                    <i class="fa-solid fa-calculator"></i>
+                <div class="flex items-center gap-2 mb-4 relative z-10 text-slate-700">
+                    <i class="fa-solid fa-calculator text-deep-sea-blue"></i>
                     <h3 class="font-bold">匯率換算</h3>
                 </div>
 
                 <div class="flex items-center gap-3 relative z-10">
                     <div class="flex-1">
-                        <label class="text-[10px] text-cyan-200 block mb-1 ml-1">JPY (日幣)</label>
-                        <div class="bg-white/20 backdrop-blur-sm rounded-xl px-3 py-2 border border-white/10">
-                            <input type="number" v-model="currencyInput" @input="calculateCurrency" class="w-full bg-transparent text-xl font-bold outline-none text-white placeholder-white/50">
+                        <label class="text-[10px] text-slate-400 block mb-1 ml-1">JPY (日幣)</label>
+                        <div class="bg-white rounded-xl px-3 py-2 border border-slate-200">
+                            <input type="number" v-model="currencyInput" @input="calculateCurrency" class="w-full bg-transparent text-xl font-bold outline-none text-slate-700 placeholder-slate-300">
                         </div>
                     </div>
-                    <i class="fa-solid fa-arrow-right-arrow-left text-cyan-300 mt-5"></i>
+                    <i class="fa-solid fa-arrow-right-arrow-left text-slate-300 mt-5"></i>
                     <div class="flex-1">
-                        <label class="text-[10px] text-cyan-200 block mb-1 ml-1">TWD (台幣)</label>
-                        <div class="bg-white/20 backdrop-blur-sm rounded-xl px-3 py-2 border border-white/10">
-                            <div class="text-xl font-bold">$ {{ formatNumber(currencyResult) }}</div>
+                        <label class="text-[10px] text-slate-400 block mb-1 ml-1">TWD (台幣)</label>
+                        <div class="bg-white rounded-xl px-3 py-2 border border-slate-200">
+                            <div class="text-xl font-bold text-slate-700">$ {{ formatNumber(currencyResult) }}</div>
                         </div>
                     </div>
                 </div>
-                <!-- 匯率來源 (需求4: 參考哪裡) -->
-                <div class="text-[10px] text-cyan-300/80 text-right mt-2 font-mono">
+                <!-- 匯率來源 -->
+                <div class="text-[10px] text-slate-400 text-right mt-2 font-mono">
                     計算匯率: {{ currentRate }} ({{ rateSource }})
                 </div>
             </div>
@@ -560,7 +560,7 @@
                      </div>
                 </div>
 
-                <!-- 需求1：機票詳細UI (只在詳細頁顯示) -->
+                <!-- 機票詳細UI -->
                 <div v-if="previewItem.category === 'flight' && previewItem.deptAirport" class="mb-6 bg-sky-50 rounded-xl p-4 border border-sky-100 shadow-sm relative overflow-hidden">
                     <div class="absolute top-0 left-0 w-full h-1 bg-sky-400"></div>
                     <div class="flex items-center justify-between mb-4">
@@ -612,7 +612,7 @@
                         <div class="w-6 text-slate-400 text-center"><i class="fa-solid fa-yen-sign"></i></div>
                         <div class="text-sm font-bold text-slate-700">{{ previewItem.price }}</div>
                     </div>
-                    <!-- 需求2：付款方式 (只在 Preview 顯示) -->
+                    <!-- 付款方式 -->
                     <div v-if="previewItem.paymentMethods && previewItem.paymentMethods.length > 0" class="flex items-center gap-3">
                         <div class="w-6 text-slate-400 text-center"><i class="fa-solid fa-wallet"></i></div>
                         <div class="flex gap-1 flex-wrap">
@@ -639,7 +639,8 @@
                     <div class="space-y-2">
                         <div v-for="(file, idx) in previewItem.files" :key="idx" @click="openFile(file)" class="flex items-center p-3 bg-slate-50 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-100">
                             <i class="fa-solid fa-file-pdf text-red-400 text-xl mr-3"></i>
-                            <span class="text-sm font-bold text-slate-700 flex-1 truncate">{{ file.name || '附件 ' + (idx + 1) }}</span>
+                            <!-- 需求1：顯示正確檔名 -->
+                            <span class="text-sm font-bold text-slate-700 flex-1 truncate">{{ file.name || '附件' }}</span>
                             <i class="fa-solid fa-arrow-up-right-from-square text-slate-300 text-xs ml-2"></i>
                         </div>
                     </div>
@@ -678,7 +679,7 @@
                     </select>
                 </div>
                 
-                <!-- 需求3：車程時間改為數字選擇 -->
+                <!-- 車程時間 -->
                 <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
                     <label class="form-label text-slate-500 mb-2">🚗 前往此處的交通 (選填)</label>
                     <div class="flex items-center gap-2 mb-2">
@@ -714,7 +715,6 @@
                     <div><label class="form-label">品名 (想吃的菜)</label><input v-model="newItinerary.foodItem" placeholder="例如：成吉思汗烤肉" class="input-field"></div>
                     <div><label class="form-label">價格</label><input v-model="newItinerary.price" placeholder="¥" class="input-field"></div>
                     
-                    <!-- 付款方式 -->
                     <div>
                         <label class="form-label">付款方式 (可複選)</label>
                         <div class="flex gap-2 flex-wrap">
@@ -740,7 +740,6 @@
                     <div><label class="form-label">景點名稱</label><input v-model="newItinerary.name" class="input-field"></div>
                     <div><label class="form-label">門票價格</label><input v-model="newItinerary.price" class="input-field"></div>
                     
-                    <!-- 付款方式 -->
                     <div>
                         <label class="form-label">付款方式 (可複選)</label>
                         <div class="flex gap-2 flex-wrap">
@@ -765,7 +764,6 @@
                     </div>
                     <div><label class="form-label text-indigo-800">地址</label><input v-model="newItinerary.address" class="input-field bg-white"></div>
                     
-                    <!-- 付款方式 -->
                     <div>
                         <label class="form-label text-indigo-800">付款方式 (可複選)</label>
                         <div class="flex gap-2 flex-wrap">
@@ -781,6 +779,11 @@
                     <div>
                         <label class="form-label text-indigo-800">訂單檔案</label>
                         <div class="space-y-2">
+                             <!-- 顯示已選檔案 -->
+                             <div v-for="(file, idx) in newItinerary.files" :key="idx" class="flex items-center justify-between bg-white p-2 rounded text-xs border border-indigo-100">
+                                <span class="truncate pr-2">{{file.name}}</span>
+                                <button @click="removeFile(idx, newItinerary)" class="text-red-500"><i class="fa-solid fa-xmark"></i></button>
+                             </div>
                              <label class="block w-full py-2 bg-white border border-dashed border-indigo-300 rounded-lg text-center text-indigo-400 cursor-pointer text-xs">
                                 <input type="file" @change="(e) => handleFileUpload(e, newItinerary)" class="hidden" multiple accept="application/pdf,image/*">
                                 <i class="fa-solid fa-cloud-arrow-up mr-1"></i> 上傳 PDF/圖片
@@ -813,6 +816,10 @@
                      <div class="mt-2">
                         <label class="form-label text-sky-800">電子機票/附件</label>
                         <div class="space-y-2">
+                             <div v-for="(file, idx) in newItinerary.files" :key="idx" class="flex items-center justify-between bg-white p-2 rounded text-xs border border-sky-100">
+                                <span class="truncate pr-2">{{file.name}}</span>
+                                <button @click="removeFile(idx, newItinerary)" class="text-red-500"><i class="fa-solid fa-xmark"></i></button>
+                             </div>
                              <label class="block w-full py-2 bg-white border border-dashed border-sky-300 rounded-lg text-center text-sky-400 cursor-pointer text-xs">
                                 <input type="file" @change="(e) => handleFileUpload(e, newItinerary)" class="hidden" multiple accept="application/pdf,image/*">
                                 <i class="fa-solid fa-cloud-arrow-up mr-1"></i> 上傳 PDF/圖片
@@ -917,7 +924,7 @@
                     <input type="date" v-model="tripSettings.startDate" class="input-field">
                 </div>
                 
-                <!-- 需求4：手動匯率設定 -->
+                <!-- 手動匯率設定 -->
                 <div>
                     <label class="form-label">手動匯率 (可輸入銀行換匯匯率)</label>
                     <div class="flex items-center gap-2">
@@ -985,7 +992,7 @@
                  <!-- Amount -->
                  <div><label class="form-label">金額 (¥)</label><input v-model.number="newExpense.amount" type="number" class="input-field font-bold text-lg text-deep-sea-blue"></div>
                  
-                 <!-- Payment (需求5：更改選項) -->
+                 <!-- Payment -->
                  <div><label class="form-label">付款方式</label>
                     <div class="grid grid-cols-2 gap-2">
                         <button @click="newExpense.payment='cash'" class="py-2 rounded-lg border text-xs font-bold" :class="newExpense.payment==='cash'?'bg-slate-700 text-white':'text-slate-400'">現金</button>
@@ -1276,10 +1283,12 @@
                         const fileRef = storageRef(storage, `uploads/file_${Date.now()}_${Math.random().toString(36).substr(2)}`);
                         await uploadBytes(fileRef, blob);
                         const url = await getDownloadURL(fileRef);
+                        // 需求1：這裡保留原始檔名
                         results.push({ name: item.name, url: url });
                     } else if (item.url) {
                         results.push(item);
                     } else if (typeof item === 'string') {
+                        // 舊資料相容
                         results.push({ name: '附件', url: item });
                     }
                 }
@@ -1376,11 +1385,13 @@
                     const fileObjects = await processUploads(newItinerary.value.files || []);
                     const finalDayIndex = parseInt(newItinerary.value.dayIndex);
                     
-                    // 需求3: 處理車程時間字串
+                    // 需求2: 智慧顯示時間
                     let tTime = '';
-                    if(newItinerary.value.transportH || newItinerary.value.transportM) {
-                        tTime = (newItinerary.value.transportH || '0') + '小時' + (newItinerary.value.transportM || '0') + '分';
-                    }
+                    const h = newItinerary.value.transportH;
+                    const m = newItinerary.value.transportM;
+                    if(h && m) tTime = `${h}小時${m}分`;
+                    else if(h) tTime = `${h}小時`;
+                    else if(m) tTime = `${m}分`;
 
                     const data = { 
                         ...newItinerary.value, 
@@ -1409,13 +1420,17 @@
                 isEditMode.value = true;
                 const item = JSON.parse(JSON.stringify(previewItem.value));
                 
-                // 解析 "X小時Y分"
+                // 解析 "X小時Y分" 或 "X小時" 或 "Y分"
+                item.transportH = '';
+                item.transportM = '';
                 if(item.transportTime) {
-                    const match = item.transportTime.match(/(\d+)小時(\d+)分/);
-                    if(match) {
-                        item.transportH = match[1];
-                        item.transportM = match[2];
-                    }
+                    const matchHM = item.transportTime.match(/(\d+)小時(\d+)分/);
+                    const matchH = item.transportTime.match(/(\d+)小時/);
+                    const matchM = item.transportTime.match(/(\d+)分/);
+                    
+                    if(matchHM) { item.transportH = matchHM[1]; item.transportM = matchHM[2]; }
+                    else if(matchH) { item.transportH = matchH[1]; }
+                    else if(matchM) { item.transportM = matchM[1]; }
                 }
                 
                 newItinerary.value = item;
@@ -1510,6 +1525,12 @@
                 currentGalleryIndex.value = 0;
                 showItineraryDetailModal.value = true;
             };
+            const switchToEditItinerary = () => {
+                showItineraryDetailModal.value = false;
+                isEditMode.value = true;
+                newItinerary.value = JSON.parse(JSON.stringify(previewItem.value));
+                showItineraryModal.value = true;
+            };
 
             const openShoppingDetail = (item) => { 
                 selectedShoppingItem.value = item; 
@@ -1537,6 +1558,17 @@
                 await setDoc(doc(db, 'trips', TRIP_ID, DATA_PATH, 'settings'), { headerImage: url }, { merge: true });
                 isLoading.value = false;
             };
+            
+            // 需求6: Banner 刪除
+            const deleteBanner = async () => {
+                if(confirm('確定刪除封面照片？')) {
+                    isLoading.value = true;
+                    await setDoc(doc(db, 'trips', TRIP_ID, DATA_PATH, 'settings'), { headerImage: null }, { merge: true });
+                    bannerUrl.value = '';
+                    isLoading.value = false;
+                }
+            };
+
             const closeAllModals = () => {
                 showSettingsModal.value = false; showItineraryModal.value = false;
                 showItineraryDetailModal.value = false; showShoppingModal.value = false; 
@@ -1560,7 +1592,7 @@
                 newExpense, saveExpense, editExpense, removeExpense,
                 closeAllModals, handleBannerUpload, openLightbox,
                 linkify, togglePayment,
-                currentRate, rateSource
+                currentRate, rateSource, deleteBanner
             };
         }
     }).mount('#app');
