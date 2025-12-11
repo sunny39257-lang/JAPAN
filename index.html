@@ -46,7 +46,6 @@
             width: 100%; max-width: 480px;
             background-color: #ffffff; min-height: 100vh; position: relative;
             box-shadow: 0 0 20px rgba(0,0,0,0.05); 
-            /* 優化：底部留白增加 safe area 避免被 Nav 擋住 */
             padding-bottom: calc(100px + env(safe-area-inset-bottom));
             overflow-x: hidden;
         }
@@ -130,7 +129,6 @@
         /* Lightbox */
         .lightbox {
             position: fixed; inset: 0; background: black; 
-            /* 優化：提高 z-index 避免被 loading 遮擋 */
             z-index: 120;
             display: flex; justify-content: center; align-items: center;
         }
@@ -168,7 +166,6 @@
         <div class="header-image-container relative w-full h-full group">
             <label class="cursor-pointer block w-full h-full relative">
                 <input type="file" @change="handleBannerUpload" class="hidden" accept="image/*">
-                <!-- 優化：加入 fetchpriority="high" -->
                 <img :src="bannerUrl || 'https://images.unsplash.com/photo-1542051841857-5f90071e7989?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80'" 
                      alt="Header" referrerpolicy="no-referrer"
                      class="relative z-10 w-full h-full object-cover"
@@ -248,7 +245,8 @@
                             <div class="p-3 flex-1 min-w-0">
                                 <div class="flex justify-between items-start">
                                     <h3 class="text-base font-bold text-slate-800 leading-tight truncate pr-1">{{ item.name }}</h3>
-                                    <span v-if="item.price" class="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-bold shrink-0">¥{{ item.price }}</span>
+                                    <!-- 修改：字體改為 text-xs (稍大) -->
+                                    <span v-if="item.price" class="text-xs bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-bold shrink-0">¥{{ item.price }}</span>
                                 </div>
                                 
                                 <div v-if="item.category === 'flight'" class="text-xs text-sky-600 font-bold mt-1">
@@ -413,7 +411,8 @@
                     <div class="flex-1">
                         <label class="text-[10px] text-slate-400 block mb-1 ml-1">JPY (日幣)</label>
                         <div class="bg-white rounded-xl px-3 py-2 border border-slate-200">
-                            <input type="number" v-model="currencyInput" @input="calculateCurrency" class="w-full bg-transparent text-xl font-bold outline-none text-slate-700 placeholder-slate-300">
+                            <!-- 修改：加入 placeholder -->
+                            <input type="number" v-model="currencyInput" @input="calculateCurrency" class="w-full bg-transparent text-xl font-bold outline-none text-slate-700 placeholder-slate-300" placeholder="0">
                         </div>
                     </div>
                     <i class="fa-solid fa-arrow-right-arrow-left text-slate-300 mt-5"></i>
@@ -842,7 +841,7 @@
         </div>
     </div>
 
-    <!-- 4. Shopping Detail Modal (補回遺失的 Modal) -->
+    <!-- 4. Shopping Detail Modal -->
     <div v-if="showShoppingDetailModal && selectedShoppingItem" class="fixed inset-0 z-[60] flex items-center justify-center px-4">
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" @click="closeAllModals"></div>
         <div class="bg-white rounded-3xl w-full max-w-sm overflow-hidden relative z-10 max-h-[90vh] overflow-y-auto">
@@ -1168,7 +1167,8 @@
             const previewItem = ref(null);
             const selectedShoppingItem = ref(null);
             const currentGalleryIndex = ref(0);
-            const currencyInput = ref(10000);
+            // 修改：預設值為空字串，避免顯示 0
+            const currencyInput = ref('');
             const currencyResult = ref(0);
             
             const apiRate = ref(0.215);
@@ -1229,7 +1229,14 @@
             }[pm] || pm);
 
             const formatNumber = (n) => n?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-            const calculateCurrency = () => currencyResult.value = Math.round(currencyInput.value * currentRate.value);
+            const calculateCurrency = () => {
+                // 如果 input 是空字串或 0，結果設為 0
+                if (!currencyInput.value) {
+                    currencyResult.value = 0;
+                    return;
+                }
+                currencyResult.value = Math.round(currencyInput.value * currentRate.value);
+            };
             
             const getDateString = (idx) => dates.value[idx] ? `${dates.value[idx].date} (${dates.value[idx].weekday})` : '';
             const getDateSimple = (idx) => dates.value[idx] ? dates.value[idx].date : '';
@@ -1454,13 +1461,14 @@
                     const fileObjects = await processUploads(newItinerary.value.files || []);
                     const finalDayIndex = parseInt(newItinerary.value.dayIndex);
                     
-                    // 需求2: 智慧顯示時間
+                    // 修正：交通時間顯示邏輯 (強制轉整數，避免 "0" 或空字串顯示)
                     let tTime = '';
-                    const h = newItinerary.value.transportH;
-                    const m = newItinerary.value.transportM;
-                    if(h && m) tTime = `${h}小時${m}分`;
-                    else if(h) tTime = `${h}小時`;
-                    else if(m) tTime = `${m}分`;
+                    const h = parseInt(newItinerary.value.transportH || 0);
+                    const m = parseInt(newItinerary.value.transportM || 0);
+                    
+                    if(h > 0 && m > 0) tTime = `${h}小時${m}分`;
+                    else if(h > 0) tTime = `${h}小時`;
+                    else if(m > 0) tTime = `${m}分`;
 
                     const data = { 
                         ...newItinerary.value, 
@@ -1612,23 +1620,37 @@
                 if(n < 0) n = len - 1; if(n >= len) n = 0;
                 currentGalleryIndex.value = n;
             };
+
+            // 修正：Banner 上傳增加 try/catch/finally 確保 spinner 消失
             const handleBannerUpload = async (e) => {
-                const file = e.target.files[0]; if(!file) return; isLoading.value = true;
-                const blob = await compressImage(file);
-                const fileRef = storageRef(storage, `uploads/banner_${Date.now()}`);
-                await uploadBytes(fileRef, blob);
-                const url = await getDownloadURL(fileRef);
-                await setDoc(doc(db, 'trips', TRIP_ID, DATA_PATH, 'settings'), { headerImage: url }, { merge: true });
-                isLoading.value = false;
+                const file = e.target.files[0]; if(!file) return; 
+                isLoading.value = true;
+                try {
+                    const blob = await compressImage(file);
+                    const fileRef = storageRef(storage, `uploads/banner_${Date.now()}`);
+                    await uploadBytes(fileRef, blob);
+                    const url = await getDownloadURL(fileRef);
+                    await setDoc(doc(db, 'trips', TRIP_ID, DATA_PATH, 'settings'), { headerImage: url }, { merge: true });
+                } catch (error) {
+                    console.error("Banner upload failed", error);
+                    alert("上傳失敗，請稍後再試");
+                } finally {
+                    isLoading.value = false;
+                }
             };
             
             // 需求6: Banner 刪除
             const deleteBanner = async () => {
                 if(confirm('確定刪除封面照片？')) {
                     isLoading.value = true;
-                    await setDoc(doc(db, 'trips', TRIP_ID, DATA_PATH, 'settings'), { headerImage: null }, { merge: true });
-                    bannerUrl.value = '';
-                    isLoading.value = false;
+                    try {
+                        await setDoc(doc(db, 'trips', TRIP_ID, DATA_PATH, 'settings'), { headerImage: null }, { merge: true });
+                        bannerUrl.value = '';
+                    } catch (error) {
+                        console.error("Banner delete failed", error);
+                    } finally {
+                        isLoading.value = false;
+                    }
                 }
             };
 
