@@ -57,13 +57,7 @@
             overflow: hidden; background-color: #f1f5f9;
         }
         
-        .banner-btn-delete {
-            position: absolute; top: 20px; right: 20px; width: 36px; height: 36px;
-            background: rgba(255, 255, 255, 0.9); color: #ef4444;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1); cursor: pointer; z-index: 30;
-            backdrop-filter: blur(4px);
-        }
+        /* Banner Delete Button removed as per request */
 
         /* Nav */
         .bottom-nav {
@@ -174,9 +168,7 @@
                     <i class="fa-solid fa-camera mr-2"></i> 更換封面
                 </div>
             </label>
-            <button v-if="bannerUrl" @click.stop="deleteBanner" class="banner-btn-delete">
-                <i class="fa-solid fa-trash-can"></i>
-            </button>
+            <!-- 垃圾桶按鈕已隱藏 (需求2) -->
         </div>
     </div>
 
@@ -335,7 +327,6 @@
 
         <!-- Tab: 花費 (Expenses) -->
         <div v-if="currentTab === 'expenses'" class="pb-24">
-            <!-- 修改：移除藍色背景，改為與資訊頁匯率相同的樣式 -->
             <div class="p-4 mb-2 relative overflow-hidden">
                  <div class="flex items-center gap-2 mb-4 relative z-10 text-slate-700">
                     <i class="fa-solid fa-coins text-deep-sea-blue"></i>
@@ -562,6 +553,11 @@
                 <div v-else class="w-full h-full flex flex-col items-center justify-center text-slate-400 bg-slate-50">
                     <i :class="getCategoryIcon(previewItem.category)" class="text-6xl opacity-30 mb-2"></i>
                     <span class="text-xs">無照片</span>
+                </div>
+                 <!-- Gallery Nav -->
+                <div v-if="previewItem.images && previewItem.images.length > 1" class="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-2">
+                    <button @click.stop="galleryNav(-1, previewItem)" class="w-8 h-8 rounded-full bg-black/30 text-white flex items-center justify-center backdrop-blur-sm"><i class="fa-solid fa-chevron-left"></i></button>
+                    <button @click.stop="galleryNav(1, previewItem)" class="w-8 h-8 rounded-full bg-black/30 text-white flex items-center justify-center backdrop-blur-sm"><i class="fa-solid fa-chevron-right"></i></button>
                 </div>
             </div>
 
@@ -854,6 +850,21 @@
 
                 <div><label class="form-label">備註 (支援網址)</label><textarea v-model="newItinerary.note" rows="2" class="input-field"></textarea></div>
                 
+                <!-- 需求3：所有行程類型都可以上傳多張照片 (放在最下方) -->
+                <div class="pt-2 border-t border-slate-100 mt-2">
+                    <label class="form-label">照片 (可多張)</label>
+                    <div class="image-preview-grid mb-2">
+                        <div v-for="(img, idx) in newItinerary.images" :key="idx" class="image-preview-item">
+                            <img :src="img">
+                            <button @click="removeImage(idx, newItinerary)" class="absolute top-1 right-1 bg-black/50 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                        <label class="image-preview-item flex items-center justify-center bg-slate-50 cursor-pointer border-dashed">
+                            <input type="file" multiple accept="image/*" @change="(e) => handleImageUpload(e, newItinerary)" class="hidden">
+                            <i class="fa-solid fa-plus text-slate-300"></i>
+                        </label>
+                    </div>
+                </div>
+
                 <div class="flex gap-2 pt-2">
                     <button v-if="isEditMode" @click="removeItineraryItem(newItinerary.id)" class="px-4 py-3 bg-red-50 text-red-500 rounded-xl"><i class="fa-solid fa-trash"></i></button>
                     <button @click="saveItineraryItem" class="flex-1 py-3 bg-deep-sea-blue text-white rounded-xl font-bold">儲存</button>
@@ -1158,7 +1169,8 @@
                 });
             };
 
-            const currentTab = ref('itinerary');
+            // 修改：預設 Tab 改為 info (資訊)
+            const currentTab = ref('info');
             const shoppingSubTab = ref('souvenir');
             const dates = ref([]);
             const tripSettings = ref({ startDate: '2026-02-01', duration: 7, manualRate: null });
@@ -1651,20 +1663,8 @@
                 }
             };
             
-            const deleteBanner = async () => {
-                if(confirm('確定刪除封面照片？')) {
-                    isLoading.value = true;
-                    try {
-                        await setDoc(doc(db, 'trips', TRIP_ID, DATA_PATH, 'settings'), { headerImage: null }, { merge: true });
-                        bannerUrl.value = '';
-                    } catch (error) {
-                        console.error("Banner delete failed", error);
-                    } finally {
-                        isLoading.value = false;
-                    }
-                }
-            };
-
+            // Delete Banner function removed from UI but kept in logic just in case
+            
             const closeAllModals = () => {
                 showSettingsModal.value = false; showItineraryModal.value = false;
                 showItineraryDetailModal.value = false; showShoppingModal.value = false; 
@@ -1688,7 +1688,7 @@
                 newExpense, saveExpense, editExpense, removeExpense,
                 closeAllModals, handleBannerUpload, openLightbox,
                 linkify, togglePayment,
-                currentRate, rateSource, deleteBanner
+                currentRate, rateSource
             };
         }
     }).mount('#app');
