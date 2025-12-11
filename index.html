@@ -15,6 +15,16 @@
     <!-- Vue 3 -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
+    <!-- 錯誤偵測腳本 (若白畫面會跳出警告) -->
+    <script>
+        window.onerror = function(msg, url, line, col, error) {
+            // 忽略 ResizeObserver 錯誤，這是瀏覽器常見的無害警告
+            if (msg.includes('ResizeObserver')) return false;
+            alert("發生錯誤: " + msg + "\n行數: " + line);
+            return false;
+        };
+    </script>
+
     <script>
         tailwind.config = {
             theme: {
@@ -56,7 +66,6 @@
             overflow: hidden; background-color: #e2e8f0;
         }
         
-        /* 需求5: Banner 刪除按鈕 */
         .banner-btn-delete {
             position: absolute; top: 20px; right: 20px; width: 36px; height: 36px;
             background: rgba(255, 255, 255, 0.9); color: #ef4444;
@@ -144,12 +153,12 @@
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        [v-cloak] { display: none; }
+        /* [v-cloak] { display: none; }  <-- 暫時移除，避免發生錯誤時全白 */
     </style>
 </head>
 <body>
 
-<div id="app" class="app-container" v-cloak>
+<div id="app" class="app-container">
 
     <!-- Global Loading -->
     <div v-if="isLoading" class="loading-overlay">
@@ -165,7 +174,7 @@
         <div class="header-image-container relative w-full h-full group">
             <label class="cursor-pointer block w-full h-full relative">
                 <input type="file" @change="handleBannerUpload" class="hidden" accept="image/*">
-                <!-- 需求5: 移除所有延遲顯示的 class，加入 eager 屬性 -->
+                <!-- 圖片優化: decoding="sync" -->
                 <img :src="bannerUrl || 'https://images.unsplash.com/photo-1542051841857-5f90071e7989?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80'" 
                      alt="Header" referrerpolicy="no-referrer"
                      class="w-full h-full object-cover"
@@ -174,7 +183,7 @@
                     <i class="fa-solid fa-camera mr-2"></i> 更換封面
                 </div>
             </label>
-            <!-- 需求5: 刪除 Banner 按鈕 -->
+            <!-- 刪除 Banner 按鈕 -->
             <button v-if="bannerUrl" @click.stop="deleteBanner" class="banner-btn-delete">
                 <i class="fa-solid fa-trash-can"></i>
             </button>
@@ -223,7 +232,7 @@
                 <div v-for="(item, idx) in currentItinerary" :key="item.id" class="relative group pb-6">
                     <div v-if="idx < currentItinerary.length - 1" class="timeline-line border-l-2 border-dashed border-slate-200"></div>
                     
-                    <!-- 顯示交通資訊 -->
+                    <!-- 顯示交通資訊 (修正: 0小時或0分不顯示) -->
                     <div v-if="item.transportType || idx > 0" class="pl-12 mb-2 flex items-center text-xs text-slate-400">
                         <div class="flex items-center bg-slate-50 px-2 py-0.5 rounded border border-slate-100">
                             <i :class="getTransportIcon(item.transportType || 'walk')" class="mr-1.5 opacity-60"></i>
@@ -305,7 +314,6 @@
             </div>
 
             <div class="flex flex-col gap-3">
-                <!-- 需求3：修正點擊範圍問題 -->
                 <div v-for="(item, idx) in filteredShoppingList" :key="item.id" 
                      @click="openShoppingDetail(item)"
                      class="bg-white rounded-xl p-3 shadow-sm border border-slate-100 flex items-center gap-3 cursor-pointer active:bg-slate-50 transition-all relative overflow-hidden"
@@ -421,7 +429,7 @@
         <!-- Tab: 資訊 (Info) -->
         <div v-if="currentTab === 'info'" class="pb-28">
             
-            <!-- 需求4：匯率換算透明化 (移除藍色背景) -->
+            <!-- 匯率換算透明化 -->
             <div class="p-4 mb-2 relative overflow-hidden">
                 <div class="flex items-center gap-2 mb-4 relative z-10 text-slate-700">
                     <i class="fa-solid fa-calculator text-deep-sea-blue"></i>
@@ -1066,9 +1074,10 @@
             const isLoading = ref(false);
             const loadingText = ref('');
             const toastMessage = ref('');
+            const bannerUrl = ref('');
             const bannerLoaded = ref(false);
 
-            // 修改: 加強壓縮設定 (1024px -> 800px, 0.6 -> 0.5)
+            // 修改: 加強壓縮設定 (800px, 0.5)
             const compressImage = async (file) => {
                 return new Promise((resolve) => {
                     const maxWidth = 800;
@@ -1097,7 +1106,7 @@
             const itineraryData = ref({});
             const shoppingList = ref([]);
             const expenses = ref([]);
-            const bannerUrl = ref('');
+            
             const selectedDateIndex = ref(0);
             const lightboxImage = ref(null);
 
